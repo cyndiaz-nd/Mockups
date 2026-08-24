@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ATS360 Client Intelligence Dashboard</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:#F0F4F8;color:#1E293B;height:100vh;display:flex;flex-direction:column;overflow:hidden;font-size:13px}
+.mockup-bar{background:#11225B;color:#93C5FD;text-align:center;padding:5px 16px;font-size:11px;font-weight:500;flex:none;letter-spacing:.02em}
+.mockup-bar strong{color:#F5A623}
+.app-header{background:#fff;border-bottom:1px solid #E2E8F0;padding:0 20px;height:54px;display:flex;align-items:center;gap:14px;flex:none;z-index:10}
+.logo{display:flex;align-items:center;gap:8px;text-decoration:none}
+.logo-mark{width:30px;height:30px;background:#11225B;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:11px;flex:none}
+.logo-text{font-weight:700;font-size:15px;color:#11225B}
+.logo-sub{color:#94A3B8;font-size:12px;padding-left:8px;border-left:1px solid #E2E8F0}
+.hspace{flex:1}
+.role-switcher{display:flex;background:#F1F5F9;border-radius:8px;padding:3px;gap:2px}
+.rbtn{padding:5px 13px;border:none;background:transparent;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500;color:#64748B;transition:all .15s;white-space:nowrap}
+.rbtn.active{background:#fff;color:#11225B;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.rbtn:hover:not(.active){color:#334155}
+.hmeta{font-size:11px;color:#94A3B8}
+.rfbtn{padding:6px 12px;background:#168AAD;color:white;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500}
+.rfbtn:hover{background:#0F6B8C}
+.app-body{display:flex;flex:1;overflow:hidden}
+.sidenav{width:210px;flex:none;background:#11225B;display:flex;flex-direction:column;overflow-y:auto;padding:14px 0}
+.nav-section{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#4B6CB7;padding:14px 18px 4px}
+.nitem{display:flex;align-items:center;gap:9px;padding:9px 18px;color:#B8C8E8;cursor:pointer;border-left:3px solid transparent;transition:all .15s;font-size:12px;user-select:none}
+.nitem:hover{background:rgba(255,255,255,.06);color:#fff}
+.nitem.active{background:rgba(22,138,173,.2);color:#fff;border-left-color:#168AAD}
+.nitem.hidden{display:none}
+.nbadge{margin-left:auto;background:#DC2626;color:white;border-radius:10px;padding:1px 6px;font-size:10px;font-weight:700}
+.nbadge.amber{background:#F5A623;color:#7C2D12}
+.nav-footer{margin-top:auto;padding:14px 18px;color:#4B6CB7;font-size:10px;line-height:1.7}
+.nav-footer strong{color:#7BA7D4}
+.main{flex:1;overflow-y:auto;padding:20px 24px}
+.sec{display:none}.sec.active{display:block}
+.sec-hdr{margin-bottom:18px}
+.sec-title{font-size:18px;font-weight:700;color:#11225B}
+.sec-sub{font-size:12px;color:#64748B;margin-top:2px}
+.kgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:14px;margin-bottom:22px}
+.kcard{background:#fff;border-radius:10px;padding:16px 18px;border:1px solid #E2E8F0}
+.kcard.hl{border-color:#FCA5A5;background:#FFFAFA}
+.klabel{font-size:10px;color:#94A3B8;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px}
+.kval{font-size:26px;font-weight:700;color:#11225B;line-height:1}
+.kval.red{color:#DC2626}.kval.amber{color:#B45309}.kval.green{color:#059669}.kval.teal{color:#168AAD}
+.ksub{font-size:11px;color:#94A3B8;margin-top:3px}
+.tw{background:#fff;border-radius:10px;border:1px solid #E2E8F0;overflow:hidden;margin-bottom:22px}
+.ttbar{padding:12px 18px;border-bottom:1px solid #F1F5F9;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tt-title{font-weight:600;font-size:13px;color:#11225B;flex:1;min-width:120px}
+.fpills{display:flex;gap:5px;flex-wrap:wrap}
+.fp{padding:3px 9px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid #E2E8F0;color:#64748B;background:#fff;transition:all .15s;white-space:nowrap}
+.fp.active{background:#11225B;color:#fff;border-color:#11225B}
+.fp:hover:not(.active){border-color:#94A3B8;color:#334155}
+.sqltgl{background:none;border:1px solid #E2E8F0;color:#64748B;font-size:11px;padding:3px 9px;border-radius:6px;cursor:pointer;white-space:nowrap}
+.sqltgl:hover{background:#F8FAFC}
+.sqlpanel{background:#1A2640;border-radius:8px;margin:0 0 20px;padding:14px 18px;font-family:'Courier New',monospace;font-size:11px;display:none;line-height:1.7}
+.sqlpanel.open{display:block}
+.sq-label{color:#168AAD;font-weight:700;font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+.kw{color:#7DD3FC}.fn{color:#BEF264}.st{color:#FCA5A5}.cm{color:#475569;font-style:italic}
+.tscroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{padding:9px 14px;text-align:left;font-weight:600;font-size:10px;color:#64748B;background:#F8FAFC;border-bottom:1px solid #E2E8F0;cursor:pointer;white-space:nowrap;user-select:none;letter-spacing:.02em;text-transform:uppercase}
+th:hover{background:#F1F5F9;color:#334155}
+td{padding:9px 14px;border-bottom:1px solid #F1F5F9;vertical-align:middle;font-size:12px}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#F8FAFC}
+.tfooter{padding:9px 14px;background:#F8FAFC;border-top:1px solid #E2E8F0;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#64748B}
+.ttotal{font-weight:700;color:#DC2626}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:700;white-space:nowrap}
+.badge.critical{background:#FEF2F2;color:#991B1B;border:1px solid #FECACA}
+.badge.overdue{background:#FFF7ED;color:#9A3412;border:1px solid #FED7AA}
+.badge.monitor{background:#FFFBEB;color:#92400E;border:1px solid #FDE68A}
+.badge.paid{background:#F0FDF4;color:#166534;border:1px solid #BBF7D0}
+.badge.legal{background:#EFF6FF;color:#1E40AF;border:1px solid #BFDBFE}
+.badge.untracked{background:#F8FAFC;color:#475569;border:1px solid #CBD5E1}
+.badge.live{background:#F0FDF4;color:#166534;border:1px solid #BBF7D0}
+.badge.uat{background:#F0F9FF;color:#0369A1;border:1px solid #BAE6FD}
+.badge.implementing{background:#FFF7ED;color:#9A3412;border:1px solid #FED7AA}
+.badge.hypercare{background:#EEF2FF;color:#3730A3;border:1px solid #C7D2FE}
+.badge.new{background:#F0FDF4;color:#14532D;border:1px solid #86EFAC}
+.badge.kickoff{background:#FFFBEB;color:#78350F;border:1px solid #FDE68A}
+.badge.hold{background:#FDF4FF;color:#6B21A8;border:1px solid #E9D5FF}
+.badge.signed{background:#F0FDF4;color:#166534;border:1px solid #BBF7D0}
+.badge.needsbrd{background:#FEF2F2;color:#991B1B;border:1px solid #FECACA}
+.badge.na{background:#F8FAFC;color:#475569;border:1px solid #E2E8F0}
+.sentiment{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600}
+.sentiment::before{content:'';width:7px;height:7px;border-radius:50%;flex:none}
+.sentiment.green::before{background:#22C55E}.sentiment.yellow::before{background:#EAB308}.sentiment.red::before{background:#EF4444}
+.sentiment.green{color:#166534}.sentiment.yellow{color:#92400E}.sentiment.red{color:#991B1B}
+.sev-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;flex:none}
+.sev-dot.critical{background:#DC2626}.sev-dot.high{background:#EA580C}.sev-dot.medium{background:#D97706}.sev-dot.low{background:#16A34A}
+.yes{color:#059669;font-weight:600}.no{color:#DC2626}
+.devnote{background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:11px 15px;font-size:11px;color:#92400E;margin-bottom:16px;line-height:1.6}
+.flag{font-size:12px;margin-left:3px}
+td.ns{color:#94A3B8;font-size:11px}
+td.action{font-size:11px}
+td.note{font-size:11px;color:#64748B;max-width:260px}
+</style>
+</head>
+<body>
+
+<div class="mockup-bar">
+  DESIGN MOCKUP &mdash; Production data powered by <strong>NetSuite SuiteQL</strong> via SuiteScript 2.x Suitelet &middot; 
+  Click <strong>{ } Dev notes</strong> in each panel for SuiteQL queries &middot; Role-based access: no extra NS license per viewer
+</div>
+
+<header class="app-header">
+  <div class="logo">
+    <div class="logo-mark">ATS</div>
+    <span class="logo-text">ATS360</span>
+  </div>
+  <span class="logo-sub">Client Intelligence Dashboard</span>
+  <div class="hspace"></div>
+  <div class="role-switcher">
+    <button class="rbtn" data-role="accounting" onclick="setRole('accounting')">Accounting</button>
+    <button class="rbtn" data-role="ats_team" onclick="setRole('ats_team')">ATS Team</button>
+    <button class="rbtn active" data-role="admin" onclick="setRole('admin')">Admin &mdash; Cynthia</button>
+  </div>
+  <span class="hmeta">Aug 24, 2026 &middot; 08:00 AM</span>
+  <button class="rfbtn" onclick="alert('In production: reloads page and re-runs all SuiteQL queries against live NS data.')">&#8635; Refresh</button>
+</header>
+
+<div class="app-body">
+<nav class="sidenav">
+  <div class="nav-section">Dashboard</div>
+  <div class="nitem active" data-section="overview" onclick="setSection('overview')">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    Overview
+  </div>
+  <div class="nav-section">Panels</div>
+  <div class="nitem" data-section="payment" data-roles="accounting,admin" onclick="setSection('payment')">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+    Payment Health <span class="nbadge">17</span>
+  </div>
+  <div class="nitem" data-section="pipeline" data-roles="ats_team,admin" onclick="setSection('pipeline')">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    Implementation Pipeline
+  </div>
+  <div class="nitem" data-section="alerts" data-roles="ats_team,admin" onclick="setSection('alerts')">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    Client Alerts <span class="nbadge">5</span>
+  </div>
+  <div class="nitem" data-section="health" data-roles="ats_team,admin" onclick="setSection('health')">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+    Client Health
+  </div>
+  <div class="nav-footer">
+    NetDynamic Inc.<br>
+    ATS360 v2026.1 &middot; NS 2026.1<br>
+    Role: <strong id="role-label">Admin &mdash; Cynthia</strong>
+  </div>
+</nav>
+
+<main class="main">
+
+<!-- OVERVIEW -->
+<div id="s-overview" class="sec active">
+  <div class="sec-hdr">
+    <div class="sec-title">Overview</div>
+    <div class="sec-sub">All data from NetSuite NDI (account 5550628) &middot; Aug 24, 2026</div>
+  </div>
+  <div class="kgrid" id="kpi-pay">
+    <div class="kcard hl"><div class="klabel">MRR at risk</div><div class="kval red">$22,408</div><div class="ksub">Overdue subscription invoices</div></div>
+    <div class="kcard hl"><div class="klabel">Invoices overdue</div><div class="kval red">25</div><div class="ksub">Of 28 active ATS clients</div></div>
+    <div class="kcard hl"><div class="klabel">Critical (90+ days)</div><div class="kval red">12</div><div class="ksub">Eligible for suspension</div></div>
+    <div class="kcard"><div class="klabel">Legal disputes</div><div class="kval amber">3</div><div class="ksub">Pivot Point &middot; JMS &middot; eHealth</div></div>
+    <div class="kcard hl"><div class="klabel">Uncollected (Continental)</div><div class="kval red">$39,066</div><div class="ksub">2024&ndash;2025 license fees</div></div>
+  </div>
+  <div class="kgrid" id="kpi-impl">
+    <div class="kcard"><div class="klabel">Active clients</div><div class="kval teal">31</div><div class="ksub">Excl. on hold + churned</div></div>
+    <div class="kcard"><div class="klabel">In implementation</div><div class="kval amber">15</div><div class="ksub">Implementing + UAT + HyperCare</div></div>
+    <div class="kcard"><div class="klabel">Live</div><div class="kval green">14</div><div class="ksub">On ATS360 in production</div></div>
+    <div class="kcard"><div class="klabel">On hold</div><div class="kval amber">3</div><div class="ksub">CSI &middot; CK Global &middot; Vizz</div></div>
+    <div class="kcard hl"><div class="klabel">Critical alerts</div><div class="kval red">5</div><div class="ksub">Immediate action required</div></div>
+  </div>
+  <div class="tw">
+    <div class="ttbar"><span class="tt-title">Payment tier summary</span></div>
+    <div class="tscroll"><table>
+      <thead><tr><th>Tier</th><th>Days overdue</th><th>Clients</th><th>MRR at risk</th><th>Recommended action</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge critical">&#9650; Critical</span></td><td>90+ days</td><td><strong>12</strong> incl. Continental ($39K uncollected)</td><td><strong style="color:#DC2626">$44,658/mo</strong></td><td>Suspension notice per MSA &sect;6.4.7 &middot; Escalate Continental to Chris + Osvaldo</td></tr>
+        <tr><td><span class="badge overdue">&#9650; Overdue</span></td><td>30&ndash;90 days</td><td><strong>8</strong> (Voyage Talent, Reimagine, Granite, Service Pro, Wine World, CCSI, Empower, Chattanooga)</td><td><strong style="color:#EA580C">$7,194/mo</strong></td><td>Payment Warning Notice per &sect;6.4.7(a)</td></tr>
+        <tr><td><span class="badge monitor">&#9679; Monitor</span></td><td>1&ndash;30 days</td><td><strong>7</strong> (Learning Community, Johnson County, Helus, Washington County, Pyramid, Vancro, Covenco)</td><td><strong style="color:#D97706">$5,243/mo</strong></td><td>Flag at Day 10 if unpaid</td></tr>
+        <tr><td><span class="badge legal">&#9888; Legal/Dispute</span></td><td>&mdash;</td><td><strong>3</strong> (Pivot Point, JMS Energy, eHealth Africa)</td><td><strong style="color:#1D4ED8">Osvaldo must clear</strong></td><td>Do NOT send payment notice without legal clearance</td></tr>
+        <tr><td><span class="badge untracked">&#9633; Untracked</span></td><td>&mdash;</td><td><strong>2</strong> (Chattanooga Area Transit C81456, Empower Semiconductor C81546)</td><td><strong>Unknown</strong></td><td>In NS but not in client tracker &mdash; find AM immediately</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- PAYMENT HEALTH -->
+<div id="s-payment" class="sec">
+  <div class="sec-hdr">
+    <div class="sec-title">Payment Health &mdash; ATS Subscription Only</div>
+    <div class="sec-sub">Recurring license fees only &middot; PS/implementation invoices excluded &middot; Source: NS Transaction (SuiteQL)</div>
+  </div>
+  <div class="devnote"><strong>&#9888; Note on the current NS saved search:</strong> "Implementation Readiness &mdash; Paid Invoices" shows $0.00 for all 30 clients. This likely pulls a specific invoice type showing unpaid status only, not actual paid amounts. The SuiteQL query below is the corrected version that properly separates ATS subscription from PS invoices. Click <strong>{ } Dev notes</strong> for the query.</div>
+  <div class="kgrid">
+    <div class="kcard hl"><div class="klabel">Total MRR at risk</div><div class="kval red">$22,408</div><div class="ksub">All overdue sub invoices</div></div>
+    <div class="kcard hl"><div class="klabel">Clients overdue</div><div class="kval red">25</div><div class="ksub">Of 28 ATS clients</div></div>
+    <div class="kcard hl"><div class="klabel">Longest outstanding</div><div class="kval red">507 days</div><div class="ksub">ENMRSH &middot; due Apr 4, 2025</div></div>
+    <div class="kcard"><div class="klabel">Paid this cycle</div><div class="kval green">1</div><div class="ksub">Rice's Pharmacy</div></div>
+  </div>
+  <div class="tw">
+    <div class="ttbar">
+      <span class="tt-title">Invoice delinquency</span>
+      <div class="fpills">
+        <div class="fp active" onclick="fp('pay','all',this)">All (25)</div>
+        <div class="fp" onclick="fp('pay','critical',this)">Critical 90+ (12)</div>
+        <div class="fp" onclick="fp('pay','overdue',this)">Overdue 30&ndash;90 (8)</div>
+        <div class="fp" onclick="fp('pay','legal',this)">Legal (3)</div>
+        <div class="fp" onclick="fp('pay','monitor',this)">Monitor 1&ndash;30 (7)</div>
+        <div class="fp" onclick="fp('pay','paid',this)">Paid (1)</div>
+        <div class="fp" onclick="fp('pay','untracked',this)">Untracked (2)</div>
+      </div>
+      <button class="sqltgl" onclick="tsql('sql-pay')">{ } Dev notes</button>
+    </div>
+    <div class="sqlpanel" id="sql-pay">
+      <div class="sq-label">SuiteQL &mdash; ATS Subscription Delinquency (replaces current saved search)</div>
+      <span class="kw">SELECT</span> c.entityid <span class="kw">AS</span> ns_id, c.companyname <span class="kw">AS</span> client,<br>
+      &nbsp;&nbsp;t.tranid <span class="kw">AS</span> invoice_num,<br>
+      &nbsp;&nbsp;<span class="fn">TO_CHAR</span>(t.trandate,<span class="st">'Mon DD, YYYY'</span>) <span class="kw">AS</span> invoice_date,<br>
+      &nbsp;&nbsp;<span class="fn">TO_CHAR</span>(t.duedate,<span class="st">'Mon DD, YYYY'</span>) <span class="kw">AS</span> due_date,<br>
+      &nbsp;&nbsp;<span class="fn">GREATEST</span>(0,<span class="fn">FLOOR</span>(<span class="fn">SYSDATE</span>-t.duedate)) <span class="kw">AS</span> days_overdue,<br>
+      &nbsp;&nbsp;t.foreignamount <span class="kw">AS</span> amount, t.amountremaining <span class="kw">AS</span> balance_due,<br>
+      &nbsp;&nbsp;e.entityid <span class="kw">AS</span> account_manager<br>
+      <span class="kw">FROM</span> transaction t<br>
+      &nbsp;&nbsp;<span class="kw">INNER JOIN</span> customer c <span class="kw">ON</span> c.id = t.entity<br>
+      &nbsp;&nbsp;<span class="kw">LEFT JOIN</span> employee e <span class="kw">ON</span> e.id = t.salesrep<br>
+      <span class="kw">WHERE</span> t.type = <span class="st">'CustInvc'</span><br>
+      &nbsp;&nbsp;<span class="kw">AND</span> t.status <span class="kw">NOT IN</span> (<span class="st">'CustInvc:B'</span>,<span class="st">'CustInvc:C'</span>) <span class="cm">-- B=Paid, C=Voided</span><br>
+      &nbsp;&nbsp;<span class="kw">AND</span> (t.memo <span class="kw">LIKE</span> <span class="st">'%ATS360%'</span> <span class="kw">OR</span> t.custbody_ats_sub = <span class="st">'T'</span>)<br>
+      &nbsp;&nbsp;<span class="kw">AND</span> t.memo <span class="kw">NOT LIKE</span> <span class="st">'%Implementation%'</span> <span class="cm">-- Exclude PS</span><br>
+      &nbsp;&nbsp;<span class="kw">AND</span> t.memo <span class="kw">NOT LIKE</span> <span class="st">'%Professional Services%'</span><br>
+      <span class="kw">ORDER BY</span> days_overdue <span class="kw">DESC</span>, c.companyname <span class="kw">ASC</span>
+    </div>
+    <div class="tscroll"><table id="pay-tbl">
+      <thead><tr>
+        <th onclick="sort('pay-tbl',0)">Status</th>
+        <th onclick="sort('pay-tbl',1)">Client</th>
+        <th>NS ID</th><th>A.M.</th>
+        <th onclick="sort('pay-tbl',4)">Invoice date</th>
+        <th onclick="sort('pay-tbl',5)">Due date</th>
+        <th onclick="sort('pay-tbl',6)">Days overdue</th>
+        <th onclick="sort('pay-tbl',7)">Monthly sub</th>
+        <th>Required action</th>
+      </tr></thead>
+      <tbody id="pay-body"></tbody>
+    </table></div>
+    <div class="tfooter">
+      <span>Showing <span id="pay-count">25</span> records &middot; ATS subscription only &middot; PS excluded</span>
+      <span class="ttotal">Total at risk: $22,408 / mo</span>
+    </div>
+  </div>
+</div>
+
+<!-- PIPELINE -->
+<div id="s-pipeline" class="sec">
+  <div class="sec-hdr">
+    <div class="sec-title">Implementation Pipeline</div>
+    <div class="sec-sub">All active ATS360 implementations &middot; Source: Customer record custom fields (custentity_ats_*)</div>
+  </div>
+  <div class="kgrid">
+    <div class="kcard"><div class="klabel">New / Kick-off</div><div class="kval teal">2</div></div>
+    <div class="kcard"><div class="klabel">Implementing</div><div class="kval amber">6</div></div>
+    <div class="kcard"><div class="klabel">UAT</div><div class="kval teal">6</div></div>
+    <div class="kcard"><div class="klabel">HyperCare</div><div class="kval teal">1</div></div>
+    <div class="kcard"><div class="klabel">Live</div><div class="kval green">14</div></div>
+    <div class="kcard"><div class="klabel">On hold</div><div class="kval amber">3</div></div>
+  </div>
+  <div class="tw">
+    <div class="ttbar">
+      <span class="tt-title">All clients by phase</span>
+      <div class="fpills">
+        <div class="fp active" onclick="fp('pipe','all',this)">All</div>
+        <div class="fp" onclick="fp('pipe','Implementing',this)">Implementing</div>
+        <div class="fp" onclick="fp('pipe','UAT',this)">UAT</div>
+        <div class="fp" onclick="fp('pipe','Live',this)">Live</div>
+        <div class="fp" onclick="fp('pipe','On Hold',this)">On Hold</div>
+      </div>
+      <button class="sqltgl" onclick="tsql('sql-pipe')">{ } Dev notes</button>
+    </div>
+    <div class="sqlpanel" id="sql-pipe">
+      <div class="sq-label">SuiteQL &mdash; Implementation Pipeline (requires 14 custom fields on Customer record &mdash; see Excel dev brief)</div>
+      <span class="kw">SELECT</span> c.entityid, c.companyname, c.custentity_ats_phase,<br>
+      &nbsp;&nbsp;<span class="fn">TO_CHAR</span>(c.custentity_ats_kickoff_date,<span class="st">'Mon DD, YYYY'</span>),<br>
+      &nbsp;&nbsp;<span class="fn">FLOOR</span>(<span class="fn">SYSDATE</span>-c.custentity_ats_kickoff_date) <span class="kw">AS</span> days_in_phase,<br>
+      &nbsp;&nbsp;<span class="fn">TO_CHAR</span>(c.custentity_ats_target_golive,<span class="st">'Mon DD, YYYY'</span>),<br>
+      &nbsp;&nbsp;e.entityid <span class="kw">AS</span> am, c.custentity_ats_brd_status, c.custentity_ats_addons<br>
+      <span class="kw">FROM</span> customer c <span class="kw">LEFT JOIN</span> employee e <span class="kw">ON</span> e.id=c.custentity_ats_account_manager<br>
+      <span class="kw">WHERE</span> c.custentity_ats_phase <span class="kw">IS NOT NULL AND</span> c.isinactive=<span class="st">'F'</span><br>
+      <span class="kw">ORDER BY CASE</span> c.custentity_ats_phase<br>
+      &nbsp;&nbsp;<span class="kw">WHEN</span> <span class="st">'Implementing'</span> <span class="kw">THEN</span> 1 <span class="kw">WHEN</span> <span class="st">'UAT'</span> <span class="kw">THEN</span> 2 <span class="kw">WHEN</span> <span class="st">'HyperCare'</span> <span class="kw">THEN</span> 3<br>
+      &nbsp;&nbsp;<span class="kw">WHEN</span> <span class="st">'Live'</span> <span class="kw">THEN</span> 4 <span class="kw">ELSE</span> 5 <span class="kw">END</span>, c.companyname
+    </div>
+    <div class="tscroll"><table id="pipe-tbl">
+      <thead><tr><th>Phase</th><th>Client</th><th>NS ID</th><th>A.M.</th><th>Kick-off date</th><th>Days in phase</th><th>Target go-live</th><th>BRD status</th><th>Add-ons</th></tr></thead>
+      <tbody id="pipe-body"></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ALERTS -->
+<div id="s-alerts" class="sec">
+  <div class="sec-hdr">
+    <div class="sec-title">Client Responsibility Alerts</div>
+    <div class="sec-sub">Contractual breach monitoring &middot; MSA Sections 5 + 6 &middot; Derived from implementation tracking + payment data</div>
+  </div>
+  <div class="kgrid">
+    <div class="kcard hl"><div class="klabel">Critical</div><div class="kval red">5</div><div class="ksub">Immediate action</div></div>
+    <div class="kcard"><div class="klabel">High</div><div class="kval amber">4</div><div class="ksub">Within 5 business days</div></div>
+    <div class="kcard"><div class="klabel">Medium</div><div class="kval amber">4</div><div class="ksub">Monitor and escalate</div></div>
+    <div class="kcard"><div class="klabel">Low</div><div class="kval teal">3</div><div class="ksub">Watch</div></div>
+  </div>
+  <div class="tw">
+    <div class="ttbar">
+      <span class="tt-title">Open alerts (16)</span>
+      <div class="fpills">
+        <div class="fp active" onclick="fp('alert','all',this)">All (16)</div>
+        <div class="fp" onclick="fp('alert','critical',this)">Critical (5)</div>
+        <div class="fp" onclick="fp('alert','high',this)">High (4)</div>
+        <div class="fp" onclick="fp('alert','medium',this)">Medium (4)</div>
+        <div class="fp" onclick="fp('alert','low',this)">Low (3)</div>
+      </div>
+      <button class="sqltgl" onclick="tsql('sql-alert')">{ } Dev notes</button>
+    </div>
+    <div class="sqlpanel" id="sql-alert">
+      <div class="sq-label">Alert logic &mdash; derived by the Suitelet, not a single NS query</div>
+      <span class="cm">-- Alerts computed from multiple data points:</span><br>
+      <span class="cm">-- 1. Payment: invoice days_overdue > threshold (from payment query)</span><br>
+      <span class="cm">-- 2. Access: custentity_ats_admin_access_date IS NULL AND kickoff + 3BD past</span><br>
+      <span class="cm">-- 3. BPM: custentity_ats_bpm_submitted IS NULL AND kickoff + 5BD past</span><br>
+      <span class="cm">-- 4. UAT: uat_start + 5BD past AND phase = 'UAT' (auto-approval &sect;6.5.3)</span><br>
+      <span class="cm">-- 5. Hold &sect;6.4.4: project_hold_date + 90 days (hours convert to support)</span><br>
+      <span class="cm">-- 6. Abandoned &sect;6.4.5: project_hold_date + 180 days</span><br>
+      <span class="cm">-- Manual flags (legal, no-contact): custentity_ats_alert_flags (text field)</span><br>
+      <span class="cm">-- Recommendation: store alert log as a custom NS record for auditability</span>
+    </div>
+    <div class="tscroll"><table id="alert-tbl">
+      <thead><tr><th>Severity</th><th>Client</th><th>A.M.</th><th>Alert type</th><th>Detail</th><th>Days</th><th>Required action</th><th>MSA ref.</th></tr></thead>
+      <tbody id="alert-body"></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- HEALTH -->
+<div id="s-health" class="sec">
+  <div class="sec-hdr">
+    <div class="sec-title">Client Health Summary</div>
+    <div class="sec-sub">Account sentiment &middot; adoption &middot; referenceability &middot; Source: Customer record custom fields</div>
+  </div>
+  <div class="kgrid">
+    <div class="kcard"><div class="klabel">Green</div><div class="kval green">4</div><div class="ksub">Satisfied + stable</div></div>
+    <div class="kcard"><div class="klabel">Yellow</div><div class="kval amber">8</div><div class="ksub">At risk &mdash; monitor</div></div>
+    <div class="kcard hl"><div class="klabel">Red</div><div class="kval red">3</div><div class="ksub">Tango &middot; eHealth &middot; Hadron</div></div>
+    <div class="kcard"><div class="klabel">Actively using</div><div class="kval teal">5</div><div class="ksub">Of 15 live clients</div></div>
+    <div class="kcard"><div class="klabel">Referenceable</div><div class="kval green">4</div><div class="ksub">Covenco &middot; JMS &middot; CSI &middot; Rice</div></div>
+  </div>
+  <div class="tw">
+    <div class="ttbar">
+      <span class="tt-title">Client health tracker</span>
+      <div class="fpills">
+        <div class="fp active" onclick="fp('health','all',this)">All</div>
+        <div class="fp" onclick="fp('health','red',this)">Red</div>
+        <div class="fp" onclick="fp('health','yellow',this)">Yellow</div>
+        <div class="fp" onclick="fp('health','green',this)">Green</div>
+      </div>
+      <button class="sqltgl" onclick="tsql('sql-health')">{ } Dev notes</button>
+    </div>
+    <div class="sqlpanel" id="sql-health">
+      <div class="sq-label">SuiteQL &mdash; Client Health (requires custom fields on Customer record)</div>
+      <span class="kw">SELECT</span> c.companyname, c.custentity_ats_phase,<br>
+      &nbsp;&nbsp;c.custentity_ats_actively_using, c.custentity_ats_sentiment,<br>
+      &nbsp;&nbsp;c.custentity_ats_referenceable, e.entityid <span class="kw">AS</span> am,<br>
+      &nbsp;&nbsp;<span class="fn">TO_CHAR</span>(c.custentity_ats_last_meeting,<span class="st">'Mon YYYY'</span>),<br>
+      &nbsp;&nbsp;c.custentity_ats_health_notes<br>
+      <span class="kw">FROM</span> customer c <span class="kw">LEFT JOIN</span> employee e <span class="kw">ON</span> e.id=c.custentity_ats_account_manager<br>
+      <span class="kw">WHERE</span> c.custentity_ats_phase <span class="kw">NOT IN</span> (<span class="st">'Churned'</span>,<span class="st">'Cancelled'</span>)<br>
+      &nbsp;&nbsp;<span class="kw">AND</span> c.isinactive=<span class="st">'F'</span><br>
+      <span class="kw">ORDER BY CASE</span> c.custentity_ats_sentiment<br>
+      &nbsp;&nbsp;<span class="kw">WHEN</span> <span class="st">'red'</span> <span class="kw">THEN</span> 1 <span class="kw">WHEN</span> <span class="st">'yellow'</span> <span class="kw">THEN</span> 2 <span class="kw">ELSE</span> 3 <span class="kw">END</span>
+    </div>
+    <div class="tscroll"><table id="health-tbl">
+      <thead><tr><th>Client</th><th>A.M.</th><th>Phase</th><th>Actively using</th><th>Sentiment</th><th>Referenceable</th><th>Last meeting</th><th>Notes</th></tr></thead>
+      <tbody id="health-body"></tbody>
+    </table></div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+const PAY = [
+  {n:"ENMRSH",id:"C81408",am:"Suchi",inv:"Mar 5, 2025",due:"Apr 4, 2025",d:507,amt:1049,s:"critical",f:null,act:"Issue suspension notice per \u00a76.4.7"},
+  {n:"Inner City Diesel",id:"C81446",am:"Matthew",inv:"Apr 7, 2025",due:"May 7, 2025",d:474,amt:699,s:"critical",f:null,act:"Issue suspension notice per \u00a76.4.7"},
+  {n:"American Overhead Door & Dock",id:"C81448",am:"Matthew",inv:"May 15, 2025",due:"Jun 14, 2025",d:436,amt:699,s:"critical",f:null,act:"Issue suspension notice per \u00a76.4.7"},
+  {n:"Clarendon Partners",id:"C81415",am:"Suchi",inv:"Jun 5, 2025",due:"Jul 5, 2025",d:415,amt:599,s:"critical",f:null,act:"Issue suspension notice per \u00a76.4.7"},
+  {n:"Continental Aerospace Technologies",id:"\u2014",am:"\u2014",inv:"2024\u20132025",due:"\u2014",d:730,amt:39066,s:"critical",f:"uncollected",act:"Escalate to Chris Kim + Osvaldo IMMEDIATELY"},
+  {n:"Suidae Health & Production",id:"C81483",am:"Matthew",inv:"Sep 1, 2025",due:"Oct 1, 2025",d:327,amt:849,s:"critical",f:null,act:"Issue suspension notice per \u00a76.4.7"},
+  {n:"AltimateMedical (Granite)",id:"C81487",am:"Matthew",inv:"Oct 20, 2025",due:"Nov 19, 2025",d:278,amt:599,s:"critical",f:"nocontact",act:"\u26a0 No client contact \u2014 find via Granite first"},
+  {n:"Chattanooga Area Regional Transit",id:"C81456",am:"\u2014",inv:"Oct 30, 2025",due:"Nov 29, 2025",d:268,amt:599,s:"untracked",f:"untracked",act:"\u26a0 Find AM \u2014 in NS but not in client list"},
+  {n:"Voyage Talent Solutions",id:"C81501",am:"Matthew",inv:"Nov 20, 2025",due:"Dec 20, 2025",d:247,amt:1049,s:"overdue",f:null,act:"Issue Payment Warning Notice"},
+  {n:"Reimagine Office Furnishings",id:"C81404",am:"Suchi",inv:"Dec 17, 2025",due:"Jan 16, 2026",d:220,amt:599,s:"overdue",f:null,act:"Issue Payment Warning Notice"},
+  {n:"Granite Partners",id:"PR120",am:"Suchi",inv:"Dec 24, 2025",due:"Jan 23, 2026",d:213,amt:599,s:"overdue",f:null,act:"Issue Payment Warning Notice"},
+  {n:"Service Pro",id:"C80966",am:"Matthew",inv:"Jan 20, 2026",due:"Feb 19, 2026",d:186,amt:1049,s:"overdue",f:null,act:"Issue Payment Warning Notice"},
+  {n:"Pivot Point Consulting",id:"C81547",am:"Suchi",inv:"Feb 10, 2026",due:"Mar 12, 2026",d:165,amt:1049,s:"legal",f:"dispute",act:"\u26a0 Legal dispute \u2014 no payment notice without Osvaldo"},
+  {n:"Wine World Companies",id:"C81545",am:"\u2014",inv:"Feb 24, 2026",due:"Mar 26, 2026",d:151,amt:1049,s:"overdue",f:null,act:"Issue Payment Warning Notice"},
+  {n:"CCSI (Coordinated Care Services)",id:"C81348",am:"Suchi",inv:"Mar 3, 2026",due:"Apr 2, 2026",d:144,amt:849,s:"overdue",f:null,act:"Issue Payment Warning Notice"},
+  {n:"Empower Semiconductor",id:"C81546",am:"\u2014",inv:"Mar 11, 2026",due:"Apr 10, 2026",d:136,amt:599,s:"untracked",f:"untracked",act:"\u26a0 Find AM \u2014 in NS but not in client list"},
+  {n:"JMS Energy",id:"C81351",am:"Matthew",inv:"Apr 1, 2026",due:"May 1, 2026",d:115,amt:849,s:"legal",f:"dispute",act:"\u26a0 Legal dispute \u2014 no payment notice without Osvaldo"},
+  {n:"DeZURIK",id:"C81159",am:"Suchi",inv:"May 7, 2026",due:"Jun 6, 2026",d:79,amt:599,s:"critical",f:"hold8mo",act:"\u26a0 Payment pending since Dec 2025 \u2014 escalate immediately"},
+  {n:"eHealth Africa",id:"C81369",am:"Suchi",inv:"Jun 1, 2026",due:"Jul 1, 2026",d:54,amt:847,s:"legal",f:"dispute",act:"\u26a0 Legal dispute \u2014 no payment notice without Osvaldo"},
+  {n:"Learning Community of Douglas & Sarpy",id:"C81489",am:"\u2014",inv:"May 29, 2026",due:"Jun 28, 2026",d:57,amt:599,s:"monitor",f:null,act:"Monitor \u2014 flag at Day 30"},
+  {n:"Johnson County, TX",id:"C81345",am:"Matthew",inv:"Jun 1, 2026",due:"Jul 1, 2026",d:54,amt:699,s:"monitor",f:null,act:"Monitor \u2014 flag at Day 30"},
+  {n:"Helus Pharma Corp.",id:"C81602",am:"\u2014",inv:"Jun 1, 2026",due:"Jul 1, 2026",d:54,amt:599,s:"monitor",f:null,act:"Monitor \u2014 flag at Day 30"},
+  {n:"Washington County of Utah",id:"C81347",am:"Matthew",inv:"Jun 1, 2026",due:"Jul 1, 2026",d:54,amt:1049,s:"monitor",f:null,act:"Monitor \u2014 flag at Day 30"},
+  {n:"Pyramid Network Services",id:"C81610",am:"\u2014",inv:"Jun 29, 2026",due:"Jul 29, 2026",d:26,amt:849,s:"monitor",f:"invoiced",act:"Follow up on invoice receipt"},
+  {n:"Vancro Inc",id:"C81566",am:"Matthew",inv:"Jun 30, 2026",due:"Jul 30, 2026",d:25,amt:1049,s:"monitor",f:null,act:"Monitor"},
+  {n:"Covenco Limited",id:"C81335",am:"Matthew",inv:"Jul 1, 2026",due:"Jul 31, 2026",d:24,amt:599,s:"monitor",f:null,act:"Monitor"},
+  {n:"Tango Care",id:"C81xxx",am:"Matthew",inv:"(custom billing)",due:"\u2014",d:20,amt:145,s:"monitor",f:"custom",act:"Issue Payment Warning Notice \u2014 20 days late"},
+  {n:"Rice's Pharmacy",id:"PR138",am:"Matthew",inv:"Jun 3, 2025",due:"Jul 3, 2025",d:0,amt:699,s:"paid",f:null,act:"\u2014"}
+];
+
+const PIPE = [
+  {n:"Pyramid Network Services",id:"C81610",am:"\u2014",phase:"New",ko:"Jul 30, 2026",d:25,tgl:"\u2014",brd:"Signed",ao:"E-Sig, Pre-Hire Pro",alert:false},
+  {n:"Helus Pharma Corp.",id:"C81602",am:"\u2014",phase:"Kick-Off",ko:"Jun 26, 2026",d:59,tgl:"\u2014",brd:"Needs BRD",ao:"\u2014",alert:true},
+  {n:"Granite Partners",id:"PR120",am:"Suchi",phase:"Implementing",ko:"Jan 23, 2025",d:578,tgl:"Jul 2025",brd:"Signed",ao:"\u2014",alert:true},
+  {n:"Carta",id:"\u2014",am:"Suchi",phase:"Implementing",ko:"Mar 3, 2026",d:174,tgl:"TBD",brd:"Signed",ao:"Pre-Hire, E-Verify, E-Sig",alert:false},
+  {n:"Vancro Inc",id:"C81566",am:"Matthew",phase:"Implementing",ko:"Apr 29, 2026",d:117,tgl:"TBD",brd:"Signed",ao:"E-Verify, E-Sig, Pre-Hire Pro",alert:false},
+  {n:"Pivot Point Consulting",id:"C81547",am:"Suchi",phase:"Implementing",ko:"Apr 7, 2026",d:139,tgl:"TBD",brd:"Signed",ao:"E-Verify, E-Sig, Pre-Hire Pro",alert:true},
+  {n:"DeZURIK",id:"C81159",am:"Suchi",phase:"Implementing",ko:"Feb 27, 2026",d:178,tgl:"TBD",brd:"Signed",ao:"\u2014",alert:true},
+  {n:"AltimateMedical (Granite)",id:"C81487",am:"Matthew",phase:"Implementing",ko:"\u2014",d:0,tgl:"\u2014",brd:"\u2014",ao:"\u2014",alert:true},
+  {n:"Wine World Companies",id:"C81545",am:"\u2014",phase:"HyperCare",ko:"\u2014",d:0,tgl:"\u2014",brd:"Signed",ao:"E-Verify, E-Sig, Pre-Hire Pro",alert:false},
+  {n:"ENMRSH",id:"C81408",am:"Suchi",phase:"UAT",ko:"Apr 24, 2025",d:487,tgl:"Mar 2026",brd:"Signed",ao:"\u2014",alert:true},
+  {n:"Johnson County, TX",id:"C81345",am:"Matthew",phase:"UAT",ko:"Apr 8, 2025",d:503,tgl:"Feb 2026",brd:"Signed",ao:"E-Sig, Pre-Hire Pro",alert:true},
+  {n:"Inner City Diesel",id:"C81446",am:"Matthew",phase:"UAT",ko:"Sep 4, 2025",d:354,tgl:"TBD",brd:"N/A",ao:"Pre-Hire",alert:false},
+  {n:"Service Pro",id:"C80966",am:"Matthew",phase:"UAT",ko:"Mar 2, 2026",d:175,tgl:"TBD",brd:"Signed",ao:"Pre-Hire Pro, E-Verify, E-Sig, Custom",alert:false},
+  {n:"American Docks \u2013 Doors",id:"C81448",am:"Matthew",phase:"UAT",ko:"\u2014",d:0,tgl:"\u2014",brd:"N/A",ao:"E-Sig",alert:false},
+  {n:"Rice's Pharmacy",id:"PR138",am:"Matthew",phase:"UAT",ko:"Sep 23, 2025",d:335,tgl:"Oct 8, 2025",brd:"N/A",ao:"Pre-Hire Pro, E-Sig",alert:false},
+  {n:"Tango Care",id:"C81xxx",am:"Matthew",phase:"Live",ko:"Jan 16, 2025",d:220,tgl:"Jun 2025",brd:"N/A",ao:"E-Verify, E-Sig, Pre-Hire Pro",alert:true},
+  {n:"CCSI",id:"C81348",am:"Suchi",phase:"Live",ko:"Oct 15, 2024",d:313,tgl:"Oct 2025",brd:"N/A",ao:"Pre-Hire Pro",alert:false},
+  {n:"Washington County",id:"C81347",am:"Matthew",phase:"Live",ko:"Dec 16, 2024",d:251,tgl:"Jul 2025",brd:"N/A",ao:"Pre-Hire Pro, E-Verify, E-Sig",alert:false},
+  {n:"eHealth Africa",id:"C81369",am:"Suchi",phase:"Live",ko:"Dec 5, 2024",d:262,tgl:"May 2025",brd:"N/A",ao:"Custom",alert:true},
+  {n:"Covenco Limited",id:"C81335",am:"Matthew",phase:"Live",ko:"Nov 7, 2024",d:290,tgl:"Nov 2024",brd:"N/A",ao:"\u2014",alert:false},
+  {n:"Hadron Insurance",id:"\u2014",am:"Matthew",phase:"Live",ko:"Nov 5, 2024",d:292,tgl:"Nov 2024",brd:"N/A",ao:"\u2014",alert:true},
+  {n:"JMS Energy",id:"C81351",am:"Matthew",phase:"Live",ko:"Oct 21, 2024",d:307,tgl:"Nov 2024",brd:"N/A",ao:"Pre-Hire Pro, E-Sig",alert:true},
+  {n:"Reimagine Office Furnishings",id:"C81404",am:"Suchi",phase:"Live",ko:"May 22, 2025",d:459,tgl:"Sep 2025",brd:"N/A",ao:"\u2014",alert:false},
+  {n:"Clarendon Partners",id:"C81415",am:"Suchi",phase:"Live",ko:"Jul 14, 2025",d:406,tgl:"\u2014",brd:"N/A",ao:"\u2014",alert:false},
+  {n:"Suidae Health",id:"C81483",am:"Matthew",phase:"Live",ko:"\u2014",d:0,tgl:"\u2014",brd:"N/A",ao:"Pre-Hire",alert:false},
+  {n:"Route 101",id:"\u2014",am:"Matthew",phase:"Live",ko:"Mar 4, 2026",d:173,tgl:"\u2014",brd:"Signed",ao:"E-Sig, Pre-Hire",alert:false},
+  {n:"Voyage Talent Solutions",id:"C81501",am:"Matthew",phase:"Live",ko:"Feb 4, 2026",d:201,tgl:"\u2014",brd:"Signed",ao:"Pre-Hire, E-Verify, E-Sig",alert:false},
+  {n:"Continental Aerospace",id:"\u2014",am:"\u2014",phase:"Live",ko:"Apr 18, 2024",d:492,tgl:"Sep 2024",brd:"N/A",ao:"\u2014",alert:true},
+  {n:"Cirrus ERP",id:"\u2014",am:"Suchi",phase:"Live",ko:"\u2014",d:0,tgl:"\u2014",brd:"N/A",ao:"\u2014",alert:false},
+  {n:"CSI Aviation",id:"\u2014",am:"Suchi",phase:"On Hold",ko:"Sep 23, 2024",d:335,tgl:"Aug 2025",brd:"N/A",ao:"\u2014",alert:true},
+  {n:"CK Global Light",id:"\u2014",am:"\u2014",phase:"On Hold",ko:"\u2014",d:0,tgl:"\u2014",brd:"N/A",ao:"\u2014",alert:false},
+  {n:"Vizz Group",id:"\u2014",am:"\u2014",phase:"On Hold",ko:"\u2014",d:0,tgl:"\u2014",brd:"N/A",ao:"\u2014",alert:false}
+];
+
+const ALERTS = [
+  {sev:"critical",c:"DeZURIK",am:"Suchi",t:"Payment",detail:"Payment confirmation pending since December 2025 — 8+ months. No response from client.",d:270,act:"Issue Payment Warning Notice immediately",ref:"MSA \u00a76.4.7"},
+  {sev:"critical",c:"Continental Aerospace",am:"\u2014",t:"Billing",detail:"Two years of subscription fees uncollected: $18,127 (2024) + $20,939 (2025). No current contact.",d:730,act:"Escalate to Chris Kim + Osvaldo",ref:"MSA \u00a715"},
+  {sev:"critical",c:"AltimateMedical",am:"Matthew",t:"No contact",detail:"Granite subsidiary — no client contact on file. Cannot initiate any communications.",d:308,act:"Find contact via Granite relationship immediately",ref:"MSA \u00a75.1"},
+  {sev:"critical",c:"Chattanooga Area Transit",am:"Unknown",t:"Untracked",detail:"Client in NetSuite (C81456) with no entry in client tracking system. Unknown account manager.",d:298,act:"Identify AM and add to client tracker",ref:"Internal"},
+  {sev:"critical",c:"Empower Semiconductor",am:"Unknown",t:"Untracked",detail:"Client in NetSuite (C81546) with no entry in client tracking system. Unknown account manager.",d:166,act:"Identify AM and add to client tracker",ref:"Internal"},
+  {sev:"high",c:"Pivot Point Consulting",am:"Suchi",t:"Legal dispute",detail:"Formal termination notice received. LinkedIn/Indeed misrepresentation + full refund demand. July 21 transcript critical evidence.",d:139,act:"No communications without Osvaldo sign-off",ref:"MSA \u00a711"},
+  {sev:"high",c:"eHealth Africa",am:"Suchi",t:"Legal dispute",detail:"Active termination dispute. Client revoked admin access during remediation window. Invoices IN2708 + IN2773 unpaid.",d:83,act:"No communications without Osvaldo sign-off",ref:"MSA \u00a711"},
+  {sev:"high",c:"JMS Energy",am:"Matthew",t:"Access removed",detail:"Client unilaterally removed NetDynamic admin access from production. Still actively posting 4 jobs.",d:115,act:"Issue formal notice per MSA \u00a75.3. Document access removal date.",ref:"MSA \u00a75.3"},
+  {sev:"high",c:"ENMRSH",am:"Suchi",t:"Timeline breach",detail:"487 days since kick-off. Target go-live March 2026 has passed. Still in UAT.",d:487,act:"Emergency review call. Evaluate project hold clause.",ref:"MSA \u00a76.4"},
+  {sev:"medium",c:"Johnson County, TX",am:"Matthew",t:"Timeline breach",detail:"503 days since kick-off. Still in UAT. Target go-live February 2026 has passed.",d:503,act:"Formal status update. Timeline accountability per \u00a76.4.6.",ref:"MSA \u00a76.4.6"},
+  {sev:"medium",c:"Tango Care",am:"Matthew",t:"Sentiment + Payment",detail:"Highly frustrated. System slowness (1 min/profile). E-Verify glitches. Payment late 20 days. Strong relationship with Matthew.",d:220,act:"Escalate performance to Pierre/Omar. Schedule account review.",ref:"Internal"},
+  {sev:"medium",c:"Granite Partners",am:"Suchi",t:"Timeline",detail:"578 days since kick-off. Target July 2025 long passed. Multi-entity: Granite + AltimateMedical (no contact).",d:578,act:"Formal timeline review. Client responsible per \u00a76.3.",ref:"MSA \u00a76.3"},
+  {sev:"medium",c:"CSI Aviation",am:"Suchi",t:"Hold \u2014 \u00a76.4.4 triggered",detail:"Project on hold 11+ months. \u00a76.4.4 triggered: hours converting to support at 75% value.",d:335,act:"Issue formal hold notice. Confirm restart intent.",ref:"MSA \u00a76.4.4"},
+  {sev:"low",c:"Hadron Insurance",am:"Matthew",t:"Adoption",detail:"Purchased LinkedIn Recruiter separately. Job applications not routing to ATS360. Product value at risk.",d:292,act:"Schedule integration review call",ref:"Internal"},
+  {sev:"low",c:"Washington County",am:"Matthew",t:"Adoption",detail:"Focused on HR/payroll first. Not actively using ATS. Renewal intention unclear.",d:251,act:"Monthly check-in. Confirm renewal intent.",ref:"Internal"},
+  {sev:"low",c:"Carta",am:"Suchi",t:"Payment + BPM",detail:"Payment 'being processed' — no date recorded. BPM questionnaire status unknown.",d:174,act:"Confirm payment receipt. Send BPM reminder.",ref:"MSA \u00a75.2"}
+];
+
+const HEALTH = [
+  {n:"Tango Care",am:"Matthew",ph:"Live",u:false,s:"red",r:false,lm:"Apr 2026",note:"Highly frustrated. System slowness critical. E-Verify glitches. Late payment."},
+  {n:"eHealth Africa",am:"Suchi",ph:"Live",u:true,s:"red",r:false,lm:"Jun 2026",note:"Active legal dispute. Admin access revoked. 1 active job."},
+  {n:"Hadron Insurance",am:"Matthew",ph:"Live",u:false,s:"red",r:false,lm:"Nov 2024",note:"Unhappy with Vonq. Purchased LinkedIn Recruiter. Apps not in ATS."},
+  {n:"ENMRSH",am:"Suchi",ph:"UAT",u:false,s:"yellow",r:false,lm:"Apr 2025",note:"487 days since kick-off. Still in UAT."},
+  {n:"Johnson County, TX",am:"Matthew",ph:"UAT",u:false,s:"yellow",r:false,lm:"Jun 2026",note:"503 days since kick-off. Target Feb 2026 passed."},
+  {n:"CCSI",am:"Suchi",ph:"Live",u:false,s:"yellow",r:false,lm:"Mar 2026",note:"Pending CR for onboarding. Payment late."},
+  {n:"Washington County",am:"Matthew",ph:"Live",u:false,s:"yellow",r:false,lm:"Jun 2026",note:"Focused on HR/payroll. Not using ATS."},
+  {n:"Continental Aerospace",am:"\u2014",ph:"Live",u:false,s:"yellow",r:false,lm:"2024",note:"Contact Chris Ingram gone. $39K uncollected. Sherice Rada is contact."},
+  {n:"Clarendon Partners",am:"Suchi",ph:"Live",u:false,s:"yellow",r:false,lm:"Jul 2025",note:""},
+  {n:"Reimagine Office Furnishings",am:"Suchi",ph:"Live",u:false,s:"yellow",r:false,lm:"Dec 2025",note:"Confirm form status with Joni Adams."},
+  {n:"JMS Energy",am:"Matthew",ph:"Live",u:true,s:"yellow",r:true,lm:"Nov 2024",note:"Admin access removed. 4 active jobs. Dispute ongoing."},
+  {n:"CSI Aviation",am:"Suchi",ph:"On Hold",u:false,s:"yellow",r:true,lm:"Sep 2024",note:"On hold 11+ months. \u00a76.4.4 triggered."},
+  {n:"Covenco Limited",am:"Matthew",ph:"Live",u:true,s:"green",r:true,lm:"Apr 2026",note:"Happy client. 1 active job."},
+  {n:"Rice's Pharmacy",am:"Matthew",ph:"UAT",u:false,s:"green",r:false,lm:"Sep 2025",note:"Paid. Kick-off complete. Seth Herron + David Figg."},
+  {n:"Voyage Talent Solutions",am:"Matthew",ph:"Live",u:false,s:"green",r:false,lm:"Feb 2026",note:"Joshua Morris."},
+  {n:"Route 101",am:"Matthew",ph:"Live",u:false,s:"green",r:false,lm:"Mar 2026",note:""}
+];
+
+// State
+let role='admin', sec='overview';
+const pf={pay:'all',pipe:'all',alert:'all',health:'all'};
+
+const rolePerms={
+  accounting:{secs:['overview','payment'],kpi:{pay:true,impl:false},label:'Accounting'},
+  ats_team:{secs:['overview','pipeline','alerts','health'],kpi:{pay:false,impl:true},label:'ATS Team'},
+  admin:{secs:['overview','payment','pipeline','alerts','health'],kpi:{pay:true,impl:true},label:'Admin \u2014 Cynthia'}
+};
+
+function setRole(r){
+  role=r;
+  document.querySelectorAll('.rbtn').forEach(b=>b.classList.toggle('active',b.dataset.role===r));
+  document.getElementById('role-label').textContent=rolePerms[r].label;
+  document.querySelectorAll('.nitem[data-roles]').forEach(el=>{
+    el.classList.toggle('hidden',!el.dataset.roles.split(',').includes(r));
+  });
+  const k=rolePerms[r].kpi;
+  document.getElementById('kpi-pay').style.display=k.pay?'grid':'none';
+  document.getElementById('kpi-impl').style.display=k.impl?'grid':'none';
+  if(!rolePerms[r].secs.includes(sec)) setSection(rolePerms[r].secs[0]);
+}
+
+function setSection(s){
+  sec=s;
+  document.querySelectorAll('.sec').forEach(el=>el.classList.remove('active'));
+  const el=document.getElementById('s-'+s);
+  if(el) el.classList.add('active');
+  document.querySelectorAll('.nitem[data-section]').forEach(n=>n.classList.toggle('active',n.dataset.section===s));
+}
+
+function fp(panel, val, el){
+  pf[panel]=val;
+  const container = el.closest('.ttbar');
+  container.querySelectorAll('.fp').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  if(panel==='pay') renderPay();
+  else if(panel==='pipe') renderPipe();
+  else if(panel==='alert') renderAlerts();
+  else if(panel==='health') renderHealth();
+}
+
+function tsql(id){document.getElementById(id).classList.toggle('open')}
+
+function sb(s){
+  const m={critical:'&#9650; Critical',overdue:'&#9650; Overdue',monitor:'&#9679; Monitor',
+    paid:'&#10003; Paid',legal:'&#9888; Legal',untracked:'? Untracked'};
+  return '<span class="badge '+s+'">'+(m[s]||s)+'</span>';
+}
+
+function pb(phase){
+  const m={New:'new','Kick-Off':'kickoff',Implementing:'implementing',HyperCare:'hypercare',UAT:'uat',Live:'live','On Hold':'hold'};
+  return '<span class="badge '+(m[phase]||'')+'" >'+phase+'</span>';
+}
+
+function brdb(b){
+  if(b==='Signed') return '<span class="badge signed">Signed</span>';
+  if(b==='Needs BRD') return '<span class="badge needsbrd">Needs BRD</span>';
+  if(b==='N/A') return '<span class="badge na">N/A</span>';
+  return b;
+}
+
+function flag(f){
+  if(!f) return '';
+  const m={nocontact:' <span class="flag" title="No client contact on file">\uD83D\uDC64</span>',
+    dispute:' <span class="flag" title="Active legal dispute">\u2696\uFE0F</span>',
+    untracked:' <span class="flag" title="In NS but not in client list">\uD83D\uDD0D</span>',
+    uncollected:' <span class="flag" title="Fees not yet invoiced">\uD83D\uDCB8</span>',
+    custom:' <span class="flag" title="Custom billing rate">\uD83D\uDCDD</span>',
+    hold8mo:' <span class="flag" title="Payment pending 8+ months">\u23F0</span>',
+    invoiced:' <span class="flag" title="Invoice sent, awaiting payment">\uD83D\uDCC4</span>'};
+  return m[f]||'';
+}
+
+function dc(v){
+  return v>90?'#DC2626':v>30?'#EA580C':v>0?'#D97706':'#059669';
+}
+
+function renderPay(){
+  const f=pf.pay;
+  const rows=PAY.filter(r=>f==='all'||r.s===f);
+  document.getElementById('pay-count').textContent=rows.length;
+  document.getElementById('pay-body').innerHTML=rows.map(r=>`<tr>
+    <td>${sb(r.s)}${flag(r.f)}</td>
+    <td><strong>${r.n}</strong></td>
+    <td class="ns">${r.id}</td>
+    <td>${r.am}</td>
+    <td>${r.inv}</td>
+    <td>${r.due}</td>
+    <td><strong style="color:${dc(r.d)}">${r.s==='paid'?'Paid':r.d+' days'}</strong></td>
+    <td>${r.f==='uncollected'?'<strong style="color:#DC2626">$39,066 uncollected</strong>':r.f==='custom'?'$145/hr custom':'$'+r.amt.toLocaleString()+'/mo'}</td>
+    <td class="action">${r.act}</td>
+  </tr>`).join('');
+}
+
+function renderPipe(){
+  const f=pf.pipe;
+  const rows=PIPE.filter(r=>f==='all'||r.phase===f);
+  document.getElementById('pipe-body').innerHTML=rows.map(r=>`<tr>
+    <td>${pb(r.phase)}</td>
+    <td><strong style="${r.alert?'color:#DC2626':''}">${r.alert?'&#9888; ':''} ${r.n}</strong></td>
+    <td class="ns">${r.id}</td>
+    <td>${r.am}</td>
+    <td>${r.ko}</td>
+    <td><strong style="color:${r.d>300?'#DC2626':r.d>150?'#D97706':'#334155'}">${r.d>0?r.d+' days':'\u2014'}</strong></td>
+    <td>${r.tgl}</td>
+    <td>${brdb(r.brd)}</td>
+    <td class="ns">${r.ao}</td>
+  </tr>`).join('');
+}
+
+function renderAlerts(){
+  const f=pf.alert;
+  const rows=ALERTS.filter(r=>f==='all'||r.sev===f);
+  const sc={critical:'#DC2626',high:'#EA580C',medium:'#D97706',low:'#16A34A'};
+  const sl={critical:'Critical',high:'High',medium:'Medium',low:'Low'};
+  document.getElementById('alert-body').innerHTML=rows.map(r=>`<tr>
+    <td><span style="display:inline-flex;align-items:center;font-size:11px;font-weight:700;color:${sc[r.sev]}">
+      <span class="sev-dot ${r.sev}"></span>${sl[r.sev]}</span></td>
+    <td><strong>${r.c}</strong></td>
+    <td>${r.am}</td>
+    <td style="font-size:11px;font-weight:500">${r.t}</td>
+    <td class="note">${r.detail}</td>
+    <td><strong style="color:${r.d>180?'#DC2626':r.d>60?'#D97706':'#64748B'}">${r.d}d</strong></td>
+    <td class="action" style="font-weight:500">${r.act}</td>
+    <td class="ns">${r.ref}</td>
+  </tr>`).join('');
+}
+
+function renderHealth(){
+  const f=pf.health;
+  const rows=HEALTH.filter(r=>f==='all'||r.s===f);
+  document.getElementById('health-body').innerHTML=rows.map(r=>`<tr>
+    <td><strong>${r.n}</strong></td>
+    <td>${r.am}</td>
+    <td>${pb(r.ph)}</td>
+    <td class="${r.u?'yes':'no'}">${r.u?'Yes':'No'}</td>
+    <td><span class="sentiment ${r.s}">${r.s.charAt(0).toUpperCase()+r.s.slice(1)}</span></td>
+    <td class="${r.r?'yes':'no'}">${r.r?'Yes':'No'}</td>
+    <td class="ns">${r.lm}</td>
+    <td class="note">${r.note}</td>
+  </tr>`).join('');
+}
+
+function sort(tid, ci){
+  const tbl=document.getElementById(tid);
+  const tb=tbl.querySelector('tbody');
+  const rows=[...tb.querySelectorAll('tr')];
+  const asc=tbl.dataset.sc==ci&&tbl.dataset.sd!=='asc';
+  rows.sort((a,b)=>{
+    const av=a.cells[ci]?.textContent.trim()||'';
+    const bv=b.cells[ci]?.textContent.trim()||'';
+    const an=parseFloat(av),bn=parseFloat(bv);
+    if(!isNaN(an)&&!isNaN(bn)) return asc?an-bn:bn-an;
+    return asc?av.localeCompare(bv):bv.localeCompare(av);
+  });
+  rows.forEach(r=>tb.appendChild(r));
+  tbl.dataset.sc=ci;tbl.dataset.sd=asc?'asc':'desc';
+}
+
+setRole('admin');
+setSection('overview');
+renderPay();renderPipe();renderAlerts();renderHealth();
+</script>
+</body>
+</html>
