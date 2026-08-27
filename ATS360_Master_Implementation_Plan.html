@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATS360 — Master Implementation Plan</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: #f1f5f9; color: #0f172a; font-size: 13px; }
+
+  /* ── Header ── */
+  .header { background: #0f172a; color: #fff; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,.3); }
+  .header-title { font-size: 16px; font-weight: 800; letter-spacing: -.02em; }
+  .header-sub   { font-size: 10px; opacity: .5; margin-top: 2px; letter-spacing: .06em; text-transform: uppercase; }
+  .header-count { font-size: 12px; opacity: .6; white-space: nowrap; }
+
+  /* ── Filter bar ── */
+  .filters { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 10px 24px; }
+  .filter-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 8px; }
+  .filter-row:last-child { margin-bottom: 0; }
+  .filter-label { font-size: 10px; font-weight: 700; color: #64748b; letter-spacing: .07em; text-transform: uppercase; margin-right: 4px; white-space: nowrap; align-self: center; }
+  .pill { padding: 3px 10px; font-size: 10px; font-weight: 700; border-radius: 20px; border: 1.5px solid; cursor: pointer; transition: all .12s; background: #fff; color: #94a3b8; border-color: #cbd5e1; }
+  .pill.active { opacity: 1; }
+  .pill.inactive { background: #fff !important; color: #94a3b8 !important; border-color: #e2e8f0 !important; }
+  .seg-btn { padding: 4px 12px; font-size: 10px; font-weight: 700; border-radius: 4px; border: 1.5px solid #cbd5e1; cursor: pointer; background: #fff; color: #64748b; transition: all .12s; }
+  .seg-btn.active { background: #0f172a; color: #fff; border-color: #0f172a; }
+  .seg-btn.active.gov     { background: #7f1d1d; border-color: #7f1d1d; }
+  .seg-btn.active.private { background: #3730a3; border-color: #3730a3; }
+  .seg-btn.active.us      { background: #0369a1; border-color: #0369a1; }
+  .seg-btn.active.can     { background: #b45309; border-color: #b45309; }
+  .quick-btn { padding: 4px 12px; font-size: 10px; font-weight: 700; border-radius: 4px; cursor: pointer; background: #fff; transition: all .12s; }
+  .quick-btn.oob     { border: 1.5px solid #1e40af; color: #1e40af; }
+  .quick-btn.gov-q   { border: 1.5px solid #7f1d1d; color: #7f1d1d; }
+  .quick-btn.priv-q  { border: 1.5px solid #3730a3; color: #3730a3; }
+  .meta-btns { margin-left: auto; display: flex; gap: 6px; }
+  .meta-btn { padding: 3px 10px; font-size: 10px; font-weight: 600; border-radius: 4px; border: 1px solid #cbd5e1; background: #fff; color: #475569; cursor: pointer; }
+
+  /* ── Table wrapper ── */
+  .table-wrap { padding: 16px 24px 32px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  thead th { background: #1e293b; color: #fff; padding: 9px 10px; text-align: left; font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; border-right: 1px solid #334155; white-space: nowrap; position: sticky; top: 62px; }
+  thead th:last-child { border-right: none; }
+
+  /* Phase header rows */
+  .phase-row td { color: #fff; padding: 6px 12px; font-weight: 800; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
+  .ph-P1 td { background: #0f172a; }
+  .ph-P2 td { background: #1e3a8a; }
+  .ph-P3 td { background: #4c1d95; }
+  .ph-P4 td { background: #7c2d12; }
+  .ph-P5 td { background: #14532d; }
+
+  /* Data rows */
+  tr.data-row td { padding: 6px 10px; border-bottom: 1px solid #e2e8f0; vertical-align: top; line-height: 1.45; }
+  tr.data-row.alt td { background: #f8fafc; }
+  tr.data-row.disco td { background: #fffbeb; }
+  tr.data-row.kickoff td { background: #eff6ff; }
+
+  /* Phase-coloured left border */
+  tr.data-row td:first-child { font-size: 10px; font-weight: 700; color: #64748b; white-space: nowrap; }
+  tr.ph-P1.data-row td:first-child { border-left: 3px solid #0f172a; }
+  tr.ph-P2.data-row td:first-child { border-left: 3px solid #1e3a8a; }
+  tr.ph-P3.data-row td:first-child { border-left: 3px solid #4c1d95; }
+  tr.ph-P4.data-row td:first-child { border-left: 3px solid #7c2d12; }
+  tr.ph-P5.data-row td:first-child { border-left: 3px solid #14532d; }
+  tr.data-row.disco td:first-child  { border-left: 3px solid #fcd34d !important; }
+
+  .wk-cell { font-size: 10px; font-weight: 700; color: #64748b; white-space: nowrap; }
+  .disco-badge { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 9px; font-weight: 800; letter-spacing: .03em; }
+  .disco-badge.kickoff { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+  .disco-badge.disco   { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+  .deliv-cell { max-width: 380px; }
+  tr.data-row.disco .deliv-cell { font-weight: 700; }
+  .mod-badge { display: inline-block; padding: 2px 7px; border-radius: 3px; font-size: 9px; font-weight: 700; white-space: nowrap; }
+  .qty-cell { font-size: 11px; color: #374151; max-width: 200px; }
+  .hrs-badge { display: inline-block; padding: 2px 7px; border-radius: 3px; font-size: 9px; font-weight: 700; }
+  .hrs-oob  { background: #dbeafe; color: #1e40af; }
+  .hrs-incl { background: #f1f5f9; color: #475569; }
+  .hrs-pkg  { background: #ffedd5; color: #9a3412; }
+  .note-cell { font-size: 10px; color: #64748b; max-width: 320px; }
+
+  /* ── Legend ── */
+  .legend { background: #fff; border-top: 1px solid #e2e8f0; padding: 16px 24px; margin-top: 4px; }
+  .legend-title { font-size: 10px; font-weight: 700; color: #64748b; letter-spacing: .07em; text-transform: uppercase; margin-bottom: 10px; }
+  .legend-grid  { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .legend-item  { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #374151; }
+  .legend-swatch{ display: inline-block; width: 52px; padding: 2px 6px; border-radius: 3px; font-size: 9px; font-weight: 700; text-align: center; }
+  .hrs-legend   { display: flex; flex-wrap: wrap; gap: 20px; font-size: 11px; color: #475569; }
+  .watermark    { margin-top: 12px; font-size: 10px; color: #94a3b8; }
+
+  /* ── Hidden ── */
+  .hidden { display: none !important; }
+
+  @media print {
+    .filters, .header { position: static; }
+    .table-wrap { padding: 8px; }
+    thead th { position: static; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div>
+    <div class="header-title">ATS360 — Master Implementation Plan</div>
+    <div class="header-sub">NetDynamic Inc. &nbsp;·&nbsp; Internal Reference &nbsp;·&nbsp; All Modules &amp; Deliverables</div>
+  </div>
+  <div class="header-count" id="counter"></div>
+</div>
+
+<!-- Filters -->
+<div class="filters">
+  <div class="filter-row">
+    <span class="filter-label">Quick&nbsp;Filter:</span>
+    <button class="quick-btn oob"   onclick="quickFilter('oob')">OOB Only</button>
+    <button class="quick-btn gov-q" onclick="quickFilter('gov')">Government Deal</button>
+    <button class="quick-btn priv-q"onclick="quickFilter('private')">Private Deal</button>
+    <div class="meta-btns">
+      <button class="meta-btn" onclick="selectAll()">Select All</button>
+      <button class="meta-btn" onclick="clearAll()">Clear All</button>
+    </div>
+  </div>
+
+  <div class="filter-row" id="module-pills">
+    <span class="filter-label">Module:</span>
+  </div>
+
+  <div class="filter-row">
+    <span class="filter-label">Sector:</span>
+    <button class="seg-btn active"   id="sec-all"     onclick="setSector('all')">All Sectors</button>
+    <button class="seg-btn gov"      id="sec-gov"     onclick="setSector('gov')">Government</button>
+    <button class="seg-btn private"  id="sec-private" onclick="setSector('private')">Private</button>
+    &nbsp;&nbsp;
+    <span class="filter-label">Region:</span>
+    <button class="seg-btn active"   id="reg-all"     onclick="setRegion('all')">All Regions</button>
+    <button class="seg-btn us"       id="reg-us"      onclick="setRegion('us')">US</button>
+    <button class="seg-btn can"      id="reg-can"     onclick="setRegion('can')">Canada</button>
+  </div>
+</div>
+
+<!-- Table -->
+<div class="table-wrap">
+<table id="imp-table">
+  <thead>
+    <tr>
+      <th style="width:56px">Phase</th>
+      <th style="width:62px">Week</th>
+      <th style="width:70px">Session</th>
+      <th>Deliverable</th>
+      <th style="width:110px">Module</th>
+      <th style="width:190px">Quantity / Scope Cap</th>
+      <th style="width:88px">Hours</th>
+      <th style="width:88px">Sector</th>
+      <th style="width:70px">Region</th>
+      <th>Notes</th>
+    </tr>
+  </thead>
+  <tbody id="tbody"></tbody>
+</table>
+</div>
+
+<!-- Legend -->
+<div class="legend">
+  <div class="legend-title">Module Colour Reference</div>
+  <div class="legend-grid" id="legend-grid"></div>
+  <div class="legend-title">Hours Key</div>
+  <div class="hrs-legend">
+    <span><span class="legend-swatch hrs-oob">OOB</span> &nbsp;Included in the standard 50-hr OOB implementation package</span>
+    <span><span class="legend-swatch hrs-pkg">X hrs pkg</span> &nbsp;Total hours for this add-on package (first row of group)</span>
+    <span><span class="legend-swatch hrs-incl">Incl.</span> &nbsp;Included within the stated add-on package hours</span>
+    <span><span class="legend-swatch hrs-pkg">X hrs</span> &nbsp;Standalone custom work — billed separately from OOB</span>
+  </div>
+  <div class="watermark">NetDynamic Inc. &nbsp;·&nbsp; Internal Use Only &nbsp;·&nbsp; Not for Client Distribution &nbsp;·&nbsp; v1.1 August 2026</div>
+</div>
+
+<script>
+// ── Data ────────────────────────────────────────────────────────────────────
+const MODULE_META = {
+  "OOB":                   {label:"OOB Core",          bg:"#dbeafe",tx:"#1e40af"},
+  "E-Signature":           {label:"E-Signature",       bg:"#f3e8ff",tx:"#7c3aed"},
+  "Pre-Hire (US)":         {label:"Pre-Hire US",       bg:"#dcfce7",tx:"#166534"},
+  "Pre-Hire (CAN)":        {label:"Pre-Hire CAN",      bg:"#ccfbf1",tx:"#0f766e"},
+  "Payroll Readiness (SP)":{label:"Payroll — SP",      bg:"#ffedd5",tx:"#9a3412"},
+  "Payroll Readiness (Gov)":{label:"Payroll — Gov",    bg:"#fee2e2",tx:"#991b1b"},
+  "SuitePeople Connect":   {label:"SP Connect",        bg:"#e0e7ff",tx:"#3730a3"},
+  "SuitePeople Mapping":   {label:"SP Mapping",        bg:"#ede9fe",tx:"#5b21b6"},
+  "Gov HCM Mapping":       {label:"Gov HCM Mapping",   bg:"#fef2f2",tx:"#7f1d1d"},
+  "Gov HCM Connect":       {label:"Gov HCM Connect",   bg:"#fff1f2",tx:"#881337"},
+  "Custom (Gov)":          {label:"Custom — Gov",      bg:"#fefce8",tx:"#713f12"},
+  "Custom":                {label:"Custom Work",       bg:"#f1f5f9",tx:"#334155"},
+  "Add-On":                {label:"Add-On Module",     bg:"#fffbeb",tx:"#92400e"},
+  "E-Verify":              {label:"E-Verify",          bg:"#ecfeff",tx:"#155e75"},
+};
+
+const PHASE_META = {
+  P1:{label:"Phase 1",name:"Initiation & Discovery"},
+  P2:{label:"Phase 2",name:"Setup & Configuration"},
+  P3:{label:"Phase 3",name:"Customization & Add-Ons"},
+  P4:{label:"Phase 4",name:"Final Customizations & Integrations"},
+  P5:{label:"Phase 5",name:"UAT, Training & Go-Live"},
+};
+
+// [ph, wk, disco, module, deliverable, qty, hrs, sector, region, notes]
+const ROWS = [
+  ["P1","Wk 1","Kickoff","OOB","Project Kickoff Call (2 Consultants)","1 session — up to 1.5 hrs","OOB","All","All","Project definition, timeline review, access provisioning"],
+  ["P1","Wk 1","Kickoff","OOB","SuiteApp Installation (Sandbox + Production)","1 instance","OOB","All","All","Direct-to-Production available if preferred"],
+  ["P1","Wk 1","Kickoff","OOB","ATS360 Integration Role Setup","1 dedicated role","OOB","All","All","Required. Dedicated NetSuite role for ATS360."],
+  ["P1","Wk 1–2","DISCO 1","OOB","BPM Review — Discovery Session 1","1 session — up to 1.5 hrs","OOB","All","All","⚠ BPM must be 100% complete before this session. Materials requirements discussed here. Materials can be staggered; BPM cannot."],
+  ["P2","Wk 2","","OOB","Initial Configuration (Modules, BPM settings)","1 session — up to 1.5 hrs","OOB","All","All",""],
+  ["P2","Wk 2","","OOB","License & Calendar Setup","1","OOB","All","All",""],
+  ["P2","Wk 3","","OOB","External Career Portal Configuration","Up to 1 portal","OOB","All","All","Branding: logo, social links, About Us, privacy policy, disclaimers"],
+  ["P2","Wk 3","","OOB","Internal Career Portal Configuration","Up to 1 portal","OOB","All","All",""],
+  ["P2","Wk 3","","OOB","Job Description Templates","Up to 5","OOB","All","All","Additional templates by ND beyond 5 → Change Order"],
+  ["P2","Wk 3","","OOB","Offer Letter Templates","Up to 2","OOB","All","All",""],
+  ["P2","Wk 3","","OOB","Interview Flow Setup","Up to 5 stages","OOB","All","All",""],
+  ["P2","Wk 3–4","DISCO 2","OOB","Add-On Discovery — Discovery Session 2","1 session — up to 1.5 hrs","OOB","All","All","🚫 BLOCKED if client has not delivered materials from Disco 1. Add-on scope confirmed here."],
+  ["P3","Wk 3–4","","E-Signature","Offer Journey Setup","Up to 1 journey","10 hrs pkg","All","All",""],
+  ["P3","Wk 3–4","","E-Signature","Offer Documents","Up to 20 documents","Incl.","All","All",""],
+  ["P3","Wk 3–4","","E-Signature","Custom PDF Forms with E-Signature","Up to 3 forms","Incl.","All","All",""],
+  ["P3","Wk 4","","Pre-Hire (US)","Employee Information Form","Up to 1","30 hrs pkg","All","US","Maps to Employee Record standard fields"],
+  ["P3","Wk 4","","Pre-Hire (US)","Emergency Contact Information Form","Up to 1","Incl.","All","US",""],
+  ["P3","Wk 4","","Pre-Hire (US)","Direct Deposit Detail Form","Up to 1","Incl.","All","US",""],
+  ["P3","Wk 4","","Pre-Hire (US)","W-4 Federal — Document Execution & E-Signature","Up to 1","Incl.","All","US",""],
+  ["P3","Wk 4","","Pre-Hire (US)","Form I-9 — Document Execution & E-Signature","Up to 1","Incl.","All","US",""],
+  ["P3","Wk 4–5","","Pre-Hire (US)","State Tax Form Collection (All 50 States)","All 50 states","Incl.","All","US","Only applicable states execute at runtime. No extra cost to add states post go-live."],
+  ["P3","Wk 4","","Pre-Hire (US)","Custom PDF Forms with E-Signature","Up to 2 forms","Incl.","All","US",""],
+  ["P3","Wk 4","","Pre-Hire (US)","Custom-Built Form with E-Signature","Up to 1 form","Incl.","All","US",""],
+  ["P3","Wk 4","","Pre-Hire (US)","Non-Signature Documents","Up to 20 documents","Incl.","All","US",""],
+  ["P3","Wk 4","","Pre-Hire (US)","Pre-Hire Portal Group Configuration","Up to 1 group","Incl.","All","US","Additional onboarding packages → Change Order"],
+  ["P3","Wk 4","","Pre-Hire (CAN)","Employee Information Form","Up to 1","30 hrs pkg","All","CAN","Maps to Employee Record standard fields"],
+  ["P3","Wk 4","","Pre-Hire (CAN)","Emergency Contact Information Form","Up to 1","Incl.","All","CAN",""],
+  ["P3","Wk 4","","Pre-Hire (CAN)","Direct Deposit Detail Form","Up to 1","Incl.","All","CAN",""],
+  ["P3","Wk 4","","Pre-Hire (CAN)","TD1 Federal — Document Execution & E-Signature","Up to 1","Incl.","All","CAN",""],
+  ["P3","Wk 4","","Pre-Hire (CAN)","TD1 Provincial — Document Execution & E-Signature","Up to 1","Incl.","All","CAN",""],
+  ["P3","Wk 4","","Pre-Hire (CAN)","Custom PDF Forms with E-Signature","Up to 2 forms","Incl.","All","CAN",""],
+  ["P3","Wk 4","","Pre-Hire (CAN)","Custom-Built Form with E-Signature","Up to 1 form","Incl.","All","CAN",""],
+  ["P3","Wk 4","","Pre-Hire (CAN)","Non-Signature Documents","Up to 20 documents","Incl.","All","CAN",""],
+  ["P3","Wk 4","","Pre-Hire (CAN)","Pre-Hire Portal Group Configuration","Up to 1 group","Incl.","All","CAN","Additional onboarding packages → Change Order"],
+  ["P3","Wk 4–5","DISCO 3","OOB","Final Configuration Review — Discovery Session 3","1 session — up to 1.5 hrs","OOB","All","All","🔒 FINAL SESSION. No configuration changes after this point. Subsequent changes require a Change Order."],
+  ["P3","Wk 5","","OOB","Welcome Email Document Setup","Up to 20 documents","OOB","All","All",""],
+  ["P3","Wk 5","","OOB","Video Conferencing Integration (Zoom / Meet / Teams)","1 platform","OOB","All","All",""],
+  ["P3","Wk 5","","OOB","Job Board Contract Integration","1 contract","OOB","All","All",""],
+  ["P3","Wk 5","","OOB","Resume Parsing Credits — Testing","100 credits","OOB","All","All","Annual subscription: 6,000 credits. Overage: $0.16/parse"],
+  ["P3","Wk 5","","Add-On","Asynchronous Video Screening Interviews","Templates, questions, branding","7–10 hrs","All","All","Feature enablement, testing, training"],
+  ["P3","Wk 5","","Add-On","Checkr Background Check Integration","1 integration","5–8 hrs","All","All","API connection, workflow config, status mapping, training"],
+  ["P3","Wk 5","","Add-On","DocuSign Integration","1 integration","5–8 hrs","All","All","Connection config, offer letter template mapping, training"],
+  ["P3","Wk 5","","Add-On","SMS Messaging (Twilio)","Daily cap: 1,200 SMS","5–8 hrs","All","All","Feature enablement, Twilio setup, testing, training"],
+  ["P3","Wk 5","","Add-On","Subsidiary Configuration Package","Scoped per BRD","15–40 hrs","All","All","Varies by complexity. Custom per client — not reusable across implementations."],
+  ["P4","Wk 5–6","","SuitePeople Connect","Requirements & Field Mapping Session","1 session","10 hrs pkg","Private","All","Confirms mapping matrix and trigger conditions before build"],
+  ["P4","Wk 5–6","","SuitePeople Connect","SP → ATS360 Push Button (Job Req — Open Status Only)","1 button","Incl.","Private","All","Active only when SP Requisition Status = Open"],
+  ["P4","Wk 5–6","","SuitePeople Connect","ATS360 Job Posting Pre-Population (12 Standard Fields)","12 mapped fields","Incl.","Private","All","Title, Description, Subsidiary, Dept, Location, Headcount, Type, HM, Recruiter, Hire Date, Open Date, Class"],
+  ["P4","Wk 5–6","","SuitePeople Connect","Employee Record OOB Mapping Validation (at Convert to Emp.)","Standard OOB fields only","Incl.","Private","All","No SP-specific field mapping. SP manages Employee Record independently post-creation."],
+  ["P4","Wk 5–6","","SuitePeople Connect","UAT Support + Handover Documentation","1","Incl.","Private","All","10 hrs total — SuitePeople Connect"],
+  ["P4","Wk 5–6","","SuitePeople Mapping","SuitePeople HCM Standard Field Mapping","Standard field set","8–12 hrs","Private","All","Requires SuitePeople module licensed. Custom fields beyond standard → Change Order."],
+  ["P4","Wk 5–6","","Gov HCM Mapping","Position Management Integration","Position mgmt structure","15–25 hrs pkg","Government","All","Requires Government HCM module licensed."],
+  ["P4","Wk 5–6","","Gov HCM Mapping","Classification Structure Mapping","Classification hierarchy","Incl.","Government","All",""],
+  ["P4","Wk 5–6","","Gov HCM Mapping","Government Compliance Record Configuration","Compliance fields","Incl.","Government","All",""],
+  ["P4","Wk 5–6","","Gov HCM Connect","Gov HCM → ATS360 Job Requisition Push","1 integration","Scoped per complexity","Government","All","Same workflow structure as SP Connect. Higher complexity due to Government HCM architecture."],
+  ["P4","Wk 5–6","","Add-On","Onboarding Dashboard — Requirements & Configuration Session","1 session","14 hrs pkg","All","All","Confirm stages feeding dashboard, Pre-Hire Portal form list (circle count), QR method, file attachment logic"],
+  ["P4","Wk 5–6","","Add-On","Onboarding Dashboard — Dashboard Page Build (Suitelet / Portlet)","1 dashboard","Incl.","All","All","Candidate table: name, position, attached files, onboarding progress, QR code, portal button"],
+  ["P4","Wk 5–6","","Add-On","Onboarding Dashboard — Attached Files Column","PDF badge links per candidate","Incl.","All","All","Script reads file attachments from each candidate's ATS360 record and renders inline"],
+  ["P4","Wk 5–6","","Add-On","Onboarding Dashboard — Onboarding Files Progress Indicator","1 circle per configured form","Incl.","All","All","Filled = submitted, empty = not yet complete. Updates on page refresh."],
+  ["P4","Wk 5–6","","Add-On","Onboarding Dashboard — QR Code Generation per Candidate","1 QR per candidate (when portal link exists)","Incl.","All","All","Encodes Pre-Hire Portal URL. Designed for walk-in candidates — no email required."],
+  ["P4","Wk 5–6","","Add-On","Onboarding Dashboard — Onboarding Button — Portal Link","Active when portal link exists","Incl.","All","All","Opens Pre-Hire Portal in new tab. Greyed out when no link available."],
+  ["P4","Wk 5–6","","Add-On","Onboarding Dashboard — UAT Support + Handover Documentation","1","Incl.","All","All","14 hrs total — Onboarding Dashboard. Requires ATS360 User License + full NetSuite license."],
+  ["P4","Wk 6","","Payroll Readiness (SP)","Requirements & Mapping Session","1 session","15 hrs pkg","Private","US","⚠ Prerequisite: Pre-Hire Portal Pro US must be fully configured first."],
+  ["P4","Wk 6","","Payroll Readiness (SP)","W-4 Federal CSV Generation Script","1 script","Incl.","Private","US","Reads W-4 data → generates SuitePeople-formatted CSV"],
+  ["P4","Wk 6","","Payroll Readiness (SP)","State Tax CSV Generation Script (All 50 States)","All 50 states","Incl.","Private","US","State-aware; only applicable states execute at runtime."],
+  ["P4","Wk 6","","Payroll Readiness (SP)","Direct Deposit CSV Generation Script","1 script","Incl.","Private","US",""],
+  ["P4","Wk 6","","Payroll Readiness (SP)","Auto-Import Engine (CSV → SuitePeople)","1","Incl.","Private","US","Includes error handling and import status logging"],
+  ["P4","Wk 6","","Payroll Readiness (SP)","Employee Record Enrichment (I-9 + Employee Info)","1","Incl.","Private","US",""],
+  ["P4","Wk 6","","Payroll Readiness (SP)","UAT Support + Handover Documentation","1","Incl.","Private","US","15 hrs total — SuitePeople Payroll Readiness (US)"],
+  ["P4","Wk 6","","Payroll Readiness (Gov)","Requirements & Mapping Session","1 session","25 hrs pkg","Government","US","⚠ Prerequisite: Pre-Hire Portal Pro must be configured first. Same action items as SuitePeople — higher complexity."],
+  ["P4","Wk 6","","Payroll Readiness (Gov)","W-4 Federal CSV Generation Script","1 script","Incl.","Government","US","Government HCM-specific compliance field requirements"],
+  ["P4","Wk 6","","Payroll Readiness (Gov)","State Tax CSV Generation Script (All 50 States)","All 50 states","Incl.","Government","US",""],
+  ["P4","Wk 6","","Payroll Readiness (Gov)","Direct Deposit CSV Generation Script","1 script","Incl.","Government","US",""],
+  ["P4","Wk 6","","Payroll Readiness (Gov)","Auto-Import Engine (CSV → Gov Payroll)","1","Incl.","Government","US","Includes error handling and import status logging"],
+  ["P4","Wk 6","","Payroll Readiness (Gov)","Employee Record Enrichment + Compliance Fields","1","Incl.","Government","US",""],
+  ["P4","Wk 6","","Payroll Readiness (Gov)","UAT Support + Handover Documentation","1","Incl.","Government","US","25 hrs total — Government Payroll Readiness (vs. 15 hrs SuitePeople)"],
+  ["P4","Wk 6","","E-Verify","E-Verify Feature Enablement","1","10 hrs pkg","All","US","Requires US-based NetSuite account."],
+  ["P4","Wk 6","","E-Verify","E-Verify Credential Configuration","1 (Company ID + username)","Incl.","All","US","Client must supply E-Verify employer credentials before configuration"],
+  ["P4","Wk 6","","E-Verify","E-Verify Testing & Training","1 session","Incl.","All","US","10 hrs total — E-Verify"],
+  ["P4","Wk 6","","Custom (Gov)","CBA: Seven-Day Internal Posting Enforcement","Automated logic per CBA","9 hrs","Government","All","Enforces mandatory 7-day internal-only posting period per union CBA terms"],
+  ["P4","Wk 6","","Custom (Gov)","CBA: Union President Notifications","Auto email + system notifications","12 hrs","Government","All","Triggered on creation of any CBA-subject job requisition"],
+  ["P4","Wk 6","","Custom (Gov)","CBA: Active Layoff Status Flags","Soft-match vs Employee records","18 hrs","Government","All","SSN last-4 soft match. HR review aid — not auto-reject."],
+  ["P4","Wk 6","","Custom (Gov)","Finance-Integrated Requisition Workflow (GL Code Automation)","Up to 3 approval tiers per instance","25–40 hrs","Government","All","Auto-pulls GL Budget Code at requisition creation. Additional tiers → Change Order."],
+  ["P4","Wk 5–6","","Custom","Vendor Record Creation Workflow (Convert to Vendor)","1 automated workflow","20 hrs","All","All","Auto-creates NetSuite Vendor record on hire. For 1099/contractor hires."],
+  ["P5","Wk 7","","OOB","User Acceptance Testing (UAT)","5 business days","OOB","All","All","Severity 1 defects only block Go-Live. Sev 2/3: resolved post Go-Live without delay."],
+  ["P5","Wk 7","","OOB","UAT Support Session","1 session","OOB","All","All",""],
+  ["P5","Wk 7","","OOB","Defect Remediation (Severity 1 only)","Up to 2 retest rounds per defect","OOB","All","All","Bug reports introducing new requirements = Change Order, not a UAT defect"],
+  ["P5","Wk 8","","OOB","User Training Sessions — ATS360 + Active Add-Ons","3 sessions (up to 1 hr each)","OOB","All","All","Covers OOB + all purchased add-ons (E-Sig, Pre-Hire, E-Verify)"],
+  ["P5","Wk 8","","OOB","Annual Resume Parsing Credits","6,000 credits / year","OOB","All","All","Clock starts at Go-Live. Overage: $0.16/parse."],
+  ["P5","Wk 8","","OOB","Implementation Consulting Support","8 hrs — expires 30 days post Go-Live","OOB","All","All","⚠ Unused hours forfeited 30 days after Go-Live. Cannot be banked."],
+  ["P5","Wk 8","","OOB","Production Go-Live","1","OOB","All","All",""],
+  ["P5","Wk 8","","OOB","Handover & Documentation Package","1 package","OOB","All","All",""],
+  ["P5","Wk 8","","OOB","30-Day Warranty Period","30 calendar days from Go-Live","OOB","All","All","Covers functionality per BRD deliverables only. Support beyond warranty → Change Order."],
+];
+
+// ── State ────────────────────────────────────────────────────────────────────
+const ALL_MODS = Object.keys(MODULE_META);
+let activeModules = new Set(ALL_MODS);
+let sectorFilter  = "all";
+let regionFilter  = "all";
+
+// ── Filter logic ─────────────────────────────────────────────────────────────
+function rowVisible(r) {
+  const [ph,wk,disco,mod,deliv,qty,hrs,sector,region] = r;
+  if (!activeModules.has(mod)) return false;
+  if (sectorFilter === "gov"     && sector === "Private")    return false;
+  if (sectorFilter === "private" && sector === "Government") return false;
+  if (regionFilter === "us"  && region === "CAN") return false;
+  if (regionFilter === "can" && region === "US")  return false;
+  return true;
+}
+
+// ── Render ───────────────────────────────────────────────────────────────────
+function render() {
+  const tbody = document.getElementById("tbody");
+  tbody.innerHTML = "";
+  let currentPhase = null;
+  let visible = 0;
+  let altIdx = 0;
+
+  ROWS.forEach(r => {
+    const [ph,wk,disco,mod,deliv,qty,hrs,sector,region,notes] = r;
+    const show = rowVisible(r);
+
+    if (ph !== currentPhase && show) {
+      currentPhase = ph;
+      const pm = PHASE_META[ph];
+      const tr = document.createElement("tr");
+      tr.className = `phase-row ph-${ph}`;
+      tr.innerHTML = `<td colspan="10">${pm.label} &nbsp;·&nbsp; ${pm.name}</td>`;
+      tbody.appendChild(tr);
+      altIdx = 0;
+    }
+
+    if (!show) return;
+
+    const mm = MODULE_META[mod];
+    const isKickoff = disco === "Kickoff";
+    const isDisco   = disco.startsWith("DISCO");
+
+    let rowCls = `data-row ph-${ph}`;
+    if (isDisco)        rowCls += " disco";
+    else if (isKickoff) rowCls += " kickoff";
+    else if (altIdx % 2 === 1) rowCls += " alt";
+    altIdx++;
+
+    const discoBadge = disco
+      ? `<span class="disco-badge ${isKickoff ? 'kickoff' : 'disco'}">${disco}</span>`
+      : "";
+
+    const modBadge = `<span class="mod-badge" style="background:${mm.bg};color:${mm.tx}">${mm.label}</span>`;
+
+    let hrsCls = "hrs-incl";
+    if (hrs === "OOB")   hrsCls = "hrs-oob";
+    else if (hrs !== "Incl.") hrsCls = "hrs-pkg";
+    const hrsBadge = `<span class="hrs-badge ${hrsCls}">${hrs}</span>`;
+
+    const tr = document.createElement("tr");
+    tr.className = rowCls;
+    tr.innerHTML = `
+      <td class="wk-cell">${ph}</td>
+      <td class="wk-cell">${wk}</td>
+      <td>${discoBadge}</td>
+      <td class="deliv-cell">${deliv}</td>
+      <td>${modBadge}</td>
+      <td class="qty-cell">${qty}</td>
+      <td>${hrsBadge}</td>
+      <td style="font-size:10px;color:#64748b">${sector}</td>
+      <td style="font-size:10px;color:#64748b">${region}</td>
+      <td class="note-cell">${notes}</td>
+    `;
+    tbody.appendChild(tr);
+    visible++;
+  });
+
+  document.getElementById("counter").textContent = `${visible} / ${ROWS.length} deliverables`;
+}
+
+// ── Pill builder ─────────────────────────────────────────────────────────────
+function buildPills() {
+  const container = document.getElementById("module-pills");
+  ALL_MODS.forEach(key => {
+    const mm = MODULE_META[key];
+    const btn = document.createElement("button");
+    btn.className = "pill active";
+    btn.id = `pill-${key}`;
+    btn.textContent = mm.label;
+    btn.style.background = mm.bg;
+    btn.style.color = mm.tx;
+    btn.style.borderColor = mm.tx + "55";
+    btn.onclick = () => toggleModule(key);
+    container.appendChild(btn);
+  });
+}
+
+function buildLegend() {
+  const grid = document.getElementById("legend-grid");
+  ALL_MODS.forEach(key => {
+    const mm = MODULE_META[key];
+    const div = document.createElement("div");
+    div.className = "legend-item";
+    div.innerHTML = `<span class="legend-swatch" style="background:${mm.bg};color:${mm.tx}">${mm.label}</span>`;
+    grid.appendChild(div);
+  });
+}
+
+// ── Actions ──────────────────────────────────────────────────────────────────
+function toggleModule(key) {
+  activeModules.has(key) ? activeModules.delete(key) : activeModules.add(key);
+  const btn = document.getElementById(`pill-${key}`);
+  const mm = MODULE_META[key];
+  if (activeModules.has(key)) {
+    btn.className = "pill active";
+    btn.style.background = mm.bg; btn.style.color = mm.tx; btn.style.borderColor = mm.tx + "55";
+  } else {
+    btn.className = "pill inactive";
+    btn.style.background = ""; btn.style.color = ""; btn.style.borderColor = "";
+  }
+  render();
+}
+
+function selectAll() {
+  activeModules = new Set(ALL_MODS);
+  ALL_MODS.forEach(k => {
+    const btn = document.getElementById(`pill-${k}`);
+    const mm = MODULE_META[k];
+    btn.className = "pill active";
+    btn.style.background = mm.bg; btn.style.color = mm.tx; btn.style.borderColor = mm.tx + "55";
+  });
+  render();
+}
+
+function clearAll() {
+  activeModules = new Set();
+  ALL_MODS.forEach(k => {
+    const btn = document.getElementById(`pill-${k}`);
+    btn.className = "pill inactive";
+    btn.style.background = ""; btn.style.color = ""; btn.style.borderColor = "";
+  });
+  render();
+}
+
+function setSector(v) {
+  sectorFilter = v;
+  ["all","gov","private"].forEach(s => {
+    const el = document.getElementById(`sec-${s}`);
+    el.className = "seg-btn" + (s === v ? " active " + s : "");
+  });
+  render();
+}
+
+function setRegion(v) {
+  regionFilter = v;
+  ["all","us","can"].forEach(s => {
+    const el = document.getElementById(`reg-${s}`);
+    el.className = "seg-btn" + (s === v ? " active " + s : "");
+  });
+  render();
+}
+
+function quickFilter(preset) {
+  selectAll();
+  if (preset === "oob") {
+    clearAll();
+    activeModules = new Set(["OOB"]);
+    const btn = document.getElementById("pill-OOB");
+    const mm = MODULE_META["OOB"];
+    btn.className = "pill active";
+    btn.style.background = mm.bg; btn.style.color = mm.tx; btn.style.borderColor = mm.tx + "55";
+    setSector("all"); setRegion("all");
+  } else if (preset === "gov") {
+    setSector("gov"); setRegion("all");
+  } else if (preset === "private") {
+    setSector("private"); setRegion("all");
+  }
+  render();
+}
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+buildPills();
+buildLegend();
+render();
+</script>
+</body>
+</html>
