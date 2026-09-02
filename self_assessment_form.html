@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Self-Assessment — Performance Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1a2332;--navy-h:#223044;--navy-mid:#2d4a7a;
+  --page:#f0f2f5;--surface:#fff;--border:#e2e5ea;--border-mid:#c8cdd6;
+  --t1:#0f1923;--t2:#5a6473;--t3:#9ea8b3;
+  --teal:#0d9488;--teal-bg:#e6f7f5;--teal-t:#0f6e56;
+  --blue-bg:#e6f1fb;--blue-t:#185fa5;
+  --purple-bg:#eeedfe;--purple-t:#3c3489;
+  --amber:#d97706;--amber-bg:#fef3c7;--amber-t:#92400e;
+  --red:#e8002d;--red-bg:#fde8ec;--red-t:#a51633;
+  --green:#16a34a;--green-bg:#dcfce7;
+  --cat-orange:#f97316;
+  font-family:'Inter',system-ui,sans-serif;font-size:14px;color:var(--t1);
+  --r6:6px;--r8:8px;--r12:12px;--r16:16px;
+}
+
+body{background:var(--page);min-height:100vh}
+
+/* ── HEADER BAND ── */
+.form-header{
+  background:var(--navy);
+  padding:0 32px;
+  display:flex;align-items:center;justify-content:space-between;
+  height:56px;position:sticky;top:0;z-index:100;
+  border-bottom:2px solid var(--red);
+}
+.fh-left{display:flex;align-items:center;gap:16px}
+.fh-logo{display:flex;align-items:center;gap:8px}
+.fh-logo-mark{width:28px;height:28px;border-radius:6px;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff}
+.fh-product{font-size:12px;font-weight:600;color:rgba(255,255,255,.5);letter-spacing:.02em}
+.fh-divider{width:1px;height:20px;background:rgba(255,255,255,.12)}
+.fh-title{font-size:13px;font-weight:500;color:#fff}
+.fh-right{display:flex;align-items:center;gap:10px}
+.fh-cycle{font-size:11px;color:rgba(255,255,255,.45);background:rgba(255,255,255,.08);padding:4px 10px;border-radius:20px}
+.fh-save{font-size:12px;color:rgba(255,255,255,.45);display:flex;align-items:center;gap:4px}
+.fh-save i{font-size:13px}
+
+/* ── PROGRESS STRIP ── */
+.progress-strip{background:var(--surface);border-bottom:1px solid var(--border);padding:0 32px;display:flex;align-items:center;gap:0;overflow-x:auto}
+.ps-step{display:flex;align-items:center;gap:0;flex-shrink:0}
+.ps-btn{display:flex;align-items:center;gap:8px;padding:14px 16px;font-size:12.5px;font-weight:500;color:var(--t3);border:none;background:none;cursor:pointer;font-family:inherit;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap}
+.ps-btn:hover{color:var(--t2)}
+.ps-btn.active{color:var(--navy);border-bottom-color:var(--navy);font-weight:600}
+.ps-btn.done{color:var(--teal);border-bottom-color:var(--teal)}
+.ps-dot{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
+.ps-dot-done{background:var(--teal);color:#fff}
+.ps-dot-active{background:var(--navy);color:#fff}
+.ps-dot-todo{background:var(--border);color:var(--t3)}
+.ps-chevron{font-size:12px;color:var(--border-mid)}
+
+/* ── LAYOUT ── */
+.form-body{display:grid;grid-template-columns:1fr 300px;gap:20px;padding:24px 32px 60px;max-width:1100px;margin:0 auto}
+@media(max-width:860px){.form-body{grid-template-columns:1fr}.form-sidebar{display:none}}
+
+/* ── SECTION CARDS ── */
+.section-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r16);margin-bottom:16px;overflow:hidden}
+.sc-header{padding:18px 22px 14px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:12px}
+.sc-icon{width:36px;height:36px;border-radius:var(--r8);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;margin-top:1px}
+.sc-titles{flex:1}
+.sc-title{font-size:14px;font-weight:600;color:var(--t1);margin-bottom:2px}
+.sc-sub{font-size:12px;color:var(--t2);line-height:1.5}
+.sc-weight-badge{display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;background:var(--navy);color:#fff;padding:3px 9px;border-radius:20px;white-space:nowrap;position:relative;cursor:default}
+.sc-body{padding:18px 22px}
+
+/* ── WEIGHT TOOLTIP ── */
+.weight-tip-wrap{position:relative}
+.weight-tip{position:absolute;right:0;top:calc(100% + 6px);background:var(--navy-h);color:#fff;font-size:11.5px;font-weight:400;padding:8px 12px;border-radius:var(--r8);width:200px;line-height:1.5;z-index:50;opacity:0;pointer-events:none;transition:opacity .15s;box-shadow:0 4px 16px rgba(0,0,0,.18)}
+.weight-tip-wrap:hover .weight-tip{opacity:1}
+.wt-info-icon{font-size:12px;opacity:.7}
+
+/* ── GOAL ITEMS ── */
+.goal-list{display:flex;flex-direction:column;gap:8px}
+.goal-item{border:1.5px solid var(--border);border-radius:var(--r12);padding:12px 14px;transition:border-color .12s;cursor:pointer}
+.goal-item:hover{border-color:var(--border-mid)}
+.goal-item.confirmed{border-color:var(--teal);background:var(--teal-bg)}
+.gi-top{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.gi-title{font-size:13px;font-weight:600;color:var(--t1);flex:1}
+.gi-confirm-btn{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--border-mid);background:var(--surface);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .12s;flex-shrink:0}
+.goal-item.confirmed .gi-confirm-btn{background:var(--teal);border-color:var(--teal);color:#fff}
+.gi-confirm-btn i{font-size:13px;color:var(--t3)}
+.goal-item.confirmed .gi-confirm-btn i{color:#fff}
+.gi-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.gi-prog-bar{flex:1;height:4px;background:#e8eaed;border-radius:2px;overflow:hidden;min-width:60px}
+.gi-prog-fill{height:100%;border-radius:2px}
+.gi-pct{font-size:11px;font-weight:600;color:var(--t2);white-space:nowrap}
+.fw-chip{font-size:9.5px;font-weight:600;padding:1px 6px;border-radius:3px;display:inline-flex;align-items:center}
+.fw-smart{background:#dbeafe;color:#1e40af}
+.fw-okr{background:var(--purple-bg);color:var(--purple-t)}
+.fw-woop{background:var(--teal-bg);color:var(--teal-t)}
+.gi-note{margin-top:8px}
+.gi-note textarea{width:100%;font-family:inherit;font-size:12.5px;color:var(--t1);border:1px solid var(--border-mid);border-radius:var(--r8);padding:8px 10px;resize:none;height:56px;outline:none;background:#fafbfc;transition:border-color .12s;line-height:1.5}
+.gi-note textarea:focus{border-color:var(--navy-mid);background:var(--surface)}
+.gi-note textarea::placeholder{color:var(--t3)}
+
+/* ── EVIDENCE ITEMS ── */
+.ev-list{display:flex;flex-direction:column;gap:8px}
+.ev-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r8);transition:all .12s;cursor:pointer}
+.ev-item:hover{border-color:var(--border-mid)}
+.ev-item.selected{border-color:var(--navy-mid);background:var(--blue-bg)}
+.ev-icon{width:32px;height:32px;border-radius:var(--r6);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.ev-body{flex:1;min-width:0}
+.ev-title{font-size:12.5px;font-weight:600;color:var(--t1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ev-meta{font-size:11px;color:var(--t3);margin-top:1px;display:flex;gap:6px;align-items:center}
+.ev-check{width:20px;height:20px;border-radius:4px;border:1.5px solid var(--border-mid);background:var(--surface);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .12s}
+.ev-item.selected .ev-check{background:var(--navy);border-color:var(--navy);color:#fff}
+.ev-check i{font-size:11px;display:none}
+.ev-item.selected .ev-check i{display:block}
+.ev-add-btn{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--navy-mid);background:none;border:1.5px dashed var(--border-mid);border-radius:var(--r8);padding:9px 14px;cursor:pointer;font-family:inherit;width:100%;transition:all .12s;margin-top:4px}
+.ev-add-btn:hover{border-color:var(--navy-mid);background:var(--blue-bg)}
+.ev-add-btn i{font-size:15px}
+
+/* ── RATING SECTION ── */
+.rating-areas{display:flex;flex-direction:column;gap:14px}
+.rating-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--r12)}
+.ra-label{flex:1;min-width:0}
+.ra-name{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:2px}
+.ra-desc{font-size:11.5px;color:var(--t2)}
+.ra-stars{display:flex;gap:4px;flex-shrink:0}
+.star-btn{width:30px;height:30px;border:none;background:none;cursor:pointer;font-size:20px;color:#d1d5db;transition:color .1s;padding:0;line-height:1;display:flex;align-items:center;justify-content:center}
+.star-btn.lit{color:#f59e0b}
+.star-btn:hover{color:#fbbf24}
+.ra-score{font-size:13px;font-weight:700;color:var(--t1);width:28px;text-align:right;flex-shrink:0}
+
+/* ── RECOGNITION ITEMS ── */
+.rec-list{display:flex;flex-direction:column;gap:8px}
+.rec-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:#fafbfc;border-radius:var(--r8);border:1px solid var(--border)}
+.rec-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;margin-top:1px}
+.rec-body{flex:1}
+.rec-from{font-size:11px;color:var(--t2);margin-bottom:2px}
+.rec-msg{font-size:12.5px;color:var(--t1);line-height:1.4}
+.rec-badge{font-size:9.5px;font-weight:600;padding:1px 6px;border-radius:3px;background:var(--amber-bg);color:var(--amber-t);margin-top:4px;display:inline-block}
+
+/* ── COMMENT BOX ── */
+.comment-wrap{position:relative}
+.comment-wrap textarea{width:100%;font-family:inherit;font-size:13px;color:var(--t1);border:1.5px solid var(--border-mid);border-radius:var(--r12);padding:12px 14px;resize:vertical;min-height:110px;outline:none;line-height:1.6;transition:border-color .15s}
+.comment-wrap textarea:focus{border-color:var(--navy-mid)}
+.comment-wrap textarea::placeholder{color:var(--t3)}
+.char-count{font-size:11px;color:var(--t3);text-align:right;margin-top:4px}
+.comment-prompts{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.cp-btn{font-size:11.5px;color:var(--navy-mid);background:var(--blue-bg);border:1px solid #c3d9f4;border-radius:20px;padding:4px 10px;cursor:pointer;font-family:inherit;transition:background .12s}
+.cp-btn:hover{background:#d4e8fb}
+
+/* ── EMPTY CAT STATE ── */
+.empty-cat{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 20px;text-align:center;gap:10px}
+.cat-svg{width:72px;height:72px}
+.empty-cat-title{font-size:13px;font-weight:600;color:var(--t2)}
+.empty-cat-sub{font-size:12px;color:var(--t3);max-width:220px;line-height:1.5}
+.empty-cat-btn{font-size:12px;color:var(--navy-mid);background:none;border:1.5px solid #c3d9f4;border-radius:20px;padding:6px 14px;cursor:pointer;font-family:inherit;transition:all .12s;margin-top:4px}
+.empty-cat-btn:hover{background:var(--blue-bg)}
+
+/* ── SIDEBAR ── */
+.form-sidebar{display:flex;flex-direction:column;gap:14px}
+.sidebar-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r16);padding:16px 18px}
+.sbc-title{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:12px}
+.completion-ring-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:14px}
+.completion-ring{position:relative;width:88px;height:88px}
+.cring-svg{width:88px;height:88px;transform:rotate(-90deg)}
+.cring-track{fill:none;stroke:#e8eaed;stroke-width:7}
+.cring-fill{fill:none;stroke:var(--navy);stroke-width:7;stroke-linecap:round;stroke-dasharray:245;stroke-dashoffset:98;transition:stroke-dashoffset .4s ease}
+.cring-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.cring-pct{font-size:20px;font-weight:700;color:var(--t1)}
+.cring-sub{font-size:9px;color:var(--t3)}
+.completion-label{font-size:12px;color:var(--t2);text-align:center}
+.section-checklist{display:flex;flex-direction:column;gap:6px}
+.sc-item{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--t2)}
+.sc-item.done-item{color:var(--t1)}
+.sc-item i{font-size:14px;flex-shrink:0}
+.sc-item.done-item i{color:var(--teal)}
+.sc-item.active-item i{color:var(--navy)}
+
+/* Deadline */
+.deadline-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.deadline-label{font-size:12px;color:var(--t2)}
+.deadline-date{font-size:12px;font-weight:600;color:var(--amber)}
+.deadline-bar{height:4px;background:#e8eaed;border-radius:2px;overflow:hidden}
+.deadline-fill{height:100%;border-radius:2px;background:var(--amber);width:72%}
+
+/* Score context */
+.score-ctx{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#f7f8fa;border-radius:var(--r8)}
+.score-num{font-size:22px;font-weight:700;color:var(--navy)}
+.score-detail{flex:1}
+.score-label{font-size:11px;color:var(--t3)}
+.score-cycle{font-size:12px;font-weight:500;color:var(--t1)}
+
+/* ── BOTTOM BAR ── */
+.form-bottom{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:12px 32px;display:flex;align-items:center;justify-content:space-between;z-index:100}
+.fb-left{font-size:12px;color:var(--t3)}
+.fb-right{display:flex;gap:10px;align-items:center}
+.btn-back{background:none;border:1.5px solid var(--border-mid);color:var(--t2);border-radius:var(--r8);padding:9px 16px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:5px}
+.btn-next{background:var(--navy);color:#fff;border:none;border-radius:var(--r8);padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px;transition:background .12s}
+.btn-next:hover{background:var(--navy-h)}
+.btn-submit{background:var(--teal);color:#fff;border:none;border-radius:var(--r8);padding:9px 24px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px}
+
+/* ── STATUS CHIPS ── */
+.status-chip{display:inline-flex;align-items:center;font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:20px}
+.st-approved{background:var(--teal-bg);color:var(--teal-t)}
+.st-pending{background:var(--amber-bg);color:var(--amber-t)}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%);background:var(--navy-h);color:#fff;font-size:12.5px;padding:8px 16px;border-radius:20px;display:flex;align-items:center;gap:6px;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap;z-index:200}
+.toast.show{opacity:1}
+
+/* Page panels */
+.page-panel{display:none}
+.page-panel.active{display:block}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="form-header">
+  <div class="fh-left">
+    <div class="fh-logo">
+      <div class="fh-logo-mark">CW</div>
+      <span class="fh-product">Performance Center</span>
+    </div>
+    <div class="fh-divider"></div>
+    <span class="fh-title">Self-Assessment</span>
+  </div>
+  <div class="fh-right">
+    <span class="fh-cycle"><i class="ti ti-refresh" style="font-size:11px"></i> Mid Year Review 2026</span>
+    <span class="fh-save" id="saveStatus"><i class="ti ti-check"></i> Saved</span>
+  </div>
+</header>
+
+<!-- PROGRESS STRIP -->
+<nav class="progress-strip">
+  <div class="ps-step">
+    <button class="ps-btn active" onclick="goTo(0,this)">
+      <span class="ps-dot ps-dot-active" id="dot0">1</span>
+      Goals
+    </button>
+  </div>
+  <i class="ti ti-chevron-right ps-chevron"></i>
+  <div class="ps-step">
+    <button class="ps-btn" onclick="goTo(1,this)">
+      <span class="ps-dot ps-dot-todo" id="dot1">2</span>
+      Evidence
+    </button>
+  </div>
+  <i class="ti ti-chevron-right ps-chevron"></i>
+  <div class="ps-step">
+    <button class="ps-btn" onclick="goTo(2,this)">
+      <span class="ps-dot ps-dot-todo" id="dot2">3</span>
+      Focus areas
+    </button>
+  </div>
+  <i class="ti ti-chevron-right ps-chevron"></i>
+  <div class="ps-step">
+    <button class="ps-btn" onclick="goTo(3,this)">
+      <span class="ps-dot ps-dot-todo" id="dot3">4</span>
+      Recognition
+    </button>
+  </div>
+  <i class="ti ti-chevron-right ps-chevron"></i>
+  <div class="ps-step">
+    <button class="ps-btn" onclick="goTo(4,this)">
+      <span class="ps-dot ps-dot-todo" id="dot4">5</span>
+      Overall
+    </button>
+  </div>
+</nav>
+
+<!-- BODY -->
+<div class="form-body">
+<div class="form-main">
+
+<!-- ══ PAGE 0 — GOALS ══ -->
+<div class="page-panel active" id="page0">
+
+  <div class="section-card">
+    <div class="sc-header">
+      <div class="sc-icon" style="background:var(--teal-bg)"><i class="ti ti-target" style="color:var(--teal-t)"></i></div>
+      <div class="sc-titles">
+        <div class="sc-title">Your goals this period</div>
+        <div class="sc-sub">Confirm each goal's progress. Tick it if the status shown is accurate — add a note if you want to give context your reviewer won't see in the numbers.</div>
+      </div>
+      <div class="weight-tip-wrap">
+        <div class="sc-weight-badge">
+          Goals <span style="opacity:.6;margin:0 3px">·</span> 25%
+          <i class="ti ti-info-circle wt-info-icon"></i>
+        </div>
+        <div class="weight-tip">Goals count for <strong>25%</strong> of your overall score. Your progress percentage and reviewer's rating of each goal both feed into this component. Confirming a goal doesn't change the score — it tells your reviewer the data shown is accurate.</div>
+      </div>
+    </div>
+    <div class="sc-body">
+      <div class="goal-list">
+
+        <div class="goal-item confirmed" id="goal1" onclick="toggleGoal('goal1')">
+          <div class="gi-top">
+            <div class="gi-title">Close Essen Healthcare deal</div>
+            <div class="gi-confirm-btn"><i class="ti ti-check"></i></div>
+          </div>
+          <div class="gi-meta">
+            <div class="gi-prog-bar"><div class="gi-prog-fill" style="width:100%;background:var(--teal)"></div></div>
+            <span class="gi-pct" style="color:var(--teal)">100%</span>
+            <span class="fw-chip fw-smart">SMART</span>
+            <span class="fw-chip fw-okr">OKR</span>
+          </div>
+          <div class="gi-note" onclick="event.stopPropagation()">
+            <textarea placeholder="Add context for your reviewer… (optional)">Closed June 30 — ahead of the Q3 original timeline. Handled discovery, negotiation, and sign-off.</textarea>
+          </div>
+        </div>
+
+        <div class="goal-item" id="goal2" onclick="toggleGoal('goal2')">
+          <div class="gi-top">
+            <div class="gi-title">Reach $1M in new sales revenue</div>
+            <div class="gi-confirm-btn"><i class="ti ti-check"></i></div>
+          </div>
+          <div class="gi-meta">
+            <div class="gi-prog-bar"><div class="gi-prog-fill" style="width:75%;background:var(--navy-mid)"></div></div>
+            <span class="gi-pct">75% — $750K</span>
+            <span class="fw-chip fw-smart">SMART</span>
+            <span class="fw-chip fw-okr">OKR</span>
+          </div>
+          <div class="gi-note" onclick="event.stopPropagation()">
+            <textarea placeholder="Add context for your reviewer… (optional)"></textarea>
+          </div>
+        </div>
+
+        <div class="goal-item" id="goal3" onclick="toggleGoal('goal3')">
+          <div class="gi-top">
+            <div class="gi-title">Mentor 2 junior consultants through their first enterprise deal</div>
+            <div class="gi-confirm-btn"><i class="ti ti-check"></i></div>
+          </div>
+          <div class="gi-meta">
+            <div class="gi-prog-bar"><div class="gi-prog-fill" style="width:60%;background:var(--amber)"></div></div>
+            <span class="gi-pct" style="color:var(--amber)">60%</span>
+            <span class="fw-chip fw-woop">WOOP</span>
+          </div>
+          <div class="gi-note" onclick="event.stopPropagation()">
+            <textarea placeholder="Add context for your reviewer… (optional)"></textarea>
+          </div>
+        </div>
+
+        <div class="goal-item" id="goal4" onclick="toggleGoal('goal4')">
+          <div class="gi-top">
+            <div class="gi-title">Complete NetSuite ERP Consultant certification</div>
+            <div class="gi-confirm-btn"><i class="ti ti-check"></i></div>
+          </div>
+          <div class="gi-meta">
+            <div class="gi-prog-bar"><div class="gi-prog-fill" style="width:100%;background:var(--teal)"></div></div>
+            <span class="gi-pct" style="color:var(--teal)">Done</span>
+            <span class="fw-chip fw-smart">SMART</span>
+          </div>
+          <div class="gi-note" onclick="event.stopPropagation()">
+            <textarea placeholder="Add context for your reviewer… (optional)"></textarea>
+          </div>
+        </div>
+
+      </div>
+
+      <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+        <div style="font-size:12px;color:var(--t3);display:flex;align-items:center;gap:5px"><i class="ti ti-info-circle" style="font-size:13px"></i>Check a goal to confirm its progress is accurate. Your reviewer sees both the data and your notes.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ PAGE 1 — EVIDENCE ══ -->
+<div class="page-panel" id="page1">
+
+  <div class="section-card">
+    <div class="sc-header">
+      <div class="sc-icon" style="background:var(--blue-bg)"><i class="ti ti-folder" style="color:var(--blue-t)"></i></div>
+      <div class="sc-titles">
+        <div class="sc-title">Evidence locker</div>
+        <div class="sc-sub">Select the items you want to include in this review. Only HR-approved items can be included. Your reviewer will see these alongside your assessment.</div>
+      </div>
+      <div class="weight-tip-wrap">
+        <div class="sc-weight-badge">
+          Evidence <span style="opacity:.6;margin:0 3px">·</span> 10%
+          <i class="ti ti-info-circle wt-info-icon"></i>
+        </div>
+        <div class="weight-tip">Evidence counts for <strong>10%</strong> of your overall score. Your reviewer approves or rejects each item you include. Approved items contribute to your evidence component. More strong evidence is always better than fewer items.</div>
+      </div>
+    </div>
+    <div class="sc-body">
+      <div class="ev-list">
+
+        <div class="ev-item selected" onclick="toggleEv(this)">
+          <div class="ev-icon" style="background:var(--amber-bg)"><i class="ti ti-certificate" style="color:var(--amber)"></i></div>
+          <div class="ev-body">
+            <div class="ev-title">NetSuite ERP Consultant Certification — SuiteFoundation</div>
+            <div class="ev-meta"><span class="status-chip st-approved">Approved</span><span>· May 14, 2026</span><span>· Certification</span></div>
+          </div>
+          <div class="ev-check"><i class="ti ti-check"></i></div>
+        </div>
+
+        <div class="ev-item selected" onclick="toggleEv(this)">
+          <div class="ev-icon" style="background:#fce7f3"><i class="ti ti-award" style="color:#9d174d"></i></div>
+          <div class="ev-body">
+            <div class="ev-title">Commendation — Essen Healthcare deal close</div>
+            <div class="ev-meta"><span class="status-chip st-approved">Approved</span><span>· Jul 2, 2026</span><span>· From: Christopher Kim</span></div>
+          </div>
+          <div class="ev-check"><i class="ti ti-check"></i></div>
+        </div>
+
+        <div class="ev-item selected" onclick="toggleEv(this)">
+          <div class="ev-icon" style="background:var(--teal-bg)"><i class="ti ti-link" style="color:var(--teal-t)"></i></div>
+          <div class="ev-body">
+            <div class="ev-title">Signed SOW — Essen Healthcare June 2026</div>
+            <div class="ev-meta"><span class="status-chip st-approved">Approved</span><span>· Jun 30, 2026</span><span>· URL link</span></div>
+          </div>
+          <div class="ev-check"><i class="ti ti-check"></i></div>
+        </div>
+
+        <div class="ev-item" onclick="toggleEv(this)" style="opacity:.6">
+          <div class="ev-icon" style="background:var(--blue-bg)"><i class="ti ti-school" style="color:var(--blue-t)"></i></div>
+          <div class="ev-body">
+            <div class="ev-title">Skill Development — Client presentation technique coaching</div>
+            <div class="ev-meta"><span class="status-chip st-pending">Pending HR review</span><span>· Jun 15, 2026</span></div>
+          </div>
+          <div class="ev-check"><i class="ti ti-check"></i></div>
+        </div>
+
+        <button class="ev-add-btn" onclick="showToast('Opening evidence locker…')">
+          <i class="ti ti-plus"></i> Add more evidence from your locker
+        </button>
+      </div>
+
+      <div style="margin-top:12px;font-size:12px;color:var(--t3);display:flex;align-items:center;gap:5px"><i class="ti ti-info-circle" style="font-size:13px"></i>Items pending HR review can't be included yet. You selected <strong id="evCount" style="color:var(--t1)">3 of 3</strong> approved items.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ PAGE 2 — FOCUS AREAS ══ -->
+<div class="page-panel" id="page2">
+
+  <div class="section-card">
+    <div class="sc-header">
+      <div class="sc-icon" style="background:var(--purple-bg)"><i class="ti ti-chart-radar" style="color:var(--purple-t)"></i></div>
+      <div class="sc-titles">
+        <div class="sc-title">Rate yourself on each focus area</div>
+        <div class="sc-sub">Be honest — this is your view, not your manager's. Your reviewer will see both scores side by side. You don't need to justify every rating but adding a note helps.</div>
+      </div>
+      <div class="weight-tip-wrap">
+        <div class="sc-weight-badge">
+          Questions <span style="opacity:.6;margin:0 3px">·</span> 50%
+          <i class="ti ti-info-circle wt-info-icon"></i>
+        </div>
+        <div class="weight-tip">Focus area ratings count for <strong>50%</strong> of your overall score — the largest component. Your self-rating is shown alongside your reviewer's rating for context, but only your reviewer's score counts toward the final result.</div>
+      </div>
+    </div>
+    <div class="sc-body">
+      <div class="rating-areas">
+
+        <div class="rating-row">
+          <div class="ra-label">
+            <div class="ra-name">Client delivery</div>
+            <div class="ra-desc">Quality and outcome of client-facing work this period</div>
+          </div>
+          <div class="ra-stars" id="stars-0">
+            <button class="star-btn lit" onclick="setStar(0,1)">★</button>
+            <button class="star-btn lit" onclick="setStar(0,2)">★</button>
+            <button class="star-btn lit" onclick="setStar(0,3)">★</button>
+            <button class="star-btn lit" onclick="setStar(0,4)">★</button>
+            <button class="star-btn" onclick="setStar(0,5)">★</button>
+          </div>
+          <span class="ra-score" id="score-0">4</span>
+        </div>
+
+        <div class="rating-row">
+          <div class="ra-label">
+            <div class="ra-name">Collaboration</div>
+            <div class="ra-desc">Working effectively with teammates, sharing knowledge, supporting others</div>
+          </div>
+          <div class="ra-stars" id="stars-1">
+            <button class="star-btn lit" onclick="setStar(1,1)">★</button>
+            <button class="star-btn lit" onclick="setStar(1,2)">★</button>
+            <button class="star-btn lit" onclick="setStar(1,3)">★</button>
+            <button class="star-btn" onclick="setStar(1,4)">★</button>
+            <button class="star-btn" onclick="setStar(1,5)">★</button>
+          </div>
+          <span class="ra-score" id="score-1">3</span>
+        </div>
+
+        <div class="rating-row">
+          <div class="ra-label">
+            <div class="ra-name">Growth and development</div>
+            <div class="ra-desc">Learning new skills, pursuing certifications, growing your expertise</div>
+          </div>
+          <div class="ra-stars" id="stars-2">
+            <button class="star-btn lit" onclick="setStar(2,1)">★</button>
+            <button class="star-btn lit" onclick="setStar(2,2)">★</button>
+            <button class="star-btn lit" onclick="setStar(2,3)">★</button>
+            <button class="star-btn lit" onclick="setStar(2,4)">★</button>
+            <button class="star-btn lit" onclick="setStar(2,5)">★</button>
+          </div>
+          <span class="ra-score" id="score-2">5</span>
+        </div>
+
+        <div class="rating-row">
+          <div class="ra-label">
+            <div class="ra-name">Communication</div>
+            <div class="ra-desc">Clarity, responsiveness, and quality of written and spoken communication</div>
+          </div>
+          <div class="ra-stars" id="stars-3">
+            <button class="star-btn lit" onclick="setStar(3,1)">★</button>
+            <button class="star-btn lit" onclick="setStar(3,2)">★</button>
+            <button class="star-btn lit" onclick="setStar(3,3)">★</button>
+            <button class="star-btn lit" onclick="setStar(3,4)">★</button>
+            <button class="star-btn" onclick="setStar(3,5)">★</button>
+          </div>
+          <span class="ra-score" id="score-3">4</span>
+        </div>
+
+      </div>
+      <div style="margin-top:14px;font-size:12px;color:var(--t3)">1 = needs significant work · 3 = meeting expectations · 5 = exceptional. Your reviewer rates separately — the two scores will be shown side by side.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ PAGE 3 — RECOGNITION ══ -->
+<div class="page-panel" id="page3">
+
+  <div class="section-card">
+    <div class="sc-header">
+      <div class="sc-icon" style="background:var(--amber-bg)"><i class="ti ti-star" style="color:var(--amber)"></i></div>
+      <div class="sc-titles">
+        <div class="sc-title">Recognition this period</div>
+        <div class="sc-sub">Recognition you received and gave this cycle. Your reviewer can see this automatically — this section just lets you add a note about what it means for your performance story.</div>
+      </div>
+      <div class="weight-tip-wrap">
+        <div class="sc-weight-badge">
+          Recognition <span style="opacity:.6;margin:0 3px">·</span> 15%
+          <i class="ti ti-info-circle wt-info-icon"></i>
+        </div>
+        <div class="weight-tip">Recognition counts for <strong>15%</strong> of your overall score. Volume, variety of senders, and attached goals all influence this component. Giving recognition also counts — it signals engagement with your team.</div>
+      </div>
+    </div>
+    <div class="sc-body">
+
+      <div style="font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px">Received — 14 recognitions this cycle</div>
+      <div class="rec-list">
+        <div class="rec-item">
+          <div class="rec-av" style="background:var(--blue-bg);color:var(--blue-t)">CK</div>
+          <div class="rec-body">
+            <div class="rec-from">Christopher Kim · Jul 2</div>
+            <div class="rec-msg">Ring ring — welcome Essen to the NetDynamic family. Best deal close of the quarter.</div>
+            <span class="rec-badge">Client Focus</span>
+          </div>
+        </div>
+        <div class="rec-item">
+          <div class="rec-av" style="background:var(--teal-bg);color:var(--teal-t)">MH</div>
+          <div class="rec-body">
+            <div class="rec-from">Mary Higgins · Jun 30</div>
+            <div class="rec-msg">Drove the Essen deal from first call to signed contract — incredible follow-through.</div>
+            <span class="rec-badge">Going above and beyond</span>
+          </div>
+        </div>
+        <div class="rec-item">
+          <div class="rec-av" style="background:var(--purple-bg);color:var(--purple-t)">AS</div>
+          <div class="rec-body">
+            <div class="rec-from">Aiden Somerhalder · Jun 20</div>
+            <div class="rec-msg">Best discovery call process I've seen on an enterprise deal. Learned a lot watching.</div>
+            <span class="rec-badge">Teamwork</span>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--navy-mid);cursor:pointer;margin-top:4px;display:flex;align-items:center;gap:4px">
+          <i class="ti ti-chevron-down" style="font-size:12px"></i>Show 11 more
+        </div>
+      </div>
+
+      <div style="margin-top:16px;margin-bottom:8px;font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.04em">Anything to add about what drove this recognition?</div>
+      <div class="comment-wrap">
+        <textarea placeholder="Optionally explain the context behind the recognition you received or gave — what specific work or behaviours contributed to this? (optional)" style="min-height:80px"></textarea>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ PAGE 4 — OVERALL ══ -->
+<div class="page-panel" id="page4">
+
+  <div class="section-card">
+    <div class="sc-header">
+      <div class="sc-icon" style="background:var(--navy);opacity:.9"><i class="ti ti-writing" style="color:#fff"></i></div>
+      <div class="sc-titles">
+        <div class="sc-title">Overall reflection</div>
+        <div class="sc-sub">One place to say anything that isn't captured by goals, evidence, or ratings. What were you proudest of? What would you do differently? What do you need to do your best work?</div>
+      </div>
+    </div>
+    <div class="sc-body">
+
+      <div class="comment-prompts">
+        <span style="font-size:12px;color:var(--t2);margin-right:4px;align-self:center">Quick prompts:</span>
+        <button class="cp-btn" onclick="setPrompt('biggest-win')">Biggest win</button>
+        <button class="cp-btn" onclick="setPrompt('did-differently')">What I'd do differently</button>
+        <button class="cp-btn" onclick="setPrompt('need-next')">What I need next</button>
+        <button class="cp-btn" onclick="setPrompt('proud-of')">Most proud of</button>
+      </div>
+
+      <div class="comment-wrap">
+        <textarea id="overallComment" placeholder="Write your overall self-assessment here… There's no minimum length — say what's useful, not what fills space." oninput="updateCharCount()" style="min-height:160px"></textarea>
+        <div class="char-count" id="charCount">0 characters</div>
+      </div>
+
+      <!-- Confirm checkboxes -->
+      <div style="margin-top:20px;display:flex;flex-direction:column;gap:10px;padding:16px;background:#f7f8fa;border-radius:var(--r12);border:1px solid var(--border)">
+        <div style="font-size:12px;font-weight:600;color:var(--t1);margin-bottom:4px">Before you submit</div>
+        <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:var(--t2)">
+          <input type="checkbox" id="check1" style="margin-top:2px;accent-color:var(--navy)"/>
+          I've reviewed my goals and the progress shown is accurate
+        </label>
+        <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:var(--t2)">
+          <input type="checkbox" id="check2" style="margin-top:2px;accent-color:var(--navy)"/>
+          I've selected the evidence I want my reviewer to consider
+        </label>
+        <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:var(--t2)">
+          <input type="checkbox" id="check3" style="margin-top:2px;accent-color:var(--navy)"/>
+          I understand this self-assessment is shared with my reviewer and HR — it cannot be edited after submission
+        </label>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+</div><!-- /.form-main -->
+
+<!-- ── SIDEBAR ── -->
+<aside class="form-sidebar">
+
+  <!-- Completion ring -->
+  <div class="sidebar-card">
+    <div class="sbc-title">Your progress</div>
+    <div class="completion-ring-wrap">
+      <div class="completion-ring">
+        <svg class="cring-svg" viewBox="0 0 88 88">
+          <circle class="cring-track" cx="44" cy="44" r="39"/>
+          <circle class="cring-fill" cx="44" cy="44" r="39" id="ringFill"/>
+        </svg>
+        <div class="cring-label">
+          <span class="cring-pct" id="ringPct">20%</span>
+          <span class="cring-sub">done</span>
+        </div>
+      </div>
+    </div>
+    <div class="section-checklist">
+      <div class="sc-item active-item" id="check-goals"><i class="ti ti-circle-dot"></i>Goals</div>
+      <div class="sc-item" id="check-evidence"><i class="ti ti-circle"></i>Evidence</div>
+      <div class="sc-item" id="check-focus"><i class="ti ti-circle"></i>Focus areas</div>
+      <div class="sc-item" id="check-rec"><i class="ti ti-circle"></i>Recognition</div>
+      <div class="sc-item" id="check-overall"><i class="ti ti-circle"></i>Overall</div>
+    </div>
+  </div>
+
+  <!-- Deadline -->
+  <div class="sidebar-card">
+    <div class="sbc-title">Deadline</div>
+    <div class="deadline-row">
+      <span class="deadline-label">Due in</span>
+      <span class="deadline-date">5 days — Jun 30</span>
+    </div>
+    <div class="deadline-bar"><div class="deadline-fill"></div></div>
+    <div style="font-size:11.5px;color:var(--t3);margin-top:8px">Cycle closes Jun 30. Submit before then or your review will be auto-submitted with zeros for unanswered sections.</div>
+  </div>
+
+  <!-- Last cycle score -->
+  <div class="sidebar-card">
+    <div class="sbc-title">Your last review</div>
+    <div class="score-ctx">
+      <div class="score-num">72%</div>
+      <div class="score-detail">
+        <div class="score-label">Overall score</div>
+        <div class="score-cycle">Annual Review 2025</div>
+      </div>
+    </div>
+    <div style="font-size:11.5px;color:var(--t3);margin-top:10px">Shown for your reference only. Your reviewer does not see this during the review.</div>
+  </div>
+
+  <!-- Cat tip -->
+  <div class="sidebar-card" style="border-style:dashed;background:#fefefe">
+    <div style="display:flex;gap:10px;align-items:flex-start">
+      <svg class="cat-svg" style="width:44px;height:44px;flex-shrink:0" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <!-- Body -->
+        <ellipse cx="50" cy="68" rx="28" ry="22" fill="#f97316"/>
+        <!-- Head -->
+        <circle cx="50" cy="42" r="22" fill="#f97316"/>
+        <!-- Ears -->
+        <polygon points="32,26 26,10 40,22" fill="#f97316"/>
+        <polygon points="68,26 74,10 60,22" fill="#f97316"/>
+        <!-- Inner ears -->
+        <polygon points="33,24 28,14 39,22" fill="#fcd9c0"/>
+        <polygon points="67,24 72,14 61,22" fill="#fcd9c0"/>
+        <!-- Face -->
+        <circle cx="43" cy="41" r="3.5" fill="#1a2332"/>
+        <circle cx="57" cy="41" r="3.5" fill="#1a2332"/>
+        <circle cx="44.5" cy="39.5" r="1.2" fill="white"/>
+        <circle cx="58.5" cy="39.5" r="1.2" fill="white"/>
+        <!-- Nose -->
+        <ellipse cx="50" cy="47" rx="2.5" ry="1.8" fill="#e879a0"/>
+        <!-- Mouth -->
+        <path d="M47,49 Q50,52 53,49" fill="none" stroke="#1a2332" stroke-width="1.2" stroke-linecap="round"/>
+        <!-- Whiskers -->
+        <line x1="28" y1="46" x2="44" y2="47" stroke="#1a2332" stroke-width="1" opacity=".5"/>
+        <line x1="28" y1="49" x2="44" y2="49" stroke="#1a2332" stroke-width="1" opacity=".5"/>
+        <line x1="56" y1="47" x2="72" y2="46" stroke="#1a2332" stroke-width="1" opacity=".5"/>
+        <line x1="56" y1="49" x2="72" y2="49" stroke="#1a2332" stroke-width="1" opacity=".5"/>
+        <!-- Tail -->
+        <path d="M78,70 Q95,55 90,80" fill="none" stroke="#f97316" stroke-width="7" stroke-linecap="round"/>
+        <!-- Stripes -->
+        <path d="M44,22 Q50,18 56,22" fill="none" stroke="#ea580c" stroke-width="2" opacity=".6"/>
+        <path d="M40,30 Q50,26 60,30" fill="none" stroke="#ea580c" stroke-width="1.5" opacity=".4"/>
+      </svg>
+      <div>
+        <div style="font-size:12.5px;font-weight:600;color:var(--t1);margin-bottom:4px">One tip</div>
+        <div style="font-size:12px;color:var(--t2);line-height:1.5">Say what's true, not what sounds impressive. Reviewers notice when self-assessments are disconnected from the data — and it works against you.</div>
+      </div>
+    </div>
+  </div>
+
+</aside>
+</div>
+
+<!-- BOTTOM BAR -->
+<div class="form-bottom">
+  <div class="fb-left" id="fbLeft">Step 1 of 5 — Goals</div>
+  <div class="fb-right">
+    <button class="btn-back" id="btnBack" onclick="prevPage()" style="display:none"><i class="ti ti-arrow-left" style="font-size:13px"></i> Back</button>
+    <button class="btn-next" id="btnNext" onclick="nextPage()">Continue <i class="ti ti-arrow-right" style="font-size:13px"></i></button>
+    <button class="btn-submit" id="btnSubmit" style="display:none" onclick="submitForm()"><i class="ti ti-send" style="font-size:13px"></i> Submit self-assessment</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><i class="ti ti-check" style="font-size:13px"></i> <span id="toastMsg">Saved</span></div>
+
+<script>
+let currentPage = 0;
+const totalPages = 5;
+const stepNames = ['Goals','Evidence','Focus areas','Recognition','Overall'];
+const stepLabels = ['Step 1 of 5 — Goals','Step 2 of 5 — Evidence','Step 3 of 5 — Focus areas','Step 4 of 5 — Recognition','Step 5 of 5 — Overall reflection'];
+const sideChecks = ['check-goals','check-evidence','check-focus','check-rec','check-overall'];
+const dots = ['dot0','dot1','dot2','dot3','dot4'];
+const psBtns = document.querySelectorAll('.ps-btn');
+const ringOffsets = [196, 147, 98, 49, 0]; // dashoffset for 0%,20%,40%,60%,80%,100%
+const ringPcts = ['0%','20%','40%','60%','80%','100%'];
+
+function goTo(idx, btn) {
+  // allow navigation to completed or current
+  document.querySelectorAll('.page-panel').forEach((p,i) => p.classList.toggle('active', i===idx));
+  currentPage = idx;
+  updateUI();
+}
+
+function nextPage() {
+  if(currentPage < totalPages-1) {
+    markDone(currentPage);
+    currentPage++;
+    document.querySelectorAll('.page-panel').forEach((p,i) => p.classList.toggle('active', i===currentPage));
+    updateUI();
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+}
+
+function prevPage() {
+  if(currentPage > 0) {
+    currentPage--;
+    document.querySelectorAll('.page-panel').forEach((p,i) => p.classList.toggle('active', i===currentPage));
+    updateUI();
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+}
+
+function markDone(idx) {
+  const dot = document.getElementById(dots[idx]);
+  dot.innerHTML = '<i class="ti ti-check" style="font-size:11px"></i>';
+  dot.className = 'ps-dot ps-dot-done';
+  psBtns[idx].className = 'ps-btn done';
+  const sc = document.getElementById(sideChecks[idx]);
+  sc.innerHTML = '<i class="ti ti-circle-check"></i>' + stepNames[idx];
+  sc.className = 'sc-item done-item';
+}
+
+function updateUI() {
+  // progress strip
+  psBtns.forEach((b,i) => {
+    if(i === currentPage) b.classList.add('active');
+    else b.classList.remove('active');
+  });
+  const activeDot = document.getElementById(dots[currentPage]);
+  if(!activeDot.classList.contains('ps-dot-done')) {
+    activeDot.className = 'ps-dot ps-dot-active';
+    activeDot.textContent = currentPage+1;
+    psBtns[currentPage].className = 'ps-btn active';
+  }
+  // sidebar check
+  sideChecks.forEach((id,i) => {
+    const el = document.getElementById(id);
+    if(!el.classList.contains('done-item')) {
+      el.className = i===currentPage ? 'sc-item active-item' : 'sc-item';
+      el.innerHTML = (i===currentPage?'<i class="ti ti-circle-dot"></i>':'<i class="ti ti-circle"></i>') + stepNames[i];
+    }
+  });
+  // ring — pages done = currentPage (if moving forward)
+  const pct = Math.round((currentPage/totalPages)*100);
+  document.getElementById('ringFill').style.strokeDashoffset = 245 - (245*(currentPage/totalPages));
+  document.getElementById('ringPct').textContent = pct+'%';
+  // bottom bar
+  document.getElementById('fbLeft').textContent = stepLabels[currentPage];
+  document.getElementById('btnBack').style.display = currentPage>0?'':'none';
+  document.getElementById('btnNext').style.display = currentPage<totalPages-1?'':'none';
+  document.getElementById('btnSubmit').style.display = currentPage===totalPages-1?'':'none';
+  // autosave indicator
+  triggerSave();
+}
+
+function triggerSave() {
+  const el = document.getElementById('saveStatus');
+  el.innerHTML = '<i class="ti ti-loader-2" style="animation:spin .8s linear infinite"></i> Saving…';
+  setTimeout(() => {el.innerHTML = '<i class="ti ti-check"></i> Saved';}, 800);
+}
+
+// Inject spin animation
+const style = document.createElement('style');
+style.textContent = '@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}';
+document.head.appendChild(style);
+
+function toggleGoal(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('confirmed');
+  triggerSave();
+}
+
+function toggleEv(el) {
+  if(el.style.opacity === '0.6') return; // pending items not selectable
+  el.classList.toggle('selected');
+  const count = document.querySelectorAll('.ev-item.selected').length;
+  document.getElementById('evCount').textContent = count+' of 3';
+  triggerSave();
+}
+
+const starScores = [4,3,5,4];
+function setStar(area, rating) {
+  starScores[area] = rating;
+  const container = document.getElementById('stars-'+area);
+  const btns = container.querySelectorAll('.star-btn');
+  btns.forEach((b,i) => b.classList.toggle('lit', i<rating));
+  document.getElementById('score-'+area).textContent = rating;
+  triggerSave();
+}
+
+function updateCharCount() {
+  const len = document.getElementById('overallComment').value.length;
+  document.getElementById('charCount').textContent = len+' characters';
+}
+
+const prompts = {
+  'biggest-win': 'The result I\'m most proud of this period is ',
+  'did-differently': 'Looking back, one thing I\'d approach differently is ',
+  'need-next': 'To do my best work next period, I need ',
+  'proud-of': 'I\'m particularly proud of the way I '
+};
+function setPrompt(key) {
+  const ta = document.getElementById('overallComment');
+  if(!ta.value) ta.value = prompts[key];
+  else ta.value += '\n\n' + prompts[key];
+  ta.focus();
+  updateCharCount();
+}
+
+function showToast(msg) {
+  document.getElementById('toastMsg').textContent = msg;
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function submitForm() {
+  const c1 = document.getElementById('check1').checked;
+  const c2 = document.getElementById('check2').checked;
+  const c3 = document.getElementById('check3').checked;
+  if(!c1||!c2||!c3){showToast('Please check all three boxes before submitting.');return;}
+  showToast('Submitting your self-assessment…');
+  setTimeout(() => {
+    document.querySelector('.form-main').innerHTML = `
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;text-align:center;gap:16px">
+        <svg viewBox="0 0 100 100" width="80" height="80" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="50" cy="68" rx="28" ry="22" fill="#f97316"/>
+          <circle cx="50" cy="42" r="22" fill="#f97316"/>
+          <polygon points="32,26 26,10 40,22" fill="#f97316"/>
+          <polygon points="68,26 74,10 60,22" fill="#f97316"/>
+          <polygon points="33,24 28,14 39,22" fill="#fcd9c0"/>
+          <polygon points="67,24 72,14 61,22" fill="#fcd9c0"/>
+          <circle cx="43" cy="41" r="3.5" fill="#1a2332"/>
+          <circle cx="57" cy="41" r="3.5" fill="#1a2332"/>
+          <circle cx="44.5" cy="39.5" r="1.2" fill="white"/>
+          <circle cx="58.5" cy="39.5" r="1.2" fill="white"/>
+          <ellipse cx="50" cy="47" rx="2.5" ry="1.8" fill="#e879a0"/>
+          <path d="M47,49 Q50,52 53,49" fill="none" stroke="#1a2332" stroke-width="1.2" stroke-linecap="round"/>
+          <line x1="28" y1="46" x2="44" y2="47" stroke="#1a2332" stroke-width="1" opacity=".5"/>
+          <line x1="56" y1="47" x2="72" y2="46" stroke="#1a2332" stroke-width="1" opacity=".5"/>
+          <path d="M78,70 Q95,55 90,80" fill="none" stroke="#f97316" stroke-width="7" stroke-linecap="round"/>
+          <circle cx="50" cy="78" r="10" fill="#16a34a"/>
+          <path d="M45,78 L48.5,82 L56,74" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div style="font-size:20px;font-weight:700;color:var(--t1)">Self-assessment submitted</div>
+        <div style="font-size:14px;color:var(--t2);max-width:380px;line-height:1.6">Your reviewer has been notified. You'll be able to see your results when the cycle closes and HR releases them. Good work getting it done.</div>
+        <a href="#" style="margin-top:8px;font-size:13px;color:var(--navy-mid);text-decoration:none;display:flex;align-items:center;gap:4px"><i class="ti ti-arrow-left" style="font-size:13px"></i> Back to Performance Center</a>
+      </div>`;
+    document.querySelector('.form-bottom').style.display='none';
+  }, 1200);
+}
+</script>
+</body>
+</html>
