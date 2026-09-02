@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Review Cycles — Performance Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1a2332;--navy-h:#223044;--navy-mid:#2d4a7a;
+  --page:#f0f2f5;--surface:#fff;--border:#e2e5ea;--border-mid:#c8cdd6;
+  --t1:#0f1923;--t2:#5a6473;--t3:#8e97a3;
+  --teal-bg:#e1f5ee;--teal-t:#0f6e56;
+  --blue-bg:#e6f1fb;--blue-t:#185fa5;
+  --purple-bg:#eeedfe;--purple-t:#3c3489;
+  --amber-bg:#faeeda;--amber-t:#633806;
+  --red:#e8002d;--red-bg:#fde8ec;--red-t:#a51633;
+  --orange-bg:#fff3e0;--orange-t:#e65100;
+  font-family:'Inter',system-ui,sans-serif;font-size:14px;color:var(--t1);background:var(--page);
+  --rsm:6px;--rmd:8px;--rlg:12px;--rxl:16px;
+}
+*{box-sizing:border-box}
+.shell{display:flex;min-height:100vh}
+.sidebar{width:200px;min-height:100vh;background:var(--navy);display:flex;flex-direction:column;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto}
+.logo-zone{display:flex;flex-direction:column;align-items:center;padding:22px 16px 16px;border-bottom:1px solid rgba(255,255,255,.09);flex-shrink:0}
+.client-logo{width:54px;height:54px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.app-title{font-size:12px;font-weight:600;color:#fff;text-align:center}
+.nav-section{flex:1;padding:10px 0}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 16px;font-size:12.5px;color:rgba(255,255,255,.55);text-decoration:none;transition:background .12s,color .12s}
+.nav-item:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.88)}
+.nav-item.active{background:rgba(255,255,255,.11);color:#fff}
+.nav-item i{font-size:15px;flex-shrink:0}
+.nav-div{height:1px;background:rgba(255,255,255,.08);margin:5px 14px}
+.av-nav{width:26px;height:26px;border-radius:50%;background:var(--navy-mid);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#85b7eb;flex-shrink:0}
+.footer-zone{padding:12px 16px 18px;border-top:1px solid rgba(255,255,255,.09);display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0}
+.powered{font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.06em;text-transform:uppercase}
+.ats-badge{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.07);border-radius:var(--rsm);padding:5px 10px;text-decoration:none}
+.ats-wm{font-size:12px;font-weight:600;color:rgba(255,255,255,.72)}
+.ats-sub{font-size:9px;color:rgba(255,255,255,.38)}
+.main{flex:1;overflow-y:auto;min-width:0;display:flex;flex-direction:column}
+.role-banner{background:var(--navy);padding:10px 24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:2px solid var(--red);flex-shrink:0}
+.role-banner-label{font-size:11px;font-weight:600;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em}
+.role-btns{display:flex;gap:6px}
+.role-btn{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid rgba(255,255,255,.2);background:transparent;color:rgba(255,255,255,.6);font-family:inherit;transition:all .12s}
+.role-btn:hover{background:rgba(255,255,255,.1);color:#fff}
+.role-btn.active{background:#fff;color:var(--navy)}
+.role-badge{margin-left:auto;font-size:11px;color:rgba(255,255,255,.4);font-style:italic}
+.content{padding:24px 28px 56px;flex:1}
+/* Subtabs */
+.subtabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:24px;overflow-x:auto}
+.subtab{padding:10px 18px;font-size:13px;font-weight:500;color:var(--t2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:all .12s;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit}
+.subtab:hover{color:var(--t1)}
+.subtab.active{color:var(--navy);border-bottom-color:var(--navy);font-weight:600}
+.subtab-panel{display:none}
+.subtab-panel.active{display:block}
+.hr-only-badge{font-size:10px;font-weight:600;background:var(--purple-bg);color:var(--purple-t);padding:2px 7px;border-radius:4px;margin-left:6px;vertical-align:middle}
+/* Buttons */
+.btn-p{background:var(--navy);color:#fff;border:none;border-radius:var(--rmd);padding:8px 16px;font-size:12.5px;font-weight:500;cursor:pointer;font-family:inherit;transition:background .12s;white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+.btn-p:hover{background:var(--navy-h)}
+.btn-g{background:transparent;color:var(--t2);border:1px solid var(--border-mid);border-radius:var(--rmd);padding:8px 14px;font-size:12.5px;font-weight:500;cursor:pointer;font-family:inherit;white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+.btn-g:hover{background:#f5f6f8}
+.btn-approve{background:#16a34a;color:#fff;border:none;border-radius:var(--rmd);padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit}
+.btn-reject{background:transparent;color:var(--red-t);border:1px solid #f5c6cc;border-radius:var(--rmd);padding:6px 10px;font-size:12px;cursor:pointer;font-family:inherit}
+.btn-sm{padding:6px 12px;font-size:12px}
+/* Stats */
+.stat-row{display:grid;gap:14px;margin-bottom:20px}
+.s4{grid-template-columns:repeat(4,1fr)}
+.s3{grid-template-columns:repeat(3,1fr)}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:14px 16px}
+.stat-label{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.stat-value{font-size:22px;font-weight:600;color:var(--t1);margin-bottom:2px}
+.stat-sub{font-size:11px;color:var(--t3)}
+/* Cycle cards */
+.cycle-list{display:flex;flex-direction:column;gap:14px;margin-bottom:20px}
+.cycle-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:18px 20px}
+.cycle-card.active-cycle{border-left:4px solid var(--teal-t)}
+.cycle-card.upcoming{border-left:4px solid var(--blue-t)}
+.cycle-card.closed{border-left:4px solid var(--border-mid);opacity:.8}
+.cc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
+.cc-name{font-size:15px;font-weight:600;color:var(--t1);margin-bottom:3px}
+.cc-meta{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--t2)}
+.cc-meta-i{display:flex;align-items:center;gap:4px}
+.cc-meta-i i{font-size:13px;color:var(--t3)}
+.cc-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
+.cc-prog-section{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-bottom:12px}
+.cc-prog-item{display:flex;flex-direction:column;gap:4px}
+.cc-prog-label{font-size:10.5px;color:var(--t3);font-weight:500}
+.cc-prog-bar{height:5px;background:#e8eaed;border-radius:3px;overflow:hidden}
+.cc-prog-fill{height:100%;border-radius:3px}
+.cc-prog-nums{font-size:11px;color:var(--t2);display:flex;justify-content:space-between}
+.cc-actions{display:flex;gap:8px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:500;padding:3px 9px;border-radius:20px}
+.chip-active{background:var(--teal-bg);color:var(--teal-t)}
+.chip-upcoming{background:var(--blue-bg);color:var(--blue-t)}
+.chip-closed{background:#f0f2f5;color:var(--t2)}
+.chip-recurring{background:var(--purple-bg);color:var(--purple-t)}
+.chip-warn{background:var(--amber-bg);color:var(--amber-t)}
+/* Pre-close checklist */
+.checklist-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:18px 20px;margin-bottom:14px}
+.cl-title{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.cl-rows{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.cl-row{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:var(--rmd);border:1px solid var(--border);background:#f7f8fa}
+.cl-row.ok{background:var(--teal-bg);border-color:#b2dfcf}
+.cl-row.warn{background:var(--amber-bg);border-color:#f0c06a}
+.cl-row.block{background:var(--red-bg);border-color:#f5c6cc}
+.cl-icon{font-size:16px;flex-shrink:0}
+.cl-label{flex:1;font-size:12.5px;color:var(--t1)}
+.cl-value{font-size:12px;font-weight:600;color:var(--t2)}
+/* Template cards */
+.template-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.template-row{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:14px 18px;display:flex;align-items:center;gap:14px}
+.template-row.pending-approval{background:#fffbf0;border-color:var(--amber-t)}
+.tr-icon{width:38px;height:38px;border-radius:var(--rmd);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;background:var(--blue-bg)}
+.tr-name{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:2px}
+.tr-meta{font-size:11.5px;color:var(--t2);display:flex;gap:10px;flex-wrap:wrap}
+.tr-actions{display:flex;gap:6px;margin-left:auto;flex-shrink:0;align-items:center}
+/* Focus areas */
+.fa-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.fa-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:16px 18px}
+.fa-name{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:4px}
+.fa-threshold{font-size:11.5px;color:var(--t2);margin-bottom:8px;display:flex;align-items:center;gap:4px}
+.fa-threshold i{font-size:12px;color:var(--t3)}
+.fa-questions{font-size:11px;color:var(--t3);margin-bottom:8px}
+.fa-actions{display:flex;gap:6px}
+.fa-suggest-row{background:var(--amber-bg);border:1px solid #f0c06a;border-radius:var(--rmd);padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:8px}
+/* Manager Groups */
+.mg-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.mg-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:16px 18px}
+.mg-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.mg-name{font-size:13px;font-weight:600;color:var(--t1)}
+.mg-dept{font-size:11.5px;color:var(--t3)}
+.mg-members{display:flex;flex-direction:column;gap:6px}
+.mg-member-row{display:flex;align-items:center;gap:10px;padding:7px 10px;background:#f7f8fa;border-radius:var(--rmd);border:1px solid var(--border)}
+.mg-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0}
+.av-t{background:var(--teal-bg);color:var(--teal-t)}
+.av-b{background:var(--blue-bg);color:var(--blue-t)}
+.av-p{background:var(--purple-bg);color:var(--purple-t)}
+.av-a{background:var(--amber-bg);color:var(--amber-t)}
+.mg-member-name{flex:1;font-size:12.5px;color:var(--t1)}
+.mg-member-role{font-size:11px;color:var(--t3)}
+.mg-weight-badge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;background:var(--purple-bg);color:var(--purple-t)}
+.mg-weight-bar{height:5px;background:#e8eaed;border-radius:3px;overflow:hidden;margin-top:8px}
+.mg-weight-fill{height:100%;border-radius:3px;background:var(--navy-mid);transition:width .3s}
+/* Results config */
+.res-config-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:20px 22px;margin-bottom:16px}
+.rc-title{font-size:14px;font-weight:600;color:var(--t1);margin-bottom:4px}
+.rc-sub{font-size:12px;color:var(--t3);margin-bottom:16px}
+.vis-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.vis-row{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:#f7f8fa;border-radius:var(--rmd);border:1px solid var(--border)}
+.vis-label{font-size:12.5px;color:var(--t1)}
+.toggle{position:relative;width:38px;height:22px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-track{position:absolute;inset:0;border-radius:22px;background:#d0d5dd;cursor:pointer;transition:background .18s}
+.toggle input:checked+.toggle-track{background:var(--navy)}
+.toggle-dot{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .18s;pointer-events:none}
+.toggle input:checked~.toggle-dot{transform:translateX(16px)}
+.release-options{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.release-option{display:flex;align-items:center;gap:10px;padding:11px 14px;border:1.5px solid var(--border-mid);border-radius:var(--rmd);cursor:pointer}
+.release-option.sel{border-color:var(--navy-mid);background:var(--blue-bg)}
+.release-option input[type=radio]{accent-color:var(--navy);width:15px;height:15px;flex-shrink:0}
+.ro-label{font-size:13px;font-weight:500;color:var(--t1)}
+.ro-sub{font-size:11.5px;color:var(--t3);margin-top:1px}
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.form-modal{background:var(--surface);border-radius:var(--rxl);width:760px;max-width:96vw;max-height:92vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.18);padding:28px;transform:translateY(8px);transition:transform .2s}
+.modal-overlay.open .form-modal{transform:translateY(0)}
+.form-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px}
+.form-title{font-size:16px;font-weight:600;color:var(--t1)}
+.form-sub{font-size:12px;color:var(--t2);margin-top:3px}
+.form-close{background:none;border:none;cursor:pointer;color:var(--t3);font-size:22px;line-height:1}
+.bsec{margin-bottom:20px}
+.bsec-title{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid var(--border)}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px}
+.flabel{font-size:11.5px;font-weight:600;color:var(--t3);letter-spacing:.04em;text-transform:uppercase;margin-bottom:5px;display:block}
+.freq{color:var(--red)}
+.finput,.fselect,.ftextarea{width:100%;font-family:inherit;font-size:13px;color:var(--t1);background:var(--surface);border:1px solid var(--border-mid);border-radius:var(--rmd);padding:8px 11px;outline:none;transition:border-color .12s}
+.finput:focus,.fselect:focus,.ftextarea:focus{border-color:var(--navy-mid)}
+.punishment-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f7f8fa;border-radius:var(--rmd);border:1px solid var(--border);margin-bottom:8px}
+.pr-label{font-size:13px;color:var(--t1);flex:1}
+.pr-sub{font-size:11.5px;color:var(--t3);margin-top:2px}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
+.page-row{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;gap:12px;flex-wrap:wrap}
+.sec-lbl{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
+.fselect-inline{font-family:inherit;font-size:12.5px;color:var(--t1);background:var(--surface);border:1px solid var(--border-mid);border-radius:var(--rmd);padding:7px 10px;outline:none}
+.fsearch{font-family:inherit;font-size:12.5px;color:var(--t1);background:var(--surface);border:1px solid var(--border-mid);border-radius:var(--rmd);padding:7px 11px;outline:none;width:200px}
+.fsearch::placeholder{color:var(--t3)}
+.info-note{font-size:12px;color:var(--t3);background:#f7f8fa;border-radius:var(--rmd);padding:10px 14px;display:flex;align-items:center;gap:7px;margin-bottom:14px}
+.info-note i{font-size:14px;flex-shrink:0}
+</style>
+</head>
+<body>
+<div class="shell">
+<aside class="sidebar">
+  <div class="logo-zone">
+    <div class="client-logo"><svg viewBox="0 0 54 54" width="38" height="38"><circle cx="27" cy="27" r="27" fill="#e8002d"/><text x="27" y="32" text-anchor="middle" font-size="11" fill="white" font-weight="700" font-family="Inter,sans-serif">CLIENT</text></svg></div>
+    <div class="app-title">Performance Center</div>
+  </div>
+  <nav class="nav-section">
+    <a href="#" class="nav-item"><div class="av-nav">CK</div><span>My Profile</span></a>
+    <div class="nav-div"></div>
+    <a href="#" class="nav-item"><i class="ti ti-home"></i><span>Overview</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-file-text"></i><span>Reviews</span></a>
+    <div class="nav-div"></div>
+    <a href="#" class="nav-item"><i class="ti ti-target"></i><span>Goals</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-star"></i><span>Recognition</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-address-book"></i><span>Directory</span></a>
+    <div class="nav-div"></div>
+    <a href="#" class="nav-item"><i class="ti ti-speakerphone"></i><span>News</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-file"></i><span>Documents</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-coin"></i><span>Financial</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-video"></i><span>Meetings</span></a>
+    <div class="nav-div"></div>
+    <a href="#" class="nav-item active"><i class="ti ti-refresh"></i><span>Review Cycles</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-settings"></i><span>Configuration</span></a>
+  </nav>
+  <div class="footer-zone">
+    <span class="powered">Powered by</span>
+    <a href="#" class="ats-badge"><div><div class="ats-wm">ATS360</div><div class="ats-sub">by NetDynamic</div></div></a>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="role-banner">
+    <span class="role-banner-label">Previewing as</span>
+    <div class="role-btns">
+      <button class="role-btn" onclick="switchRole('supervisor',this)">Supervisor</button>
+      <button class="role-btn active" onclick="switchRole('hr',this)">HR Admin</button>
+    </div>
+    <span class="role-badge" id="roleBadge">HR Admin — full cycle management</span>
+  </div>
+
+  <div class="content">
+    <div class="page-row">
+      <div><div style="font-size:20px;font-weight:600;color:var(--t1);margin-bottom:2px">Review Cycles</div><div style="font-size:13px;color:var(--t2)" id="pageSubtitle">Manage cycles, templates, focus areas, manager groups, and results configuration.</div></div>
+      <button class="btn-p" id="primaryAction" onclick="openModal('createCycleModal')"><i class="ti ti-plus"></i>New cycle</button>
+    </div>
+
+    <!-- Subtabs -->
+    <div class="subtabs" id="subtabBar">
+      <button class="subtab active" onclick="showTab('overview',this)">Overview</button>
+      <button class="subtab" onclick="showTab('cycles',this)">Cycles</button>
+      <button class="subtab" onclick="showTab('templates',this)">Templates</button>
+      <button class="subtab" onclick="showTab('focus',this)">Focus Areas</button>
+      <button class="subtab hr-tab" onclick="showTab('groups',this)">Manager Groups</button>
+      <button class="subtab hr-tab" onclick="showTab('results',this)">Results Config <span class="hr-only-badge">HR</span></button>
+    </div>
+
+    <!-- ══ OVERVIEW ══ -->
+    <div class="subtab-panel active" id="tab-overview">
+      <div class="stat-row s4">
+        <div class="stat-card"><div class="stat-label">Active cycles</div><div class="stat-value">2</div><div class="stat-sub">Currently running</div></div>
+        <div class="stat-card"><div class="stat-label">Avg submission rate</div><div class="stat-value" style="color:var(--teal-t)">84%</div><div class="stat-sub">Across active cycles</div></div>
+        <div class="stat-card"><div class="stat-label">Overdue reviews</div><div class="stat-value" style="color:var(--red-t)">12</div><div class="stat-sub">Not submitted</div></div>
+        <div class="stat-card"><div class="stat-label">Cycles closing soon</div><div class="stat-value" style="color:var(--amber-t)">1</div><div class="stat-sub">Within 7 days</div></div>
+      </div>
+
+      <!-- Active cycle cards -->
+      <div class="sec-lbl">Active cycles</div>
+      <div class="cycle-list">
+        <div class="cycle-card active-cycle">
+          <div class="cc-top">
+            <div>
+              <div class="cc-name">Mid Year Peer Review 2026</div>
+              <div class="cc-meta">
+                <span class="cc-meta-i"><i class="ti ti-calendar"></i>Jan 1 – Jun 30, 2026</span>
+                <span class="cc-meta-i"><i class="ti ti-users"></i>98 participants</span>
+                <span class="cc-meta-i"><i class="ti ti-file-text"></i>360° Annual Template</span>
+                <span class="chip chip-recurring" style="font-size:10px;padding:1px 6px"><i class="ti ti-refresh" style="font-size:10px"></i>Semi-annual</span>
+              </div>
+            </div>
+            <div class="cc-right">
+              <span class="chip chip-active">Active</span>
+              <span style="font-size:11px;color:var(--red-t);font-weight:600"><i class="ti ti-clock" style="font-size:12px"></i> Closes in 3 days</span>
+            </div>
+          </div>
+          <div class="cc-prog-section">
+            <div class="cc-prog-item">
+              <div class="cc-prog-label">Self-assessments</div>
+              <div class="cc-prog-bar"><div class="cc-prog-fill" style="width:91%;background:var(--teal-t)"></div></div>
+              <div class="cc-prog-nums"><span>89 / 98</span><span style="color:var(--teal-t)">91%</span></div>
+            </div>
+            <div class="cc-prog-item">
+              <div class="cc-prog-label">Manager reviews</div>
+              <div class="cc-prog-bar"><div class="cc-prog-fill" style="width:78%;background:var(--navy-mid)"></div></div>
+              <div class="cc-prog-nums"><span>76 / 98</span><span>78%</span></div>
+            </div>
+            <div class="cc-prog-item">
+              <div class="cc-prog-label">Peer reviews</div>
+              <div class="cc-prog-bar"><div class="cc-prog-fill" style="width:82%;background:var(--purple-t)"></div></div>
+              <div class="cc-prog-nums"><span>80 / 98</span><span>82%</span></div>
+            </div>
+            <div class="cc-prog-item">
+              <div class="cc-prog-label">Overall submitted</div>
+              <div class="cc-prog-bar"><div class="cc-prog-fill" style="width:84%;background:var(--amber-t)"></div></div>
+              <div class="cc-prog-nums"><span>82 / 98</span><span style="color:var(--amber-t)">84%</span></div>
+            </div>
+          </div>
+          <div class="cc-actions">
+            <button class="btn-p btn-sm" onclick="openModal('closeChecklistModal')"><i class="ti ti-lock"></i>Close cycle</button>
+            <button class="btn-g btn-sm"><i class="ti ti-send"></i>Send reminder</button>
+            <button class="btn-g btn-sm"><i class="ti ti-eye"></i>View submissions</button>
+            <button class="btn-g btn-sm"><i class="ti ti-download"></i>Export progress</button>
+          </div>
+        </div>
+
+        <div class="cycle-card active-cycle">
+          <div class="cc-top">
+            <div>
+              <div class="cc-name">Monthly Check-in — July 2026</div>
+              <div class="cc-meta">
+                <span class="cc-meta-i"><i class="ti ti-calendar"></i>Jul 1 – Jul 31, 2026</span>
+                <span class="cc-meta-i"><i class="ti ti-users"></i>45 participants</span>
+                <span class="cc-meta-i"><i class="ti ti-file-text"></i>Monthly Lightweight Template</span>
+                <span class="chip chip-recurring" style="font-size:10px;padding:1px 6px"><i class="ti ti-refresh" style="font-size:10px"></i>Monthly</span>
+              </div>
+            </div>
+            <div class="cc-right">
+              <span class="chip chip-active">Active</span>
+              <span style="font-size:11px;color:var(--t3)">Closes Jul 31</span>
+            </div>
+          </div>
+          <div class="cc-prog-section">
+            <div class="cc-prog-item">
+              <div class="cc-prog-label">Self-assessments</div>
+              <div class="cc-prog-bar"><div class="cc-prog-fill" style="width:62%;background:var(--teal-t)"></div></div>
+              <div class="cc-prog-nums"><span>28 / 45</span><span>62%</span></div>
+            </div>
+            <div class="cc-prog-item">
+              <div class="cc-prog-label">Manager reviews</div>
+              <div class="cc-prog-bar"><div class="cc-prog-fill" style="width:55%;background:var(--navy-mid)"></div></div>
+              <div class="cc-prog-nums"><span>25 / 45</span><span>55%</span></div>
+            </div>
+            <div class="cc-prog-item">
+              <div class="cc-prog-label">Peer reviews</div>
+              <div class="cc-prog-bar"><div class="cc-prog-fill" style="width:0%;background:var(--purple-t)"></div></div>
+              <div class="cc-prog-nums"><span style="color:var(--t3)">Not included</span><span>—</span></div>
+            </div>
+            <div class="cc-prog-item">
+              <div class="cc-prog-label">Overall submitted</div>
+              <div class="cc-prog-bar"><div class="cc-prog-fill" style="width:58%;background:var(--amber-t)"></div></div>
+              <div class="cc-prog-nums"><span>26 / 45</span><span>58%</span></div>
+            </div>
+          </div>
+          <div class="cc-actions">
+            <button class="btn-g btn-sm"><i class="ti ti-send"></i>Send reminder</button>
+            <button class="btn-g btn-sm"><i class="ti ti-eye"></i>View submissions</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Overdue table -->
+      <div class="sec-lbl">Overdue — not submitted <span style="background:var(--red);color:#fff;font-size:10px;padding:1px 6px;border-radius:8px;margin-left:4px">12</span></div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);overflow:hidden;margin-bottom:20px">
+        <table style="width:100%;border-collapse:collapse">
+          <thead><tr><th style="font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;padding:11px 14px;text-align:left;background:#f7f8fa;border-bottom:1px solid var(--border)">Employee</th><th style="font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;padding:11px 14px;text-align:left;background:#f7f8fa;border-bottom:1px solid var(--border)">Cycle</th><th style="font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;padding:11px 14px;text-align:left;background:#f7f8fa;border-bottom:1px solid var(--border)">Missing</th><th style="font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;padding:11px 14px;text-align:left;background:#f7f8fa;border-bottom:1px solid var(--border)">Due</th><th style="font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;padding:11px 14px;text-align:left;background:#f7f8fa;border-bottom:1px solid var(--border)">Actions</th></tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid var(--border)"><td style="padding:11px 14px;font-size:13px"><a href="#" style="color:var(--navy-mid);text-decoration:none;font-weight:500">Bon Ariola</a></td><td style="padding:11px 14px;font-size:12.5px;color:var(--t2)">Mid Year Peer Review</td><td style="padding:11px 14px"><span class="chip chip-warn">Self-assessment</span></td><td style="padding:11px 14px;font-size:12px;color:var(--red-t);font-weight:500">Jun 30 — today</td><td style="padding:11px 14px"><button class="btn-g btn-sm"><i class="ti ti-send"></i>Nudge</button></td></tr>
+            <tr style="border-bottom:1px solid var(--border)"><td style="padding:11px 14px;font-size:13px"><a href="#" style="color:var(--navy-mid);text-decoration:none;font-weight:500">Gabriel Guzman</a></td><td style="padding:11px 14px;font-size:12.5px;color:var(--t2)">Mid Year Peer Review</td><td style="padding:11px 14px"><span class="chip chip-warn">Manager review (×3)</span></td><td style="padding:11px 14px;font-size:12px;color:var(--red-t);font-weight:500">Jun 30 — today</td><td style="padding:11px 14px"><button class="btn-g btn-sm"><i class="ti ti-send"></i>Nudge</button></td></tr>
+            <tr><td style="padding:11px 14px;font-size:13px"><a href="#" style="color:var(--navy-mid);text-decoration:none;font-weight:500">Omar Chacón</a></td><td style="padding:11px 14px;font-size:12.5px;color:var(--t2)">Mid Year Peer Review</td><td style="padding:11px 14px"><span class="chip chip-warn">Peer review (×2)</span></td><td style="padding:11px 14px;font-size:12px;color:var(--red-t);font-weight:500">Jun 30 — today</td><td style="padding:11px 14px"><button class="btn-g btn-sm"><i class="ti ti-send"></i>Nudge</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ CYCLES ══ -->
+    <div class="subtab-panel" id="tab-cycles">
+      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+        <select class="fselect-inline"><option>All statuses</option><option>Active</option><option>Upcoming</option><option>Closed</option></select>
+        <input class="fsearch" type="text" placeholder="Search cycles…"/>
+      </div>
+      <div class="cycle-list">
+        <div class="cycle-card active-cycle">
+          <div class="cc-top">
+            <div><div class="cc-name">Mid Year Peer Review 2026</div><div class="cc-meta"><span class="cc-meta-i"><i class="ti ti-calendar"></i>Jan 1 – Jun 30, 2026</span><span class="cc-meta-i"><i class="ti ti-users"></i>98 participants</span><span class="chip chip-recurring" style="font-size:10px;padding:1px 6px">Semi-annual</span></div></div>
+            <div class="cc-right"><span class="chip chip-active">Active</span></div>
+          </div>
+          <div class="cc-actions"><button class="btn-p btn-sm" onclick="openModal('closeChecklistModal')"><i class="ti ti-lock"></i>Close cycle</button><button class="btn-g btn-sm"><i class="ti ti-edit"></i>Edit</button><button class="btn-g btn-sm"><i class="ti ti-copy"></i>Duplicate</button></div>
+        </div>
+        <div class="cycle-card upcoming">
+          <div class="cc-top">
+            <div><div class="cc-name">Annual Review 2026</div><div class="cc-meta"><span class="cc-meta-i"><i class="ti ti-calendar"></i>Jul 1 – Dec 31, 2026</span><span class="cc-meta-i"><i class="ti ti-users"></i>112 participants (projected)</span><span class="chip chip-upcoming" style="font-size:10px;padding:1px 6px">Launches Jul 1</span></div></div>
+            <div class="cc-right"><span class="chip chip-upcoming">Upcoming</span></div>
+          </div>
+          <div class="cc-actions"><button class="btn-g btn-sm"><i class="ti ti-edit"></i>Edit</button><button class="btn-g btn-sm"><i class="ti ti-send"></i>Launch now</button></div>
+        </div>
+        <div class="cycle-card closed">
+          <div class="cc-top">
+            <div><div class="cc-name">Annual Review 2025</div><div class="cc-meta"><span class="cc-meta-i"><i class="ti ti-calendar"></i>Jul 1 – Dec 31, 2025</span><span class="cc-meta-i"><i class="ti ti-users"></i>94 participants</span></div></div>
+            <div class="cc-right"><span class="chip chip-closed">Closed</span></div>
+          </div>
+          <div class="cc-actions"><button class="btn-g btn-sm"><i class="ti ti-chart-bar"></i>View results</button><button class="btn-g btn-sm"><i class="ti ti-download"></i>Export</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ TEMPLATES ══ -->
+    <div class="subtab-panel" id="tab-templates">
+      <div class="sec-lbl">Pending approval <span style="background:var(--amber-t);color:#fff;font-size:10px;padding:1px 6px;border-radius:8px;margin-left:4px">2</span></div>
+      <div class="template-list">
+        <div class="template-row pending-approval">
+          <div class="tr-icon"><i class="ti ti-file-text" style="font-size:18px;color:var(--blue-t)"></i></div>
+          <div style="flex:1;min-width:0">
+            <div class="tr-name">Dev Team Q3 Check-in</div>
+            <div class="tr-meta"><span>Submitted by Wilver Guzman · Jul 1, 2026</span><span>Self + Manager reviewer types</span><span>6 questions</span></div>
+          </div>
+          <div class="tr-actions"><button class="btn-g btn-sm">Preview</button><button class="btn-approve">Approve</button><button class="btn-reject">Reject</button></div>
+        </div>
+        <div class="template-row pending-approval">
+          <div class="tr-icon"><i class="ti ti-file-text" style="font-size:18px;color:var(--blue-t)"></i></div>
+          <div style="flex:1;min-width:0">
+            <div class="tr-name">PS Team Leadership Evaluation</div>
+            <div class="tr-meta"><span>Submitted by Christopher Kim · Jun 28, 2026</span><span>Self + Peer + Manager reviewer types</span><span>12 questions</span></div>
+          </div>
+          <div class="tr-actions"><button class="btn-g btn-sm">Preview</button><button class="btn-approve">Approve</button><button class="btn-reject">Reject</button></div>
+        </div>
+      </div>
+      <div class="sec-lbl">All templates</div>
+      <div class="template-list">
+        <div class="template-row">
+          <div class="tr-icon"><i class="ti ti-file-text" style="font-size:18px;color:var(--teal-t)"></i></div>
+          <div style="flex:1;min-width:0"><div class="tr-name">360° Annual Template</div><div class="tr-meta"><span>Created by HR Admin</span><span>All 4 reviewer types</span><span>18 questions</span><span style="color:var(--teal-t);font-weight:500">Active in 1 cycle</span></div></div>
+          <div class="tr-actions"><button class="btn-g btn-sm"><i class="ti ti-edit"></i>Edit</button><button class="btn-g btn-sm"><i class="ti ti-copy"></i>Duplicate</button></div>
+        </div>
+        <div class="template-row">
+          <div class="tr-icon"><i class="ti ti-file-text" style="font-size:18px;color:var(--blue-t)"></i></div>
+          <div style="flex:1;min-width:0"><div class="tr-name">Monthly Lightweight Template</div><div class="tr-meta"><span>Created by HR Admin</span><span>Self + Manager</span><span>4 questions</span><span style="color:var(--teal-t);font-weight:500">Active in 1 cycle</span></div></div>
+          <div class="tr-actions"><button class="btn-g btn-sm"><i class="ti ti-edit"></i>Edit</button><button class="btn-g btn-sm"><i class="ti ti-copy"></i>Duplicate</button></div>
+        </div>
+      </div>
+      <button class="btn-p btn-sm"><i class="ti ti-plus"></i>New template</button>
+    </div>
+
+    <!-- ══ FOCUS AREAS ══ -->
+    <div class="subtab-panel" id="tab-focus">
+      <div class="sec-lbl">Pending suggestions <span style="background:var(--amber-t);color:#fff;font-size:10px;padding:1px 6px;border-radius:8px;margin-left:4px">1</span></div>
+      <div class="fa-suggest-row">
+        <i class="ti ti-bulb" style="font-size:16px;color:var(--amber-t);flex-shrink:0"></i>
+        <div style="flex:1"><div style="font-size:12.5px;font-weight:600;color:var(--t1)">Suggested: "Remote Collaboration"</div><div style="font-size:11.5px;color:var(--t2)">Suggested by Christopher Kim · Jun 28, 2026 · Threshold 3.0</div></div>
+        <button class="btn-approve btn-sm">Approve</button>
+        <button class="btn-reject btn-sm" style="margin-left:4px">Reject</button>
+      </div>
+      <div class="sec-lbl">Active focus areas</div>
+      <div class="fa-grid">
+        <div class="fa-card"><div class="fa-name">Client Focus</div><div class="fa-threshold"><i class="ti ti-chart-bar"></i>Gap threshold: 3.0 / 5</div><div class="fa-questions">Used in 3 templates · 8 questions tagged</div><div class="fa-actions"><button class="btn-g btn-sm"><i class="ti ti-edit"></i>Edit</button><button class="btn-g btn-sm">View questions</button></div></div>
+        <div class="fa-card"><div class="fa-name">Technical Delivery</div><div class="fa-threshold"><i class="ti ti-chart-bar"></i>Gap threshold: 3.5 / 5</div><div class="fa-questions">Used in 2 templates · 6 questions tagged</div><div class="fa-actions"><button class="btn-g btn-sm"><i class="ti ti-edit"></i>Edit</button><button class="btn-g btn-sm">View questions</button></div></div>
+        <div class="fa-card"><div class="fa-name">Teamwork</div><div class="fa-threshold"><i class="ti ti-chart-bar"></i>Gap threshold: 3.0 / 5</div><div class="fa-questions">Used in 3 templates · 5 questions tagged</div><div class="fa-actions"><button class="btn-g btn-sm"><i class="ti ti-edit"></i>Edit</button><button class="btn-g btn-sm">View questions</button></div></div>
+        <div class="fa-card"><div class="fa-name">Leadership</div><div class="fa-threshold"><i class="ti ti-chart-bar"></i>Gap threshold: 3.5 / 5</div><div class="fa-questions">Used in 1 template · 4 questions tagged</div><div class="fa-actions"><button class="btn-g btn-sm"><i class="ti ti-edit"></i>Edit</button><button class="btn-g btn-sm">View questions</button></div></div>
+        <div class="fa-card"><div class="fa-name">Communication</div><div class="fa-threshold"><i class="ti ti-chart-bar"></i>Gap threshold: 3.0 / 5</div><div class="fa-questions">Used in 2 templates · 6 questions tagged</div><div class="fa-actions"><button class="btn-g btn-sm"><i class="ti ti-edit"></i>Edit</button><button class="btn-g btn-sm">View questions</button></div></div>
+      </div>
+      <button class="btn-p btn-sm"><i class="ti ti-plus"></i>New focus area</button>
+    </div>
+
+    <!-- ══ MANAGER GROUPS ══ -->
+    <div class="subtab-panel" id="tab-groups">
+      <div class="info-note"><i class="ti ti-info-circle"></i>Manager Groups define who reviews an employee and with what weighting. Assign a group to an employee from their profile record. Individual cycles can override the profile assignment.</div>
+      <div class="mg-list">
+        <div class="mg-card">
+          <div class="mg-header">
+            <div><div class="mg-name">PS — Standard Review</div><div class="mg-dept">Professional Services · 6 employees assigned</div></div>
+            <div style="display:flex;gap:6px"><button class="btn-g btn-sm"><i class="ti ti-edit"></i>Edit</button><button class="btn-g btn-sm"><i class="ti ti-copy"></i>Duplicate</button></div>
+          </div>
+          <div class="mg-members">
+            <div class="mg-member-row"><div class="mg-av av-b">CK</div><div style="flex:1"><div class="mg-member-name">Christopher Kim</div><div class="mg-member-role">CEO — Primary reviewer</div></div><div class="mg-weight-badge">100%</div></div>
+          </div>
+          <div class="mg-weight-bar"><div class="mg-weight-fill" style="width:100%"></div></div>
+        </div>
+        <div class="mg-card">
+          <div class="mg-header">
+            <div><div class="mg-name">Senior Staff — Dual Review</div><div class="mg-dept">All departments · 4 employees assigned</div></div>
+            <div style="display:flex;gap:6px"><button class="btn-g btn-sm"><i class="ti ti-edit"></i>Edit</button><button class="btn-g btn-sm"><i class="ti ti-copy"></i>Duplicate</button></div>
+          </div>
+          <div class="mg-members">
+            <div class="mg-member-row"><div class="mg-av av-b">CK</div><div style="flex:1"><div class="mg-member-name">Christopher Kim</div><div class="mg-member-role">CEO</div></div><div class="mg-weight-badge">70%</div></div>
+            <div class="mg-member-row"><div class="mg-av av-t">WG</div><div style="flex:1"><div class="mg-member-name">Wilver Guzman</div><div class="mg-member-role">Dev Lead</div></div><div class="mg-weight-badge">30%</div></div>
+          </div>
+          <div class="mg-weight-bar"><div style="display:flex;height:5px;border-radius:3px;overflow:hidden"><div style="width:70%;background:var(--navy-mid)"></div><div style="width:30%;background:var(--teal-t)"></div></div></div>
+        </div>
+        <div class="mg-card">
+          <div class="mg-header">
+            <div><div class="mg-name">Dev — Committee Review</div><div class="mg-dept">Development · 3 employees assigned</div></div>
+            <div style="display:flex;gap:6px"><button class="btn-g btn-sm"><i class="ti ti-edit"></i>Edit</button><button class="btn-g btn-sm"><i class="ti ti-copy"></i>Duplicate</button></div>
+          </div>
+          <div class="mg-members">
+            <div class="mg-member-row"><div class="mg-av av-b">CK</div><div style="flex:1"><div class="mg-member-name">Christopher Kim</div><div class="mg-member-role">CEO</div></div><div class="mg-weight-badge">40%</div></div>
+            <div class="mg-member-row"><div class="mg-av av-t">WG</div><div style="flex:1"><div class="mg-member-name">Wilver Guzman</div><div class="mg-member-role">Dev Lead</div></div><div class="mg-weight-badge">35%</div></div>
+            <div class="mg-member-row"><div class="mg-av av-p">GA</div><div style="flex:1"><div class="mg-member-name">Gabriel Guzman</div><div class="mg-member-role">Senior Developer</div></div><div class="mg-weight-badge">25%</div></div>
+          </div>
+          <div style="display:flex;height:5px;border-radius:3px;overflow:hidden;margin-top:8px"><div style="width:40%;background:var(--navy-mid)"></div><div style="width:35%;background:var(--teal-t)"></div><div style="width:25%;background:var(--purple-t)"></div></div>
+        </div>
+      </div>
+      <button class="btn-p btn-sm" onclick="openModal('createGroupModal')"><i class="ti ti-plus"></i>New manager group</button>
+    </div>
+
+    <!-- ══ RESULTS CONFIG ══ -->
+    <div class="subtab-panel" id="tab-results">
+      <div class="res-config-card">
+        <div class="rc-title">Results visibility defaults</div>
+        <div class="rc-sub">These are org-level defaults applied to every new cycle. Individual cycles can override these settings if Allow per-cycle override is enabled.</div>
+        <div class="vis-grid">
+          <div class="vis-row"><span class="vis-label">Show overall score to employee</span><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div><div class="toggle-dot"></div></label></div>
+          <div class="vis-row"><span class="vis-label">Show score breakdown by component</span><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div><div class="toggle-dot"></div></label></div>
+          <div class="vis-row"><span class="vis-label">Show individual question scores</span><label class="toggle"><input type="checkbox"/><div class="toggle-track"></div><div class="toggle-dot"></div></label></div>
+          <div class="vis-row"><span class="vis-label">Show manager comments (visible ones)</span><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div><div class="toggle-dot"></div></label></div>
+          <div class="vis-row"><span class="vis-label">Show peer aggregate score</span><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div><div class="toggle-dot"></div></label></div>
+          <div class="vis-row"><span class="vis-label">Show goal ratings</span><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div><div class="toggle-dot"></div></label></div>
+          <div class="vis-row"><span class="vis-label">Show training gaps generated</span><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div><div class="toggle-dot"></div></label></div>
+          <div class="vis-row"><span class="vis-label">Show pass / fail indicator</span><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div><div class="toggle-dot"></div></label></div>
+          <div class="vis-row"><span class="vis-label">Allow per-cycle override</span><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div><div class="toggle-dot"></div></label></div>
+        </div>
+      </div>
+      <div class="res-config-card">
+        <div class="rc-title">Default release mode</div>
+        <div class="rc-sub">Applied to every new cycle unless overridden at cycle creation.</div>
+        <div class="release-options">
+          <label class="release-option sel"><input type="radio" name="releaseDefault" checked/><div><div class="ro-label">Manual release by HR</div><div class="ro-sub">HR explicitly releases each cycle's results after review.</div></div></label>
+          <label class="release-option"><input type="radio" name="releaseDefault"/><div><div class="ro-label">Auto-release on cycle close</div><div class="ro-sub">Results are visible to employees as soon as the cycle closes.</div></div></label>
+          <label class="release-option"><input type="radio" name="releaseDefault"/><div><div class="ro-label">Release during review meeting</div><div class="ro-sub">HR triggers release from within the meeting record during the 1:1 call.</div></div></label>
+        </div>
+      </div>
+      <div class="res-config-card">
+        <div class="rc-title">Score display format</div>
+        <div class="rc-sub">How scores are shown to employees when results are visible.</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <label class="release-option sel"><input type="radio" name="scoreFormat" checked/><div><div class="ro-label">Percentage (76%)</div><div class="ro-sub">Hover shows the raw decimal score (3.8 / 5).</div></div></label>
+          <label class="release-option"><input type="radio" name="scoreFormat"/><div><div class="ro-label">Descriptor only (Meets Expectations)</div><div class="ro-sub">No numeric value shown to the employee.</div></div></label>
+          <label class="release-option"><input type="radio" name="scoreFormat"/><div><div class="ro-label">Pass / fail only</div><div class="ro-sub">Suitable for lightweight monthly cycles where a number adds no value.</div></div></label>
+        </div>
+      </div>
+      <div class="res-config-card">
+        <div class="rc-title">Non-submission handling</div>
+        <div class="rc-sub">What happens when a cycle closes and a review was not submitted.</div>
+        <div class="punishment-row">
+          <div><div class="pr-label">Auto-submit incomplete reviews with zeros on close</div><div class="pr-sub">Unanswered questions score zero, which naturally reduces the overall score.</div></div>
+          <label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div><div class="toggle-dot"></div></label>
+        </div>
+        <div class="punishment-row">
+          <div><div class="pr-label">Apply additional non-submission deduction</div><div class="pr-sub">Deduct a fixed number of points from the final score for failure to submit. Independent of the zero-score effect.</div></div>
+          <label class="toggle"><input type="checkbox"/><div class="toggle-track"></div><div class="toggle-dot"></div></label>
+        </div>
+        <div class="punishment-row">
+          <div><div class="pr-label">Allow per-cycle override</div><div class="pr-sub">Individual cycles can change non-submission handling from these defaults.</div></div>
+          <label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div><div class="toggle-dot"></div></label>
+        </div>
+      </div>
+      <div class="res-config-card">
+        <div class="rc-title">Mass export defaults</div>
+        <div class="rc-sub">What is included when HR exports a closed cycle.</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div class="vis-row"><span class="vis-label">Individual review PDFs</span><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div><div class="toggle-dot"></div></label></div>
+          <div class="vis-row"><span class="vis-label">Score summary CSV</span><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div><div class="toggle-dot"></div></label></div>
+          <div class="vis-row"><span class="vis-label">Training gaps CSV</span><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div><div class="toggle-dot"></div></label></div>
+          <div class="vis-row"><span class="vis-label">Promotion readiness summary</span><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div><div class="toggle-dot"></div></label></div>
+          <div class="vis-row"><span class="vis-label">Goal ratings CSV</span><label class="toggle"><input type="checkbox"/><div class="toggle-track"></div><div class="toggle-dot"></div></label></div>
+        </div>
+      </div>
+      <button class="btn-p btn-sm">Save defaults</button>
+    </div>
+
+  </div><!-- /.content -->
+</div><!-- /.main -->
+</div><!-- /.shell -->
+
+<!-- PRE-CLOSE CHECKLIST MODAL -->
+<div class="modal-overlay" id="closeChecklistModal">
+  <div class="form-modal" style="max-width:580px">
+    <div class="form-hd">
+      <div><div class="form-title">Close cycle — Mid Year Peer Review 2026</div><div class="form-sub">Review the checklist before closing. You can proceed even if items are incomplete.</div></div>
+      <button class="form-close" onclick="closeModal('closeChecklistModal')">×</button>
+    </div>
+    <div class="cl-rows">
+      <div class="cl-row ok"><i class="ti ti-circle-check cl-icon" style="color:var(--teal-t)"></i><div class="cl-label">Self-assessments submitted</div><div class="cl-value" style="color:var(--teal-t)">89 / 98</div></div>
+      <div class="cl-row warn"><i class="ti ti-alert-triangle cl-icon" style="color:var(--amber-t)"></i><div class="cl-label">Manager reviews submitted</div><div class="cl-value" style="color:var(--amber-t)">76 / 98 — 22 missing</div></div>
+      <div class="cl-row warn"><i class="ti ti-alert-triangle cl-icon" style="color:var(--amber-t)"></i><div class="cl-label">Peer reviews submitted</div><div class="cl-value" style="color:var(--amber-t)">80 / 98 — 18 missing</div></div>
+      <div class="cl-row ok"><i class="ti ti-circle-check cl-icon" style="color:var(--teal-t)"></i><div class="cl-label">Template locked</div><div class="cl-value" style="color:var(--teal-t)">360° Annual Template v2</div></div>
+      <div class="cl-row ok"><i class="ti ti-circle-check cl-icon" style="color:var(--teal-t)"></i><div class="cl-label">Manager groups confirmed</div><div class="cl-value" style="color:var(--teal-t)">All 98 participants assigned</div></div>
+      <div class="cl-row ok"><i class="ti ti-circle-check cl-icon" style="color:var(--teal-t)"></i><div class="cl-label">Goal weights configured</div><div class="cl-value" style="color:var(--teal-t)">K30 · E10 · Q40 · G20</div></div>
+    </div>
+    <div style="background:var(--amber-bg);border:1px solid #f0c06a;border-radius:var(--rmd);padding:12px 14px;font-size:12.5px;color:var(--amber-t);margin-bottom:16px;display:flex;gap:8px;align-items:flex-start">
+      <i class="ti ti-alert-triangle" style="font-size:15px;flex-shrink:0;margin-top:1px"></i>
+      <div>22 manager reviews and 18 peer reviews are incomplete. Closing now will auto-submit them with zeros for unanswered questions, reducing those employees' scores. You can still proceed — this is a soft gate.</div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn-g" onclick="closeModal('closeChecklistModal')">Go back and chase completions</button>
+      <button class="btn-p" onclick="closeModal('closeChecklistModal')"><i class="ti ti-lock"></i>Close cycle and run scoring</button>
+    </div>
+  </div>
+</div>
+
+<!-- CREATE CYCLE MODAL -->
+<div class="modal-overlay" id="createCycleModal">
+  <div class="form-modal">
+    <div class="form-hd">
+      <div><div class="form-title">New review cycle</div><div class="form-sub">Set up the cycle, link a template, configure participants and post-cycle settings.</div></div>
+      <button class="form-close" onclick="closeModal('createCycleModal')">×</button>
+    </div>
+    <div class="bsec">
+      <div class="bsec-title">Basics</div>
+      <div style="margin-bottom:12px"><label class="flabel">Cycle name <span class="freq">*</span></label><input class="finput" type="text" placeholder="e.g. Annual Review 2026"/></div>
+      <div class="fg2">
+        <div><label class="flabel">Start date <span class="freq">*</span></label><input class="finput" type="date"/></div>
+        <div><label class="flabel">End date <span class="freq">*</span></label><input class="finput" type="date"/></div>
+        <div><label class="flabel">Template <span class="freq">*</span></label><select class="fselect" style="width:100%"><option>360° Annual Template</option><option>Monthly Lightweight Template</option><option>PS Team Leadership Evaluation</option></select></div>
+        <div><label class="flabel">Department scope</label><select class="fselect" style="width:100%"><option>All departments</option><option>Professional Services</option><option>Development</option></select></div>
+      </div>
+    </div>
+    <div class="bsec">
+      <div class="bsec-title">Recurrence</div>
+      <div class="fg2">
+        <div><label class="flabel">Recurrence</label><select class="fselect" style="width:100%"><option>None (one-time)</option><option>Monthly</option><option>Quarterly</option><option>Semi-annual</option><option>Annual</option></select></div>
+        <div><label class="flabel">HR advance notice (days)</label><input class="finput" type="number" value="3"/></div>
+      </div>
+    </div>
+    <div class="bsec">
+      <div class="bsec-title">Participant rules</div>
+      <div class="fg3">
+        <div><label class="flabel">Min tenure (days)</label><input class="finput" type="number" value="90"/></div>
+        <div><label class="flabel">Mid-cycle join</label><select class="fselect" style="width:100%"><option>Add to next cycle</option><option>Add immediately</option></select></div>
+        <div><label class="flabel">Departed employee</label><select class="fselect" style="width:100%"><option>Cancel their reviews</option><option>Complete then archive</option></select></div>
+      </div>
+      <div><label class="flabel">Employment types included</label>
+        <div style="display:flex;gap:10px;margin-top:6px">
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox" checked style="accent-color:var(--navy)"/>Full-time</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox" checked style="accent-color:var(--navy)"/>Part-time</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox" style="accent-color:var(--navy)"/>Contractors</label>
+        </div>
+      </div>
+    </div>
+    <div class="bsec">
+      <div class="bsec-title">Post-cycle settings</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="punishment-row"><div><div class="pr-label">Promotion-eligible cycle</div><div class="pr-sub">Promotion readiness runs automatically on close.</div></div><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div><div class="toggle-dot"></div></label></div>
+        <div class="punishment-row"><div><div class="pr-label">Schedule review meeting on close</div><div class="pr-sub">Booking links sent to all participants when the cycle closes.</div></div><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div><div class="toggle-dot"></div></label></div>
+        <div class="punishment-row"><div><div class="pr-label">Apply non-submission deduction</div><div class="pr-sub">Employees who don't submit receive an additional score deduction beyond zero-scoring.</div></div><label class="toggle"><input type="checkbox"/><div class="toggle-track"></div><div class="toggle-dot"></div></label></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-g" onclick="closeModal('createCycleModal')">Cancel</button>
+      <button class="btn-g">Save as draft</button>
+      <button class="btn-p"><i class="ti ti-check"></i>Create cycle</button>
+    </div>
+  </div>
+</div>
+
+<!-- CREATE MANAGER GROUP MODAL -->
+<div class="modal-overlay" id="createGroupModal">
+  <div class="form-modal" style="max-width:520px">
+    <div class="form-hd">
+      <div><div class="form-title">New manager group</div><div class="form-sub">All reviewer weights must sum to 100%.</div></div>
+      <button class="form-close" onclick="closeModal('createGroupModal')">×</button>
+    </div>
+    <div class="bsec">
+      <div class="bsec-title">Group details</div>
+      <div style="margin-bottom:12px"><label class="flabel">Group name <span class="freq">*</span></label><input class="finput" type="text" placeholder="e.g. Senior Staff — Dual Review"/></div>
+      <div><label class="flabel">Department scope</label><select class="fselect" style="width:100%"><option>All departments</option><option>Professional Services</option><option>Development</option><option>Sales</option></select></div>
+    </div>
+    <div class="bsec">
+      <div class="bsec-title">Reviewers</div>
+      <div id="groupMemberRows" style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px">
+        <div class="mg-member-row" style="gap:8px">
+          <select style="flex:1;font-family:inherit;font-size:12.5px;color:var(--t1);background:var(--surface);border:1px solid var(--border-mid);border-radius:var(--rmd);padding:6px 9px;outline:none"><option>Select reviewer…</option><option>Christopher Kim</option><option>Wilver Guzman</option><option>Gabriel Guzman</option></select>
+          <input type="number" value="100" min="1" max="100" style="width:64px;font-family:inherit;font-size:13px;font-weight:600;color:var(--t1);background:var(--surface);border:1px solid var(--border-mid);border-radius:var(--rmd);padding:6px 8px;outline:none;text-align:center" oninput="updateGroupTotal()"/>
+          <span style="font-size:12px;color:var(--t2)">%</span>
+          <div style="width:26px;height:26px;border-radius:var(--rsm);border:1px solid var(--border-mid);background:var(--surface);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t2)" onclick="this.closest('.mg-member-row').remove();updateGroupTotal()"><i class="ti ti-trash" style="font-size:13px"></i></div>
+        </div>
+      </div>
+      <button class="btn-g btn-sm" onclick="addGroupMember()"><i class="ti ti-plus"></i>Add reviewer</button>
+      <div style="margin-top:12px;padding:10px 12px;background:#f7f8fa;border-radius:var(--rmd);border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:12px;color:var(--t2)">Total weight</span>
+        <span id="groupTotal" style="font-size:13px;font-weight:700;color:var(--teal-t)">100% ✓</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-g" onclick="closeModal('createGroupModal')">Cancel</button>
+      <button class="btn-p"><i class="ti ti-check"></i>Save group</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchRole(role,btn){
+  document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const badges={supervisor:'Supervisor — Templates, Focus Areas, Manager Groups (read-only)',hr:'HR Admin — full cycle management'};
+  document.getElementById('roleBadge').textContent=badges[role];
+  // Hide/show HR-only tabs
+  document.querySelectorAll('.hr-tab').forEach(t=>{
+    t.style.display=role==='hr'?'block':'none';
+  });
+  document.getElementById('primaryAction').style.display=role==='hr'?'inline-flex':'none';
+  if(role==='supervisor'){
+    // Force to templates if on an HR-only tab
+    const active=document.querySelector('.subtab.active');
+    if(active&&(active.textContent.includes('Manager Groups')||active.textContent.includes('Results'))){
+      showTab('templates',document.querySelectorAll('.subtab')[2]);
+    }
+  }
+}
+function showTab(id,btn){
+  document.querySelectorAll('.subtab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.subtab-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+}
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.modal-overlay').forEach(o=>{o.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})});
+document.querySelectorAll('.release-option').forEach(opt=>{
+  opt.addEventListener('click',function(){
+    const siblings=this.closest('.release-options,div').querySelectorAll('.release-option');
+    siblings.forEach(s=>s.classList.remove('sel'));
+    this.classList.add('sel');
+  });
+});
+function addGroupMember(){
+  const row=document.createElement('div');
+  row.className='mg-member-row';
+  row.style.gap='8px';
+  row.innerHTML=`<select style="flex:1;font-family:inherit;font-size:12.5px;color:var(--t1);background:var(--surface);border:1px solid var(--border-mid);border-radius:var(--rmd);padding:6px 9px;outline:none"><option>Select reviewer…</option><option>Christopher Kim</option><option>Wilver Guzman</option><option>Gabriel Guzman</option></select><input type="number" value="0" min="1" max="100" style="width:64px;font-family:inherit;font-size:13px;font-weight:600;color:var(--t1);background:var(--surface);border:1px solid var(--border-mid);border-radius:var(--rmd);padding:6px 8px;outline:none;text-align:center" oninput="updateGroupTotal()"/><span style="font-size:12px;color:var(--t2)">%</span><div style="width:26px;height:26px;border-radius:var(--rsm);border:1px solid var(--border-mid);background:var(--surface);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t2)" onclick="this.closest('.mg-member-row').remove();updateGroupTotal()"><i class="ti ti-trash" style="font-size:13px"></i></div>`;
+  document.getElementById('groupMemberRows').appendChild(row);
+  updateGroupTotal();
+}
+function updateGroupTotal(){
+  const inputs=document.querySelectorAll('#groupMemberRows input[type=number]');
+  const total=[...inputs].reduce((a,i)=>a+(parseFloat(i.value)||0),0);
+  const el=document.getElementById('groupTotal');
+  if(total===100){el.textContent='100% ✓';el.style.color='var(--teal-t)';}
+  else if(total<100){el.textContent=total+'% — '+(100-total)+'% remaining';el.style.color='var(--amber-t)';}
+  else{el.textContent=total+'% — over by '+(total-100)+'%';el.style.color='var(--red-t)';}
+}
+// Init
+switchRole('hr',document.querySelector('.role-btn.active'));
+</script>
+</body>
+</html>
