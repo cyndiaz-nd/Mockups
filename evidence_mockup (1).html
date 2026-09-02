@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Evidence — Performance Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1a2332;--navy-h:#223044;--navy-mid:#2d4a7a;
+  --page:#f0f2f5;--surface:#fff;--border:#e2e5ea;--border-mid:#c8cdd6;
+  --t1:#0f1923;--t2:#5a6473;--t3:#8e97a3;
+  --teal-bg:#e1f5ee;--teal-t:#0f6e56;
+  --blue-bg:#e6f1fb;--blue-t:#185fa5;
+  --purple-bg:#eeedfe;--purple-t:#3c3489;
+  --amber-bg:#faeeda;--amber-t:#633806;
+  --green-bg:#eaf3de;--green-t:#3b6d11;
+  --red:#e8002d;--red-bg:#fde8ec;--red-t:#a51633;
+  --orange-bg:#fff3e0;--orange-t:#e65100;
+  font-family:'Inter',system-ui,sans-serif;font-size:14px;color:var(--t1);background:var(--page);
+  --rsm:6px;--rmd:8px;--rlg:12px;--rxl:16px;
+}
+.shell{display:flex;min-height:100vh}
+.sidebar{width:200px;min-height:100vh;background:var(--navy);display:flex;flex-direction:column;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto}
+.logo-zone{display:flex;flex-direction:column;align-items:center;padding:22px 16px 16px;border-bottom:1px solid rgba(255,255,255,.09);flex-shrink:0}
+.client-logo{width:54px;height:54px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.app-title{font-size:12px;font-weight:600;color:#fff;text-align:center}
+.nav-section{flex:1;padding:10px 0}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 16px;font-size:12.5px;color:rgba(255,255,255,.55);text-decoration:none;transition:background .12s,color .12s}
+.nav-item:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.88)}
+.nav-item.active{background:rgba(255,255,255,.11);color:#fff}
+.nav-item i{font-size:15px;flex-shrink:0}
+.nav-div{height:1px;background:rgba(255,255,255,.08);margin:5px 14px}
+.av-nav{width:26px;height:26px;border-radius:50%;background:var(--navy-mid);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#85b7eb;flex-shrink:0}
+.footer-zone{padding:12px 16px 18px;border-top:1px solid rgba(255,255,255,.09);display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0}
+.powered{font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.06em;text-transform:uppercase}
+.ats-badge{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.07);border-radius:var(--rsm);padding:5px 10px;text-decoration:none}
+.ats-wm{font-size:12px;font-weight:600;color:rgba(255,255,255,.72)}
+.ats-sub{font-size:9px;color:rgba(255,255,255,.38)}
+.main{flex:1;overflow-y:auto;min-width:0;display:flex;flex-direction:column}
+/* Control banner */
+.ctrl-banner{background:var(--navy);padding:12px 24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;border-bottom:2px solid var(--red);flex-shrink:0}
+.ctrl-group{display:flex;align-items:center;gap:8px}
+.ctrl-label{font-size:11px;font-weight:600;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.06em}
+.ctrl-btns{display:flex;gap:5px}
+.ctrl-btn{padding:5px 13px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid rgba(255,255,255,.2);background:transparent;color:rgba(255,255,255,.6);font-family:inherit;transition:all .12s}
+.ctrl-btn:hover{background:rgba(255,255,255,.1);color:#fff}
+.ctrl-btn.active{background:#fff;color:var(--navy)}
+.ctrl-sep{width:1px;height:24px;background:rgba(255,255,255,.15)}
+.ctrl-desc{margin-left:auto;font-size:11px;color:rgba(255,255,255,.35);font-style:italic}
+.content{padding:24px 28px 56px;flex:1}
+.view-panel{display:none}
+.view-panel.active{display:block}
+/* Buttons */
+.btn-p{background:var(--navy);color:#fff;border:none;border-radius:var(--rmd);padding:8px 16px;font-size:12.5px;font-weight:500;cursor:pointer;font-family:inherit;transition:background .12s;white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+.btn-p:hover{background:var(--navy-h)}
+.btn-g{background:transparent;color:var(--t2);border:1px solid var(--border-mid);border-radius:var(--rmd);padding:8px 14px;font-size:12.5px;font-weight:500;cursor:pointer;font-family:inherit;white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+.btn-g:hover{background:#f5f6f8}
+.btn-approve{background:#16a34a;color:#fff;border:none;border-radius:var(--rmd);padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:4px}
+.btn-reject{background:transparent;color:var(--red-t);border:1px solid #f5c6cc;border-radius:var(--rmd);padding:6px 10px;font-size:12px;cursor:pointer;font-family:inherit}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-warn{background:var(--amber-bg);color:var(--amber-t);border:1px solid #f0c06a;border-radius:var(--rmd);padding:6px 12px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:4px}
+/* Phase 2 gate */
+.p2-gate{background:var(--surface);border:1.5px dashed var(--border-mid);border-radius:var(--rlg);padding:20px 18px;display:flex;align-items:center;gap:14px;margin-bottom:10px}
+.p2-gate i{font-size:24px;color:var(--border-mid);flex-shrink:0}
+.p2-gate-title{font-size:13px;font-weight:600;color:var(--t2);margin-bottom:3px}
+.p2-gate-sub{font-size:12px;color:var(--t3);line-height:1.5}
+.p2-badge{display:inline-block;background:var(--purple-bg);color:var(--purple-t);font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;margin-top:4px}
+/* Stats */
+.stat-row{display:grid;gap:14px;margin-bottom:20px}
+.s4{grid-template-columns:repeat(4,1fr)}
+.s3{grid-template-columns:repeat(3,1fr)}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:14px 16px}
+.stat-label{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.stat-value{font-size:22px;font-weight:600;color:var(--t1);margin-bottom:2px}
+.stat-sub{font-size:11px;color:var(--t3)}
+/* Evidence cards */
+.ev-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.ev-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:14px 16px;display:flex;align-items:flex-start;gap:14px;transition:box-shadow .12s}
+.ev-card:hover{box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.ev-card.pending-hr{border-left:3px solid var(--amber-t)}
+.ev-card.approved{border-left:3px solid var(--teal-t)}
+.ev-card.rejected{border-left:3px solid var(--red-t);opacity:.7}
+.ev-card.draft{border-left:3px solid var(--border-mid)}
+.ev-card.disputed{border-left:3px solid var(--orange-t)}
+.ev-type-icon{width:40px;height:40px;border-radius:var(--rmd);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.eti-file{background:var(--blue-bg)}
+.eti-url{background:var(--teal-bg)}
+.eti-note{background:var(--purple-bg)}
+.eti-cert{background:var(--amber-bg)}
+.eti-cycle{background:var(--navy);opacity:.85}
+.eti-ns{background:var(--green-bg)}
+.eti-commend{background:#fce7f3}
+.eti-warn{background:var(--red-bg)}
+.eti-skill{background:var(--blue-bg)}
+.eti-obs{background:var(--teal-bg)}
+.eti-pip{background:var(--orange-bg)}
+.eti-1on1{background:var(--purple-bg)}
+.eti-attend{background:var(--amber-bg)}
+.ev-body{flex:1;min-width:0}
+.ev-title{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:3px}
+.ev-meta{display:flex;gap:10px;flex-wrap:wrap;font-size:11.5px;color:var(--t2);margin-bottom:6px}
+.ev-meta-i{display:flex;align-items:center;gap:3px}
+.ev-meta-i i{font-size:12px;color:var(--t3)}
+.ev-desc{font-size:12.5px;color:var(--t2);line-height:1.5;margin-bottom:8px}
+.ev-tags{display:flex;gap:5px;flex-wrap:wrap}
+.ev-actions{display:flex;gap:6px;align-items:center;flex-shrink:0;flex-direction:column;align-items:flex-end}
+/* Type chips */
+.type-chip{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:4px}
+.tc-file{background:var(--blue-bg);color:var(--blue-t)}
+.tc-url{background:var(--teal-bg);color:var(--teal-t)}
+.tc-note{background:var(--purple-bg);color:var(--purple-t)}
+.tc-cert{background:var(--amber-bg);color:var(--amber-t)}
+.tc-cycle{background:var(--navy);color:#fff}
+.tc-ns{background:var(--green-bg);color:var(--green-t)}
+.tc-commend{background:#fce7f3;color:#9d174d}
+.tc-warn{background:var(--red-bg);color:var(--red-t)}
+.tc-verbal{background:var(--orange-bg);color:var(--orange-t)}
+.tc-skill{background:var(--blue-bg);color:var(--blue-t)}
+.tc-obs{background:var(--teal-bg);color:var(--teal-t)}
+.tc-pip{background:var(--orange-bg);color:var(--orange-t)}
+.tc-1on1{background:var(--purple-bg);color:var(--purple-t)}
+.tc-attend{background:var(--amber-bg);color:var(--amber-t)}
+.tc-policy{background:var(--red-bg);color:var(--red-t)}
+/* Status chips */
+.st-chip{display:inline-flex;align-items:center;font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:20px}
+.st-draft{background:#f0f2f5;color:var(--t2)}
+.st-pending{background:var(--amber-bg);color:var(--amber-t)}
+.st-approved{background:var(--teal-bg);color:var(--teal-t)}
+.st-rejected{background:var(--red-bg);color:var(--red-t)}
+.st-disputed{background:var(--orange-bg);color:var(--orange-t)}
+.st-submitted{background:var(--blue-bg);color:var(--blue-t)}
+/* Contributor badge */
+.contrib-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px}
+.cb-emp{background:var(--teal-bg);color:var(--teal-t)}
+.cb-sup{background:var(--navy);color:#fff}
+.cb-hr{background:var(--purple-bg);color:var(--purple-t)}
+.cb-sys{background:#f0f2f5;color:var(--t2)}
+/* Filter bar */
+.filter-bar{display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+.fselect{font-family:inherit;font-size:12.5px;color:var(--t1);background:var(--surface);border:1px solid var(--border-mid);border-radius:var(--rmd);padding:7px 10px;outline:none}
+.fsearch{font-family:inherit;font-size:12.5px;color:var(--t1);background:var(--surface);border:1px solid var(--border-mid);border-radius:var(--rmd);padding:7px 11px;outline:none;width:200px}
+.fsearch::placeholder{color:var(--t3)}
+/* Section labels */
+.sec-lbl{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
+.page-row{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;gap:12px;flex-wrap:wrap}
+.info-note{font-size:12px;color:var(--t3);background:#f7f8fa;border-radius:var(--rmd);padding:10px 14px;display:flex;align-items:center;gap:7px;margin-bottom:14px}
+.info-note i{font-size:14px;flex-shrink:0}
+/* Cycle evidence panel */
+.cycle-header{background:var(--navy);border-radius:var(--rlg);padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.ch-title{font-size:15px;font-weight:600;color:#fff;flex:1}
+.ch-meta{font-size:12px;color:rgba(255,255,255,.5)}
+.weight-badge{background:var(--purple-bg);color:var(--purple-t);font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px}
+.ev-score-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.ess-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:12px 14px;text-align:center}
+.ess-label{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.ess-value{font-size:20px;font-weight:700;color:var(--t1)}
+.ess-sub{font-size:10.5px;color:var(--t3);margin-top:2px}
+/* Contributor sections */
+.contrib-section{margin-bottom:20px}
+.cs-header{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding:8px 12px;background:#f7f8fa;border-radius:var(--rmd);border:1px solid var(--border)}
+.cs-header-title{font-size:12px;font-weight:600;color:var(--t1);flex:1}
+/* Review panel */
+.review-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:16px 18px;margin-bottom:12px}
+.rp-title{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.review-item{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.review-item:last-child{border-bottom:none}
+.ri-icon{width:36px;height:36px;border-radius:var(--rmd);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.ri-body{flex:1;min-width:0}
+.ri-title{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:2px}
+.ri-meta{font-size:11.5px;color:var(--t2);margin-bottom:4px}
+.ri-desc{font-size:12px;color:var(--t2);line-height:1.5}
+.ri-actions{display:flex;gap:6px;align-items:center;flex-shrink:0}
+/* Supervisor note form */
+.note-type-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.note-type-opt{border:1.5px solid var(--border-mid);border-radius:var(--rmd);padding:10px 8px;text-align:center;cursor:pointer;transition:all .12s;background:var(--surface);position:relative}
+.note-type-opt:hover{border-color:var(--navy-mid)}
+.note-type-opt.sel{border-color:var(--navy-mid);background:var(--blue-bg)}
+.note-type-opt.p2{opacity:.55;cursor:not-allowed}
+.note-type-opt.p2:hover{border-color:var(--border-mid)}
+.nto-icon{font-size:20px;margin-bottom:4px}
+.nto-name{font-size:11px;font-weight:600;color:var(--t1)}
+.nto-p2{position:absolute;top:4px;right:4px;font-size:9px;font-weight:700;background:var(--purple-bg);color:var(--purple-t);padding:1px 5px;border-radius:3px}
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.form-modal{background:var(--surface);border-radius:var(--rxl);width:680px;max-width:96vw;max-height:92vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.18);padding:28px;transform:translateY(8px);transition:transform .2s}
+.modal-overlay.open .form-modal{transform:translateY(0)}
+.form-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px}
+.form-title{font-size:16px;font-weight:600;color:var(--t1)}
+.form-sub{font-size:12px;color:var(--t2);margin-top:3px}
+.form-close{background:none;border:none;cursor:pointer;color:var(--t3);font-size:22px;line-height:1}
+.bsec{margin-bottom:18px}
+.bsec-title{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid var(--border)}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.flabel{font-size:11.5px;font-weight:600;color:var(--t3);letter-spacing:.04em;text-transform:uppercase;margin-bottom:5px;display:block}
+.freq{color:var(--red)}
+.finput,.fselect,.ftextarea{width:100%;font-family:inherit;font-size:13px;color:var(--t1);background:var(--surface);border:1px solid var(--border-mid);border-radius:var(--rmd);padding:8px 11px;outline:none;transition:border-color .12s}
+.finput:focus,.fselect:focus,.ftextarea:focus{border-color:var(--navy-mid)}
+.ftextarea{resize:vertical;min-height:80px;line-height:1.5}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
+.ev-req-note{background:var(--red-bg);border:1px solid #f5c6cc;border-radius:var(--rmd);padding:8px 12px;font-size:12px;color:var(--red-t);display:flex;align-items:center;gap:6px;margin-top:8px}
+.toggle{position:relative;width:38px;height:22px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-track{position:absolute;inset:0;border-radius:22px;background:#d0d5dd;cursor:pointer;transition:background .18s}
+.toggle input:checked+.toggle-track{background:var(--navy)}
+.toggle-dot{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .18s;pointer-events:none}
+.toggle input:checked~.toggle-dot{transform:translateX(16px)}
+/* HR review queue */
+.hr-queue{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:16px 18px;margin-bottom:16px}
+.hq-title{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.hq-item{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.hq-item:last-child{border-bottom:none;padding-bottom:0}
+.hq-body{flex:1}
+.hq-title-text{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:2px}
+.hq-meta{font-size:11.5px;color:var(--t2);margin-bottom:4px;display:flex;gap:8px;flex-wrap:wrap}
+.hq-actions{display:flex;gap:6px;flex-shrink:0;align-items:center}
+</style>
+</head>
+<body>
+<div class="shell">
+<aside class="sidebar">
+  <div class="logo-zone">
+    <div class="client-logo"><svg viewBox="0 0 54 54" width="38" height="38"><circle cx="27" cy="27" r="27" fill="#e8002d"/><text x="27" y="32" text-anchor="middle" font-size="11" fill="white" font-weight="700" font-family="Inter,sans-serif">CLIENT</text></svg></div>
+    <div class="app-title">Performance Center</div>
+  </div>
+  <nav class="nav-section">
+    <a href="#" class="nav-item active"><div class="av-nav">CD</div><span>My Profile</span></a>
+    <div class="nav-div"></div>
+    <a href="#" class="nav-item"><i class="ti ti-home"></i><span>Overview</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-file-text"></i><span>Reviews</span></a>
+    <div class="nav-div"></div>
+    <a href="#" class="nav-item"><i class="ti ti-target"></i><span>Goals</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-star"></i><span>Recognition</span></a>
+    <div class="nav-div"></div>
+    <a href="#" class="nav-item"><i class="ti ti-refresh"></i><span>Review Cycles</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-settings"></i><span>Configuration</span></a>
+  </nav>
+  <div class="footer-zone">
+    <span class="powered">Powered by</span>
+    <a href="#" class="ats-badge"><div><div class="ats-wm">ATS360</div><div class="ats-sub">by NetDynamic</div></div></a>
+  </div>
+</aside>
+
+<div class="main">
+  <!-- Control banner — role + surface toggles -->
+  <div class="ctrl-banner">
+    <div class="ctrl-group">
+      <span class="ctrl-label">Role</span>
+      <div class="ctrl-btns">
+        <button class="ctrl-btn active" onclick="setRole('employee',this)">Employee</button>
+        <button class="ctrl-btn" onclick="setRole('supervisor',this)">Supervisor</button>
+        <button class="ctrl-btn" onclick="setRole('hr',this)">HR Admin</button>
+      </div>
+    </div>
+    <div class="ctrl-sep"></div>
+    <div class="ctrl-group">
+      <span class="ctrl-label">Surface</span>
+      <div class="ctrl-btns">
+        <button class="ctrl-btn active" onclick="setSurface('locker',this)">Evidence Locker</button>
+        <button class="ctrl-btn" onclick="setSurface('cycle',this)">Active Cycle Panel</button>
+      </div>
+    </div>
+    <span class="ctrl-desc" id="ctrlDesc">Employee — Evidence Locker on My Profile</span>
+  </div>
+
+  <div class="content">
+
+  <!-- ══════════════════════════════════════
+       EVIDENCE LOCKER
+  ══════════════════════════════════════ -->
+
+  <!-- LOCKER · EMPLOYEE -->
+  <div class="view-panel active" id="panel-locker-employee">
+    <div class="page-row">
+      <div><div style="font-size:20px;font-weight:600;color:var(--t1);margin-bottom:2px">Evidence Locker</div><div style="font-size:13px;color:var(--t2)">Your evidence library. Add items anytime — attach them to a cycle when ready.</div></div>
+      <button class="btn-p" onclick="openModal('addEvidenceModal')"><i class="ti ti-plus"></i>Add evidence</button>
+    </div>
+
+    <div class="stat-row s4">
+      <div class="stat-card"><div class="stat-label">Total items</div><div class="stat-value">18</div><div class="stat-sub">In your locker</div></div>
+      <div class="stat-card"><div class="stat-label">Attached to cycles</div><div class="stat-value">12</div><div class="stat-sub">Across 3 cycles</div></div>
+      <div class="stat-card"><div class="stat-label">Pending approval</div><div class="stat-value" style="color:var(--amber-t)">2</div><div class="stat-sub">Awaiting HR review</div></div>
+      <div class="stat-card"><div class="stat-label">Approved this period</div><div class="stat-value" style="color:var(--teal-t)">9</div><div class="stat-sub">Contributing to score</div></div>
+    </div>
+
+    <div class="filter-bar">
+      <input class="fsearch" type="text" placeholder="Search evidence…"/>
+      <select class="fselect"><option>All types</option><option>File upload</option><option>URL link</option><option>Self-assessment note</option><option>Certification</option><option>NS record link</option><option>Past cycle score</option><option>Supervisor note</option></select>
+      <select class="fselect"><option>All statuses</option><option>Draft</option><option>Submitted</option><option>Pending HR</option><option>Approved</option><option>Rejected</option></select>
+      <select class="fselect"><option>All cycles</option><option>Mid Year Review 2026</option><option>Monthly Check-in June</option></select>
+    </div>
+
+    <div class="ev-list">
+      <!-- Approved items -->
+      <div class="ev-card approved">
+        <div class="ev-type-icon eti-cert"><i class="ti ti-certificate" style="font-size:20px;color:var(--amber-t)"></i></div>
+        <div class="ev-body">
+          <div class="ev-title">NetSuite ERP Consultant Certification — SuiteFoundation</div>
+          <div class="ev-meta">
+            <span class="ev-meta-i"><i class="ti ti-calendar"></i>Earned May 14, 2026</span>
+            <span class="ev-meta-i"><i class="ti ti-user"></i>Added by you</span>
+            <span class="ev-meta-i"><i class="ti ti-refresh"></i>Mid Year Review 2026</span>
+          </div>
+          <div class="ev-tags">
+            <span class="type-chip tc-cert"><i class="ti ti-certificate" style="font-size:10px"></i>Certification</span>
+            <span class="contrib-badge cb-emp">Employee</span>
+            <span class="st-chip st-approved">Approved</span>
+          </div>
+        </div>
+        <div class="ev-actions">
+          <button class="btn-g btn-sm"><i class="ti ti-eye"></i>View</button>
+        </div>
+      </div>
+
+      <div class="ev-card approved">
+        <div class="ev-type-icon eti-commend"><i class="ti ti-award" style="font-size:20px;color:#9d174d"></i></div>
+        <div class="ev-body">
+          <div class="ev-title">Commendation — Essen Healthcare deal close</div>
+          <div class="ev-meta">
+            <span class="ev-meta-i"><i class="ti ti-calendar"></i>Jul 2, 2026</span>
+            <span class="ev-meta-i"><i class="ti ti-user"></i>Added by Christopher Kim</span>
+            <span class="ev-meta-i"><i class="ti ti-refresh"></i>Mid Year Review 2026</span>
+          </div>
+          <div class="ev-desc">"Closing Essen Healthcare and Pyramid Network in the same quarter while maintaining existing client relationships is a genuine achievement."</div>
+          <div class="ev-tags">
+            <span class="type-chip tc-commend"><i class="ti ti-award" style="font-size:10px"></i>Commendation</span>
+            <span class="contrib-badge cb-sup">Supervisor</span>
+            <span class="st-chip st-approved">Approved</span>
+          </div>
+        </div>
+        <div class="ev-actions">
+          <button class="btn-g btn-sm"><i class="ti ti-eye"></i>View</button>
+        </div>
+      </div>
+
+      <div class="ev-card approved">
+        <div class="ev-type-icon eti-url"><i class="ti ti-link" style="font-size:20px;color:var(--teal-t)"></i></div>
+        <div class="ev-body">
+          <div class="ev-title">Signed SOW — Essen Healthcare Jun 2026</div>
+          <div class="ev-meta">
+            <span class="ev-meta-i"><i class="ti ti-calendar"></i>Jun 30, 2026</span>
+            <span class="ev-meta-i"><i class="ti ti-user"></i>Added by you</span>
+          </div>
+          <div class="ev-tags">
+            <span class="type-chip tc-url"><i class="ti ti-link" style="font-size:10px"></i>URL link</span>
+            <span class="contrib-badge cb-emp">Employee</span>
+            <span class="st-chip st-approved">Approved</span>
+          </div>
+        </div>
+        <div class="ev-actions">
+          <button class="btn-g btn-sm"><i class="ti ti-external-link"></i>Open</button>
+        </div>
+      </div>
+
+      <!-- Pending HR approval -->
+      <div class="ev-card pending-hr">
+        <div class="ev-type-icon eti-skill"><i class="ti ti-school" style="font-size:20px;color:var(--blue-t)"></i></div>
+        <div class="ev-body">
+          <div class="ev-title">Skill Development — Client presentation technique coaching</div>
+          <div class="ev-meta">
+            <span class="ev-meta-i"><i class="ti ti-calendar"></i>Jun 15, 2026</span>
+            <span class="ev-meta-i"><i class="ti ti-user"></i>Added by Christopher Kim</span>
+          </div>
+          <div class="ev-desc">Coached on professional presentation for enterprise client meetings. Expected to apply in Essen and Pyramid demos.</div>
+          <div class="ev-tags">
+            <span class="type-chip tc-skill"><i class="ti ti-school" style="font-size:10px"></i>Skill Development</span>
+            <span class="contrib-badge cb-sup">Supervisor</span>
+            <span class="st-chip st-pending">Pending HR review</span>
+          </div>
+        </div>
+        <div class="ev-actions">
+          <button class="btn-g btn-sm"><i class="ti ti-eye"></i>View</button>
+          <span style="font-size:10.5px;color:var(--t3);text-align:right">Waiting for<br>HR approval</span>
+        </div>
+      </div>
+
+      <!-- Draft -->
+      <div class="ev-card draft">
+        <div class="ev-type-icon eti-note"><i class="ti ti-notes" style="font-size:20px;color:var(--purple-t)"></i></div>
+        <div class="ev-body">
+          <div class="ev-title">Self-assessment — Q2 client success narrative</div>
+          <div class="ev-meta">
+            <span class="ev-meta-i"><i class="ti ti-calendar"></i>Last edited Jul 1, 2026</span>
+            <span class="ev-meta-i"><i class="ti ti-user"></i>Added by you</span>
+          </div>
+          <div class="ev-tags">
+            <span class="type-chip tc-note"><i class="ti ti-notes" style="font-size:10px"></i>Self-assessment note</span>
+            <span class="contrib-badge cb-emp">Employee</span>
+            <span class="st-chip st-draft">Draft</span>
+          </div>
+        </div>
+        <div class="ev-actions">
+          <button class="btn-p btn-sm"><i class="ti ti-send"></i>Submit</button>
+          <button class="btn-g btn-sm"><i class="ti ti-edit"></i>Edit</button>
+        </div>
+      </div>
+
+      <!-- Phase 2 gated types -->
+      <div class="p2-gate">
+        <i class="ti ti-clock-2"></i>
+        <div>
+          <div class="p2-gate-title">External feedback forms — clients and contractors</div>
+          <div class="p2-gate-sub">Send a structured feedback form to any email address — no NetSuite login required. Responses attach automatically to your evidence locker. Ideal for client commendations and contractor feedback.</div>
+          <span class="p2-badge">Phase 2</span>
+        </div>
+      </div>
+      <div class="p2-gate">
+        <i class="ti ti-clock-2"></i>
+        <div>
+          <div class="p2-gate-title">Auto-contributing cycle scores — crescendo model</div>
+          <div class="p2-gate-sub">Monthly and weekly cycle scores automatically detected, decay-weighted, and attached as evidence for your annual review. Manual past cycle attachment is available now.</div>
+          <span class="p2-badge">Phase 2</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOCKER · SUPERVISOR -->
+  <div class="view-panel" id="panel-locker-supervisor">
+    <div class="page-row">
+      <div><div style="font-size:20px;font-weight:600;color:var(--t1);margin-bottom:2px">Supervisor Notes</div><div style="font-size:13px;color:var(--t2)">Add notes for your direct reports. All notes route to HR for approval before the employee is notified.</div></div>
+      <button class="btn-p" onclick="openModal('addNoteModal')"><i class="ti ti-plus"></i>Add note</button>
+    </div>
+
+    <div class="info-note"><i class="ti ti-info-circle"></i>All notes you create go to HR for approval. If approved, the employee is notified and the note appears in their evidence locker. If HR rejects a note, it is archived — the employee never sees it.</div>
+
+    <!-- Employee selector -->
+    <div style="display:flex;gap:10px;margin-bottom:16px;align-items:center;flex-wrap:wrap">
+      <span style="font-size:13px;font-weight:500;color:var(--t2)">Viewing notes for:</span>
+      <select class="fselect"><option>Cynthia Diaz</option><option>Aiden Somerhalder</option><option>Amy Nguyen</option><option>Bon Ariola</option></select>
+      <select class="fselect"><option>All types</option><option>Commendation</option><option>Skill Development</option><option>1:1 Notes</option><option>Attendance Note</option><option>Verbal Warning</option><option>Policy Violation</option></select>
+      <select class="fselect"><option>All statuses</option><option>Pending HR</option><option>Approved</option><option>Rejected</option></select>
+    </div>
+
+    <div class="ev-list">
+      <div class="ev-card approved">
+        <div class="ev-type-icon eti-commend"><i class="ti ti-award" style="font-size:20px;color:#9d174d"></i></div>
+        <div class="ev-body">
+          <div class="ev-title">Commendation — Essen Healthcare deal close</div>
+          <div class="ev-meta"><span class="ev-meta-i"><i class="ti ti-calendar"></i>Jul 2, 2026</span><span class="ev-meta-i"><i class="ti ti-user"></i>You</span><span class="ev-meta-i"><i class="ti ti-refresh"></i>Mid Year Review 2026</span></div>
+          <div class="ev-desc">"Closing Essen Healthcare and Pyramid Network in the same quarter while maintaining existing client relationships is a genuine achievement."</div>
+          <div class="ev-tags"><span class="type-chip tc-commend">Commendation</span><span class="st-chip st-approved">Approved by HR · Jun 30</span></div>
+        </div>
+        <div class="ev-actions"><button class="btn-g btn-sm"><i class="ti ti-eye"></i>View</button></div>
+      </div>
+
+      <div class="ev-card pending-hr">
+        <div class="ev-type-icon eti-skill"><i class="ti ti-school" style="font-size:20px;color:var(--blue-t)"></i></div>
+        <div class="ev-body">
+          <div class="ev-title">Skill Development — Client presentation technique coaching</div>
+          <div class="ev-meta"><span class="ev-meta-i"><i class="ti ti-calendar"></i>Jun 15, 2026</span><span class="ev-meta-i"><i class="ti ti-user"></i>You</span></div>
+          <div class="ev-desc">Coached on professional presentation for enterprise client meetings. Expected to apply in Essen and Pyramid demos. Follow-up note to be added once improvement observed.</div>
+          <div class="ev-tags"><span class="type-chip tc-skill">Skill Development</span><span class="st-chip st-pending">Pending HR review</span></div>
+        </div>
+        <div class="ev-actions"><button class="btn-g btn-sm"><i class="ti ti-edit"></i>Edit</button></div>
+      </div>
+
+      <div class="ev-card approved">
+        <div class="ev-type-icon eti-1on1"><i class="ti ti-messages" style="font-size:20px;color:var(--purple-t)"></i></div>
+        <div class="ev-body">
+          <div class="ev-title">1:1 Notes — June 10 check-in</div>
+          <div class="ev-meta"><span class="ev-meta-i"><i class="ti ti-calendar"></i>Jun 10, 2026</span><span class="ev-meta-i"><i class="ti ti-link"></i>Linked to meeting record</span></div>
+          <div class="ev-desc">Discussed Q2 pipeline, Essen negotiation status, and development goal around enterprise presentation skills. Employee is on track.</div>
+          <div class="ev-tags"><span class="type-chip tc-1on1">1:1 Notes</span><span class="st-chip st-approved">Approved</span></div>
+        </div>
+        <div class="ev-actions"><button class="btn-g btn-sm"><i class="ti ti-eye"></i>View</button></div>
+      </div>
+
+      <div class="ev-card rejected" style="opacity:.65">
+        <div class="ev-type-icon eti-attend"><i class="ti ti-clock" style="font-size:20px;color:var(--amber-t)"></i></div>
+        <div class="ev-body">
+          <div class="ev-title">Attendance Note — Late arrival May 8</div>
+          <div class="ev-meta"><span class="ev-meta-i"><i class="ti ti-calendar"></i>May 8, 2026</span></div>
+          <div class="ev-tags"><span class="type-chip tc-attend">Attendance Note</span><span class="st-chip st-rejected">Rejected by HR</span></div>
+          <div style="font-size:11.5px;color:var(--red-t);margin-top:5px;background:var(--red-bg);padding:5px 8px;border-radius:var(--rsm)"><i class="ti ti-info-circle" style="font-size:12px"></i> HR rejection reason: Employee had a pre-approved flex arrangement on this date — not an unexcused attendance issue.</div>
+        </div>
+        <div class="ev-actions"><button class="btn-g btn-sm" style="opacity:.6" disabled>Archived</button></div>
+      </div>
+
+      <!-- Phase 2 -->
+      <div class="p2-gate">
+        <i class="ti ti-clock-2"></i>
+        <div>
+          <div class="p2-gate-title">Written Warning with template and dynamic tags</div>
+          <div class="p2-gate-sub">HR-configured written warning templates with dynamic tags — employee name, incident date, prior warning references, improvement deadline, signature blocks. Generated as a signed PDF document.</div>
+          <span class="p2-badge">Phase 2</span>
+        </div>
+      </div>
+      <div class="p2-gate">
+        <i class="ti ti-clock-2"></i>
+        <div>
+          <div class="p2-gate-title">Full dispute workflow</div>
+          <div class="p2-gate-sub">Employee disputes a note → HR responds → HR upholds, modifies, or overturns → all outcomes permanently recorded. Phase 1 includes a Dispute button that flags the note for HR attention.</div>
+          <span class="p2-badge">Phase 2</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOCKER · HR -->
+  <div class="view-panel" id="panel-locker-hr">
+    <div class="page-row">
+      <div><div style="font-size:20px;font-weight:600;color:var(--t1);margin-bottom:2px">Evidence &amp; Notes — HR Review Queue</div><div style="font-size:13px;color:var(--t2)">Approve or reject supervisor notes before they reach employees. Add HR evidence directly.</div></div>
+      <div style="display:flex;gap:8px">
+        <select class="fselect"><option>All employees</option><option>Cynthia Diaz</option><option>Bon Ariola</option><option>Amy Nguyen</option></select>
+        <button class="btn-p" onclick="openModal('addEvidenceModal')"><i class="ti ti-plus"></i>Add HR note</button>
+      </div>
+    </div>
+
+    <!-- Pending queue -->
+    <div class="hr-queue">
+      <div class="hq-title"><i class="ti ti-clock" style="font-size:15px;color:var(--amber-t)"></i>Pending your review <span style="background:var(--amber-t);color:#fff;font-size:10px;padding:1px 6px;border-radius:8px">4</span></div>
+      <div class="hq-item">
+        <div class="ev-type-icon eti-skill" style="width:36px;height:36px;font-size:16px"><i class="ti ti-school" style="color:var(--blue-t)"></i></div>
+        <div class="hq-body">
+          <div class="hq-title-text">Skill Development — Client presentation technique coaching</div>
+          <div class="hq-meta"><span>Cynthia Diaz</span><span>By Christopher Kim · Jun 15</span><span class="type-chip tc-skill" style="font-size:10px">Skill Development</span></div>
+        </div>
+        <div class="hq-actions">
+          <button class="btn-g btn-sm"><i class="ti ti-eye"></i>Review</button>
+          <button class="btn-approve">Approve</button>
+          <button class="btn-reject">Reject</button>
+        </div>
+      </div>
+      <div class="hq-item">
+        <div class="ev-type-icon eti-warn" style="width:36px;height:36px;font-size:16px"><i class="ti ti-alert-triangle" style="color:var(--red-t)"></i></div>
+        <div class="hq-body">
+          <div class="hq-title-text">Verbal Warning — Missed 3 client follow-up calls</div>
+          <div class="hq-meta"><span>Amy Nguyen</span><span>By Christopher Kim · Jun 28</span><span class="type-chip tc-verbal" style="font-size:10px">Verbal Warning</span><span style="font-size:10.5px;color:var(--red-t);font-weight:500">Evidence attached ✓</span></div>
+        </div>
+        <div class="hq-actions">
+          <button class="btn-g btn-sm"><i class="ti ti-eye"></i>Review</button>
+          <button class="btn-approve">Approve</button>
+          <button class="btn-reject">Reject</button>
+        </div>
+      </div>
+      <div class="hq-item">
+        <div class="ev-type-icon eti-attend" style="width:36px;height:36px;font-size:16px"><i class="ti ti-clock" style="color:var(--amber-t)"></i></div>
+        <div class="hq-body">
+          <div class="hq-title-text">Punctuality — Pattern of late arrivals June</div>
+          <div class="hq-meta"><span>Bon Ariola</span><span>By Wilver Guzman · Jul 1</span><span class="type-chip tc-attend" style="font-size:10px">Punctuality</span><span style="font-size:10.5px;color:var(--red-t);font-weight:500">Evidence attached ✓</span></div>
+        </div>
+        <div class="hq-actions">
+          <button class="btn-g btn-sm"><i class="ti ti-eye"></i>Review</button>
+          <button class="btn-approve">Approve</button>
+          <button class="btn-reject">Reject</button>
+        </div>
+      </div>
+      <div class="hq-item">
+        <div class="ev-type-icon eti-obs" style="width:36px;height:36px;font-size:16px"><i class="ti ti-eye" style="color:var(--teal-t)"></i></div>
+        <div class="hq-body">
+          <div class="hq-title-text">Commendation — Led team through Pyramid Network onboarding</div>
+          <div class="hq-meta"><span>Aiden Somerhalder</span><span>By Christopher Kim · Jul 2</span><span class="type-chip tc-commend" style="font-size:10px">Commendation</span></div>
+        </div>
+        <div class="hq-actions">
+          <button class="btn-g btn-sm"><i class="ti ti-eye"></i>Review</button>
+          <button class="btn-approve">Approve</button>
+          <button class="btn-reject">Reject</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- All evidence -->
+    <div class="sec-lbl">All evidence — Cynthia Diaz</div>
+    <div class="ev-list">
+      <div class="ev-card approved">
+        <div class="ev-type-icon eti-cert"><i class="ti ti-certificate" style="font-size:20px;color:var(--amber-t)"></i></div>
+        <div class="ev-body">
+          <div class="ev-title">NetSuite ERP Consultant Certification</div>
+          <div class="ev-meta"><span class="ev-meta-i"><i class="ti ti-calendar"></i>May 14, 2026</span></div>
+          <div class="ev-tags"><span class="type-chip tc-cert">Certification</span><span class="contrib-badge cb-emp">Employee</span><span class="st-chip st-approved">Approved</span></div>
+        </div>
+        <div class="ev-actions"><button class="btn-g btn-sm"><i class="ti ti-eye"></i>View</button></div>
+      </div>
+      <div class="ev-card approved">
+        <div class="ev-type-icon eti-commend"><i class="ti ti-award" style="font-size:20px;color:#9d174d"></i></div>
+        <div class="ev-body">
+          <div class="ev-title">Commendation — Essen Healthcare deal close</div>
+          <div class="ev-meta"><span class="ev-meta-i"><i class="ti ti-calendar"></i>Jul 2, 2026</span></div>
+          <div class="ev-tags"><span class="type-chip tc-commend">Commendation</span><span class="contrib-badge cb-sup">Supervisor</span><span class="st-chip st-approved">Approved</span></div>
+        </div>
+        <div class="ev-actions"><button class="btn-g btn-sm"><i class="ti ti-eye"></i>View</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       ACTIVE CYCLE PANEL
+  ══════════════════════════════════════ -->
+
+  <!-- CYCLE · EMPLOYEE -->
+  <div class="view-panel" id="panel-cycle-employee">
+    <div class="cycle-header">
+      <div><div class="ch-title">Evidence — Mid Year Peer Review 2026</div><div class="ch-meta">Jan 1 – Jun 30, 2026 · Due Jun 30 · 5 days remaining</div></div>
+      <span class="weight-badge">Evidence weight: 10% of total score</span>
+      <button class="btn-p btn-sm" onclick="openModal('addEvidenceModal')"><i class="ti ti-plus"></i>Add evidence</button>
+    </div>
+
+    <div class="ev-score-strip">
+      <div class="ess-card"><div class="ess-label">Items submitted</div><div class="ess-value">6</div><div class="ess-sub">of 10 max</div></div>
+      <div class="ess-card"><div class="ess-label">Approved</div><div class="ess-value" style="color:var(--teal-t)">4</div><div class="ess-sub">Contributing to score</div></div>
+      <div class="ess-card"><div class="ess-label">Pending HR</div><div class="ess-value" style="color:var(--amber-t)">2</div><div class="ess-sub">Awaiting review</div></div>
+      <div class="ess-card"><div class="ess-label">Evidence gate</div><div class="ess-value" style="color:var(--teal-t)">Met</div><div class="ess-sub">Min 3 required</div></div>
+    </div>
+
+    <div class="info-note"><i class="ti ti-info-circle"></i>Your reviewer will approve or reject each item during the review. You will see the outcome when results are released.</div>
+
+    <div class="contrib-section">
+      <div class="cs-header"><span class="contrib-badge cb-emp">Employee</span><span class="cs-header-title">Added by you</span><span style="font-size:11.5px;color:var(--t3)">4 items</span></div>
+      <div class="ev-list" style="margin-bottom:0">
+        <div class="ev-card approved">
+          <div class="ev-type-icon eti-cert"><i class="ti ti-certificate" style="font-size:18px;color:var(--amber-t)"></i></div>
+          <div class="ev-body">
+            <div class="ev-title">NetSuite ERP Consultant Certification</div>
+            <div class="ev-meta"><span class="ev-meta-i"><i class="ti ti-calendar"></i>May 14, 2026</span></div>
+            <div class="ev-tags"><span class="type-chip tc-cert">Certification</span><span class="st-chip st-approved">Approved</span></div>
+          </div>
+          <div class="ev-actions"><button class="btn-g btn-sm"><i class="ti ti-eye"></i>View</button></div>
+        </div>
+        <div class="ev-card approved">
+          <div class="ev-type-icon eti-url"><i class="ti ti-link" style="font-size:18px;color:var(--teal-t)"></i></div>
+          <div class="ev-body">
+            <div class="ev-title">Signed SOW — Essen Healthcare</div>
+            <div class="ev-meta"><span class="ev-meta-i"><i class="ti ti-calendar"></i>Jun 30, 2026</span></div>
+            <div class="ev-tags"><span class="type-chip tc-url">URL link</span><span class="st-chip st-approved">Approved</span></div>
+          </div>
+          <div class="ev-actions"><button class="btn-g btn-sm"><i class="ti ti-external-link"></i>Open</button></div>
+        </div>
+        <div class="ev-card pending-hr">
+          <div class="ev-type-icon eti-note"><i class="ti ti-notes" style="font-size:18px;color:var(--purple-t)"></i></div>
+          <div class="ev-body">
+            <div class="ev-title">Self-assessment — Q2 client success narrative</div>
+            <div class="ev-meta"><span class="ev-meta-i"><i class="ti ti-calendar"></i>Jul 1, 2026</span></div>
+            <div class="ev-tags"><span class="type-chip tc-note">Self-assessment</span><span class="st-chip st-pending">Pending HR</span></div>
+          </div>
+          <div class="ev-actions"><button class="btn-g btn-sm"><i class="ti ti-eye"></i>View</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="contrib-section">
+      <div class="cs-header"><span class="contrib-badge cb-sup">Supervisor</span><span class="cs-header-title">Added by Christopher Kim</span><span style="font-size:11.5px;color:var(--t3)">2 items</span></div>
+      <div class="ev-list" style="margin-bottom:0">
+        <div class="ev-card approved">
+          <div class="ev-type-icon eti-commend"><i class="ti ti-award" style="font-size:18px;color:#9d174d"></i></div>
+          <div class="ev-body">
+            <div class="ev-title">Commendation — Essen Healthcare deal close</div>
+            <div class="ev-meta"><span class="ev-meta-i"><i class="ti ti-calendar"></i>Jul 2, 2026</span></div>
+            <div class="ev-tags"><span class="type-chip tc-commend">Commendation</span><span class="st-chip st-approved">Approved</span></div>
+          </div>
+          <div class="ev-actions"><button class="btn-g btn-sm"><i class="ti ti-eye"></i>View</button></div>
+        </div>
+        <div class="ev-card pending-hr">
+          <div class="ev-type-icon eti-skill"><i class="ti ti-school" style="font-size:18px;color:var(--blue-t)"></i></div>
+          <div class="ev-body">
+            <div class="ev-title">Skill Development — Presentation coaching</div>
+            <div class="ev-meta"><span class="ev-meta-i"><i class="ti ti-calendar"></i>Jun 15, 2026</span></div>
+            <div class="ev-tags"><span class="type-chip tc-skill">Skill Development</span><span class="st-chip st-pending">Pending HR</span></div>
+          </div>
+          <div class="ev-actions"><span style="font-size:11px;color:var(--t3)">Waiting for HR</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 2 -->
+    <div class="p2-gate">
+      <i class="ti ti-clock-2"></i>
+      <div><div class="p2-gate-title">Past cycle scores as evidence — manual attachment</div><div class="p2-gate-sub">Manually attach a closed cycle's score to this cycle's evidence package. Auto-detection and decay weighting ships in Phase 2.</div><span class="p2-badge">Phase 2</span></div>
+    </div>
+  </div>
+
+  <!-- CYCLE · SUPERVISOR / HR — reviewer view -->
+  <div class="view-panel" id="panel-cycle-supervisor">
+    <div class="cycle-header">
+      <div><div class="ch-title">Evidence Review — Cynthia Diaz · Mid Year Peer Review 2026</div><div class="ch-meta">Reviewing as: Christopher Kim · Evidence weight: 10%</div></div>
+      <span class="weight-badge">4 approved · 2 pending · 0 rejected</span>
+    </div>
+
+    <div class="ev-score-strip">
+      <div class="ess-card"><div class="ess-label">Total submitted</div><div class="ess-value">6</div></div>
+      <div class="ess-card"><div class="ess-label">You approved</div><div class="ess-value" style="color:var(--teal-t)">4</div></div>
+      <div class="ess-card"><div class="ess-label">Pending your action</div><div class="ess-value" style="color:var(--amber-t)">0</div><div class="ess-sub">HR reviews first</div></div>
+      <div class="ess-card"><div class="ess-label">Evidence score</div><div class="ess-value">80%</div><div class="ess-sub">4.0 / 5 so far</div></div>
+    </div>
+
+    <div class="review-panel">
+      <div class="rp-title">All evidence items — approve or reject each one</div>
+      <div class="review-item">
+        <div class="ri-icon eti-cert"><i class="ti ti-certificate" style="font-size:16px;color:var(--amber-t)"></i></div>
+        <div class="ri-body">
+          <div class="ri-title">NetSuite ERP Consultant Certification</div>
+          <div class="ri-meta"><span class="type-chip tc-cert" style="font-size:10px">Certification</span> <span class="contrib-badge cb-emp" style="font-size:9px">Employee</span> · May 14, 2026</div>
+        </div>
+        <div class="ri-actions">
+          <span class="st-chip st-approved">Approved</span>
+          <button class="btn-g btn-sm"><i class="ti ti-eye"></i>View</button>
+        </div>
+      </div>
+      <div class="review-item">
+        <div class="ri-icon eti-url"><i class="ti ti-link" style="font-size:16px;color:var(--teal-t)"></i></div>
+        <div class="ri-body">
+          <div class="ri-title">Signed SOW — Essen Healthcare</div>
+          <div class="ri-meta"><span class="type-chip tc-url" style="font-size:10px">URL link</span> <span class="contrib-badge cb-emp" style="font-size:9px">Employee</span> · Jun 30, 2026</div>
+        </div>
+        <div class="ri-actions">
+          <span class="st-chip st-approved">Approved</span>
+          <button class="btn-g btn-sm"><i class="ti ti-external-link"></i>Open</button>
+        </div>
+      </div>
+      <div class="review-item">
+        <div class="ri-icon eti-note"><i class="ti ti-notes" style="font-size:16px;color:var(--purple-t)"></i></div>
+        <div class="ri-body">
+          <div class="ri-title">Self-assessment — Q2 client success narrative</div>
+          <div class="ri-meta"><span class="type-chip tc-note" style="font-size:10px">Self-assessment</span> <span class="contrib-badge cb-emp" style="font-size:9px">Employee</span> · Jul 1, 2026</div>
+          <div class="ri-desc" style="margin-top:4px">Drove two enterprise deals to close in the same quarter. Maintained existing portfolio with zero client escalations. Built the Essen discovery process from scratch with no template.</div>
+        </div>
+        <div class="ri-actions">
+          <button class="btn-approve btn-sm"><i class="ti ti-check" style="font-size:12px"></i>Approve</button>
+          <button class="btn-reject btn-sm">Reject</button>
+          <button class="btn-g btn-sm"><i class="ti ti-eye"></i>Full view</button>
+        </div>
+      </div>
+      <div class="review-item">
+        <div class="ri-icon eti-commend"><i class="ti ti-award" style="font-size:16px;color:#9d174d"></i></div>
+        <div class="ri-body">
+          <div class="ri-title">Commendation — Essen Healthcare deal close</div>
+          <div class="ri-meta"><span class="type-chip tc-commend" style="font-size:10px">Commendation</span> <span class="contrib-badge cb-sup" style="font-size:9px">Supervisor</span> · Jul 2, 2026</div>
+        </div>
+        <div class="ri-actions">
+          <span class="st-chip st-approved">Approved</span>
+        </div>
+      </div>
+      <div class="review-item" style="background:#fffbf0">
+        <div class="ri-icon eti-skill"><i class="ti ti-school" style="font-size:16px;color:var(--blue-t)"></i></div>
+        <div class="ri-body">
+          <div class="ri-title">Skill Development — Client presentation technique coaching</div>
+          <div class="ri-meta"><span class="type-chip tc-skill" style="font-size:10px">Skill Development</span> <span class="contrib-badge cb-sup" style="font-size:9px">You</span> · Jun 15, 2026</div>
+          <div class="ri-desc" style="margin-top:4px">Has demonstrated improved presentation quality — tie policy applied consistently in client meetings post-coaching. Follow-up improvement noted.</div>
+        </div>
+        <div class="ri-actions">
+          <button class="btn-approve btn-sm"><i class="ti ti-check" style="font-size:12px"></i>Approve</button>
+          <button class="btn-reject btn-sm">Reject</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CYCLE · HR — same as supervisor but can also see rejected/archived -->
+  <div class="view-panel" id="panel-cycle-hr">
+    <div class="cycle-header">
+      <div><div class="ch-title">Evidence — All Participants · Mid Year Peer Review 2026</div><div class="ch-meta">HR Admin view · 98 participants · evidence gate threshold: 3 items</div></div>
+      <span class="weight-badge">Evidence weight: 10%</span>
+    </div>
+
+    <div class="stat-row s4">
+      <div class="stat-card"><div class="stat-label">Total items submitted</div><div class="stat-value">412</div><div class="stat-sub">Across 98 employees</div></div>
+      <div class="stat-card"><div class="stat-label">Approved</div><div class="stat-value" style="color:var(--teal-t)">334</div></div>
+      <div class="stat-card"><div class="stat-label">Pending HR review</div><div class="stat-value" style="color:var(--amber-t)">62</div></div>
+      <div class="stat-card"><div class="stat-label">Gate not met</div><div class="stat-value" style="color:var(--red-t)">8</div><div class="stat-sub">Below minimum 3</div></div>
+    </div>
+
+    <div class="info-note"><i class="ti ti-alert-triangle" style="color:var(--amber-t)"></i>62 items are pending your review. Employees cannot see supervisor notes until you approve them. Approve or reject before cycle closes.</div>
+
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+      <select class="fselect"><option>All employees</option><option>Cynthia Diaz</option><option>Amy Nguyen</option><option>Bon Ariola</option></select>
+      <select class="fselect"><option>Pending HR review</option><option>All statuses</option><option>Approved</option><option>Rejected</option></select>
+      <select class="fselect"><option>All types</option><option>Verbal Warning</option><option>Punctuality</option><option>Commendation</option><option>Skill Development</option></select>
+      <button class="btn-g btn-sm"><i class="ti ti-checks"></i>Bulk approve selected</button>
+    </div>
+
+    <div class="hr-queue">
+      <div class="hq-title"><i class="ti ti-clock" style="font-size:15px;color:var(--amber-t)"></i>Pending your review — 4 shown</div>
+      <div class="hq-item">
+        <div class="ev-type-icon eti-skill" style="width:36px;height:36px;font-size:16px"><i class="ti ti-school" style="color:var(--blue-t)"></i></div>
+        <div class="hq-body">
+          <div class="hq-title-text">Skill Development — Client presentation technique coaching</div>
+          <div class="hq-meta"><span style="font-weight:600">Cynthia Diaz</span><span>By Christopher Kim · Jun 15</span><span class="type-chip tc-skill" style="font-size:10px">Skill Development</span></div>
+        </div>
+        <div class="hq-actions"><button class="btn-g btn-sm"><i class="ti ti-eye"></i>Review</button><button class="btn-approve">Approve</button><button class="btn-reject">Reject</button></div>
+      </div>
+      <div class="hq-item">
+        <div class="ev-type-icon eti-warn" style="width:36px;height:36px;font-size:16px"><i class="ti ti-alert-triangle" style="color:var(--red-t)"></i></div>
+        <div class="hq-body">
+          <div class="hq-title-text">Verbal Warning — Missed 3 client follow-up calls</div>
+          <div class="hq-meta"><span style="font-weight:600">Amy Nguyen</span><span>By Christopher Kim · Jun 28</span><span class="type-chip tc-verbal" style="font-size:10px">Verbal Warning</span><span style="font-size:10.5px;color:var(--teal-t);font-weight:500">✓ Evidence attached</span></div>
+        </div>
+        <div class="hq-actions"><button class="btn-g btn-sm"><i class="ti ti-eye"></i>Review</button><button class="btn-approve">Approve</button><button class="btn-reject">Reject</button></div>
+      </div>
+      <div class="hq-item">
+        <div class="ev-type-icon eti-attend" style="width:36px;height:36px;font-size:16px"><i class="ti ti-clock" style="color:var(--amber-t)"></i></div>
+        <div class="hq-body">
+          <div class="hq-title-text">Punctuality — Pattern of late arrivals June</div>
+          <div class="hq-meta"><span style="font-weight:600">Bon Ariola</span><span>By Wilver Guzman · Jul 1</span><span class="type-chip tc-attend" style="font-size:10px">Punctuality</span><span style="font-size:10.5px;color:var(--teal-t);font-weight:500">✓ Evidence attached</span></div>
+        </div>
+        <div class="hq-actions"><button class="btn-g btn-sm"><i class="ti ti-eye"></i>Review</button><button class="btn-approve">Approve</button><button class="btn-reject">Reject</button></div>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- /.content -->
+</div><!-- /.main -->
+</div><!-- /.shell -->
+
+<!-- ADD EVIDENCE MODAL -->
+<div class="modal-overlay" id="addEvidenceModal">
+  <div class="form-modal">
+    <div class="form-hd">
+      <div><div class="form-title">Add evidence</div><div class="form-sub">Choose a type. Supervisor and HR items route to HR for approval before the employee sees them.</div></div>
+      <button class="form-close" onclick="closeModal('addEvidenceModal')">×</button>
+    </div>
+    <div class="bsec">
+      <div class="bsec-title">Evidence type</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">
+        <div class="note-type-opt sel" onclick="selType(this)"><div class="nto-icon">📄</div><div class="nto-name">File upload</div></div>
+        <div class="note-type-opt" onclick="selType(this)"><div class="nto-icon">🔗</div><div class="nto-name">URL link</div></div>
+        <div class="note-type-opt" onclick="selType(this)"><div class="nto-icon">📝</div><div class="nto-name">Self-assessment note</div></div>
+        <div class="note-type-opt" onclick="selType(this)"><div class="nto-icon">🏆</div><div class="nto-name">Certification</div></div>
+        <div class="note-type-opt" onclick="selType(this)"><div class="nto-icon">🗂️</div><div class="nto-name">NS record link</div></div>
+        <div class="note-type-opt p2"><div class="nto-icon">📧</div><div class="nto-name">External feedback form</div><span class="nto-p2">P2</span></div>
+        <div class="note-type-opt p2"><div class="nto-icon">📊</div><div class="nto-name">Past cycle score</div><span class="nto-p2">P2</span></div>
+      </div>
+    </div>
+    <div class="bsec">
+      <div class="bsec-title">Details</div>
+      <div style="margin-bottom:12px"><label class="flabel">Title <span class="freq">*</span></label><input class="finput" type="text" placeholder="Describe this evidence item…"/></div>
+      <div class="fg2">
+        <div><label class="flabel">Date</label><input class="finput" type="date"/></div>
+        <div><label class="flabel">Link to cycle</label><select class="fselect" style="width:100%"><option>— None (locker only) —</option><option>Mid Year Review 2026</option><option>Monthly Check-in July</option></select></div>
+      </div>
+      <div style="margin-bottom:12px"><label class="flabel">Description</label><textarea class="ftextarea" placeholder="Optional context about this evidence…"></textarea></div>
+      <div style="margin-bottom:12px"><label class="flabel">File upload</label><input class="finput" type="file"/><div style="font-size:11px;color:var(--t3);margin-top:4px">Stored in NS File Cabinet. Max 25MB. PDF, DOC, PNG, JPG.</div></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:#f7f8fa;border-radius:var(--rmd);border:1px solid var(--border)">
+        <div><div style="font-size:13px;color:var(--t1)">Visibility</div><div style="font-size:11.5px;color:var(--t3)">Private — only you and your reviewer. Shared — visible to HR.</div></div>
+        <select class="fselect" style="width:120px"><option>Private</option><option>Shared (HR)</option></select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-g" onclick="closeModal('addEvidenceModal')">Cancel</button>
+      <button class="btn-g">Save as draft</button>
+      <button class="btn-p"><i class="ti ti-send"></i>Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD SUPERVISOR NOTE MODAL -->
+<div class="modal-overlay" id="addNoteModal">
+  <div class="form-modal">
+    <div class="form-hd">
+      <div><div class="form-title">Add supervisor note</div><div class="form-sub">This note will go to HR for approval before the employee is notified. Phase 2 items are not yet available.</div></div>
+      <button class="form-close" onclick="closeModal('addNoteModal')">×</button>
+    </div>
+    <div class="bsec">
+      <div class="bsec-title">Note type — select one</div>
+      <div class="note-type-grid">
+        <div class="note-type-opt sel" onclick="selType(this)"><div class="nto-icon">🏆</div><div class="nto-name">Commendation</div></div>
+        <div class="note-type-opt" onclick="selType(this)"><div class="nto-icon">📚</div><div class="nto-name">Skill Development</div></div>
+        <div class="note-type-opt" onclick="selType(this)"><div class="nto-icon">🤝</div><div class="nto-name">Mentorship</div></div>
+        <div class="note-type-opt" onclick="selType(this)"><div class="nto-icon">🎯</div><div class="nto-name">Goal Progress</div></div>
+        <div class="note-type-opt" onclick="selType(this)"><div class="nto-icon">⭐</div><div class="nto-name">Client Feedback</div></div>
+        <div class="note-type-opt" onclick="selType(this)"><div class="nto-icon">📈</div><div class="nto-name">Feedback Improvement</div></div>
+        <div class="note-type-opt" onclick="selType(this)"><div class="nto-icon">🔍</div><div class="nto-name">Probationary Review</div></div>
+        <div class="note-type-opt" onclick="selType(this)"><div class="nto-icon">💬</div><div class="nto-name">1:1 Notes</div></div>
+        <div class="note-type-opt" onclick="selType(this)"><div class="nto-icon">🕐</div><div class="nto-name">Attendance Note</div></div>
+        <div class="note-type-opt" onclick="selType(this)"><div class="nto-icon">⏰</div><div class="nto-name">Punctuality</div></div>
+        <div class="note-type-opt" onclick="selType(this)"><div class="nto-icon">📋</div><div class="nto-name">Policy Violation</div></div>
+        <div class="note-type-opt" onclick="selType(this)"><div class="nto-icon">⚠️</div><div class="nto-name">Verbal Warning</div></div>
+        <div class="note-type-opt" onclick="selType(this)"><div class="nto-icon">🚪</div><div class="nto-name">Exit Note</div></div>
+        <div class="note-type-opt p2"><div class="nto-icon">📄</div><div class="nto-name">Written Warning</div><span class="nto-p2">P2</span></div>
+        <div class="note-type-opt p2"><div class="nto-icon">📊</div><div class="nto-name">PIP</div><span class="nto-p2">P2</span></div>
+        <div class="note-type-opt p2"><div class="nto-icon">🔴</div><div class="nto-name">Disciplinary Record</div><span class="nto-p2">P2</span></div>
+      </div>
+    </div>
+    <div class="bsec">
+      <div class="bsec-title">Details</div>
+      <div style="margin-bottom:12px"><label class="flabel">Employee <span class="freq">*</span></label><select class="fselect" style="width:100%"><option>Cynthia Diaz</option><option>Amy Nguyen</option><option>Bon Ariola</option><option>Aiden Somerhalder</option></select></div>
+      <div style="margin-bottom:12px"><label class="flabel">Title <span class="freq">*</span></label><input class="finput" type="text" placeholder="Brief description of this note…"/></div>
+      <div class="fg2">
+        <div><label class="flabel">Date of observation</label><input class="finput" type="date"/></div>
+        <div><label class="flabel">Link to cycle</label><select class="fselect" style="width:100%"><option>— None —</option><option>Mid Year Review 2026</option><option>Monthly Check-in July</option></select></div>
+      </div>
+      <div style="margin-bottom:12px"><label class="flabel">Note content <span class="freq">*</span></label><textarea class="ftextarea" style="min-height:100px" placeholder="Describe what you observed. Be specific — date, context, behaviour, and impact."></textarea></div>
+      <div class="ev-req-note" id="evReqNote" style="display:none"><i class="ti ti-alert-circle" style="font-size:14px;flex-shrink:0"></i>This note type requires at least one evidence item attached before submission.</div>
+      <div style="margin-top:10px"><label class="flabel">Attach evidence</label><input class="finput" type="file"/><div style="font-size:11px;color:var(--t3);margin-top:4px">Clock In/Out records, emails, documents — anything that supports this note.</div></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-g" onclick="closeModal('addNoteModal')">Cancel</button>
+      <button class="btn-p"><i class="ti ti-send"></i>Submit to HR for review</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentRole='employee';
+let currentSurface='locker';
+
+function setRole(role,btn){
+  document.querySelectorAll('.ctrl-btns .ctrl-btn').forEach((b,i)=>{if(i<3)b.classList.remove('active')});
+  btn.classList.add('active');
+  currentRole=role;
+  render();
+}
+function setSurface(surface,btn){
+  const surfaceBtns=document.querySelectorAll('.ctrl-btns')[1].querySelectorAll('.ctrl-btn');
+  surfaceBtns.forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  currentSurface=surface;
+  render();
+}
+function render(){
+  document.querySelectorAll('.view-panel').forEach(p=>p.classList.remove('active'));
+  const id='panel-'+currentSurface+'-'+currentRole;
+  const el=document.getElementById(id);
+  if(el) el.classList.add('active');
+  else{
+    // Supervisor and HR share the cycle reviewer view
+    const fallback=document.getElementById('panel-cycle-supervisor');
+    if(currentSurface==='cycle'&&currentRole==='hr'){
+      document.getElementById('panel-cycle-hr').classList.add('active');
+    } else if(currentSurface==='cycle'&&currentRole==='supervisor'){
+      document.getElementById('panel-cycle-supervisor').classList.add('active');
+    }
+  }
+  const descs={
+    'locker-employee':'Employee — Evidence Locker on My Profile',
+    'locker-supervisor':'Supervisor — Notes management for direct reports',
+    'locker-hr':'HR Admin — Approval queue + all employee evidence',
+    'cycle-employee':'Employee — Evidence panel inside active cycle',
+    'cycle-supervisor':'Supervisor — Evidence reviewer inside active cycle',
+    'cycle-hr':'HR Admin — Bulk evidence review across all participants'
+  };
+  document.getElementById('ctrlDesc').textContent=descs[currentSurface+'-'+currentRole]||'';
+}
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.modal-overlay').forEach(o=>{o.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})});
+function selType(el){
+  if(el.classList.contains('p2'))return;
+  el.closest('.bsec').querySelectorAll('.note-type-opt').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel');
+  // Show evidence required note for disciplinary types
+  const name=el.querySelector('.nto-name')?.textContent||'';
+  const requiresEv=['Verbal Warning','Punctuality','Policy Violation','Attendance Note'];
+  const req=document.getElementById('evReqNote');
+  if(req) req.style.display=requiresEv.includes(name)?'flex':'none';
+}
+render();
+</script>
+</body>
+</html>
