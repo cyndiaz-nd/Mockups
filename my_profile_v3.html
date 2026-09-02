@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>My Profile — Performance Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1a2332;--navy-h:#223044;--navy-mid:#2d4a7a;
+  --page:#f0f2f5;--surface:#fff;--border:#e2e5ea;--border-mid:#c8cdd6;
+  --t1:#0f1923;--t2:#5a6473;--t3:#8e97a3;
+  --teal-bg:#e1f5ee;--teal-t:#0f6e56;--teal:#16a34a;
+  --blue-bg:#e6f1fb;--blue-t:#185fa5;
+  --purple-bg:#eeedfe;--purple-t:#3c3489;
+  --amber-bg:#faeeda;--amber-t:#633806;
+  --red:#e8002d;--red-bg:#fde8ec;--red-t:#a51633;
+  --orange-bg:#fff3e0;--orange-t:#e65100;
+  font-family:'Inter',system-ui,sans-serif;font-size:14px;color:var(--t1);background:var(--page);
+  --sidebar-w:200px;--sidebar-collapsed-w:56px;
+  --rsm:6px;--rmd:8px;--rlg:12px;--rxl:16px;
+  --sidebar-transition:width 0.22s ease;
+}
+.shell{display:flex;min-height:100vh;position:relative}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:var(--sidebar-w);min-height:100vh;background:var(--navy);
+  display:flex;flex-direction:column;flex-shrink:0;
+  position:sticky;top:0;height:100vh;overflow:hidden;
+  transition:var(--sidebar-transition);z-index:100;
+}
+.sidebar.collapsed{width:var(--sidebar-collapsed-w)}
+.logo-zone{display:flex;align-items:center;gap:10px;padding:18px 14px;border-bottom:1px solid rgba(255,255,255,.09);flex-shrink:0;overflow:hidden;min-width:0}
+.client-logo-img{width:36px;height:36px;border-radius:var(--rmd);background:var(--red);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-text{overflow:hidden;transition:opacity .1s .08s,max-width .22s ease;max-width:140px;white-space:nowrap}
+.sidebar.collapsed .logo-text{opacity:0;max-width:0;transition:opacity .08s,max-width .22s ease}
+.logo-title{font-size:12px;font-weight:700;color:#fff;line-height:1.2}
+.logo-sub{font-size:10px;color:rgba(255,255,255,.4);line-height:1.2}
+.nav-section{flex:1;padding:8px 0;overflow-y:auto;overflow-x:hidden}
+.nav-item{
+  display:flex;align-items:center;gap:10px;padding:9px 14px;
+  font-size:12.5px;color:rgba(255,255,255,.55);text-decoration:none;
+  transition:background .12s,color .12s;cursor:pointer;position:relative;
+  white-space:nowrap;min-width:0;overflow:hidden
+}
+.nav-item:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.88)}
+.nav-item.active{background:rgba(255,255,255,.11);color:#fff}
+.nav-item i{font-size:16px;flex-shrink:0;width:20px;text-align:center}
+.nav-label{overflow:hidden;transition:opacity .1s .08s,max-width .22s ease;max-width:140px}
+.sidebar.collapsed .nav-label{opacity:0;max-width:0;pointer-events:none;transition:opacity .08s,max-width .22s ease}
+.nav-badge{background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:8px;min-width:16px;text-align:center;flex-shrink:0;transition:opacity .1s .08s}
+.sidebar.collapsed .nav-badge{opacity:0;pointer-events:none}
+/* Tooltips in collapsed state */
+.nav-item .nav-tip{
+  display:none;position:absolute;left:calc(var(--sidebar-collapsed-w) + 6px);top:50%;transform:translateY(-50%);
+  background:var(--navy-h);color:#fff;font-size:12px;padding:5px 10px;border-radius:var(--rmd);
+  white-space:nowrap;pointer-events:none;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,.2);
+  opacity:0;transition:opacity .1s
+}
+.sidebar.collapsed .nav-item:hover .nav-tip{display:block;opacity:1}
+.nav-div{height:1px;background:rgba(255,255,255,.08);margin:4px 12px;flex-shrink:0}
+.av-nav{width:26px;height:26px;border-radius:50%;background:var(--navy-mid);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:#85b7eb;flex-shrink:0}
+/* Sidebar toggle button */
+.sidebar-toggle{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:10px 14px;border:none;background:transparent;cursor:pointer;
+  color:rgba(255,255,255,.4);font-family:inherit;font-size:12px;
+  transition:color .12s;flex-shrink:0;overflow:hidden;white-space:nowrap;
+  border-top:1px solid rgba(255,255,255,.08)
+}
+.sidebar-toggle:hover{color:rgba(255,255,255,.8)}
+.sidebar-toggle i{font-size:15px;flex-shrink:0;transition:transform .22s}
+.sidebar-toggle-label{transition:opacity .1s .08s,max-width .22s ease;max-width:120px}
+.sidebar.collapsed .sidebar-toggle-label{opacity:0;max-width:0}
+.sidebar.collapsed .sidebar-toggle i{transform:rotate(180deg)}
+.footer-zone{padding:10px 14px 16px;border-top:1px solid rgba(255,255,255,.09);display:flex;flex-direction:column;align-items:flex-start;gap:5px;flex-shrink:0;overflow:hidden}
+.powered-txt{font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.06em;text-transform:uppercase;transition:opacity .1s .08s}
+.sidebar.collapsed .powered-txt{opacity:0}
+.ats-link{display:flex;align-items:center;gap:6px;text-decoration:none;padding:4px 0}
+.ats-wm{font-size:11px;font-weight:600;color:rgba(255,255,255,.65);transition:opacity .1s .08s,max-width .22s ease;max-width:100px;overflow:hidden;white-space:nowrap}
+.sidebar.collapsed .ats-wm{opacity:0;max-width:0}
+.ats-icon{font-size:14px;color:rgba(255,255,255,.4);flex-shrink:0}
+
+/* ── MAIN ── */
+.main{flex:1;overflow-y:auto;min-width:0;display:flex;flex-direction:column}
+
+/* Role banner */
+.role-banner{background:var(--navy);padding:8px 24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:2px solid var(--red);flex-shrink:0}
+.role-label{font-size:11px;font-weight:600;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.06em}
+.role-btns{display:flex;gap:5px}
+.role-btn{padding:4px 13px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid rgba(255,255,255,.2);background:transparent;color:rgba(255,255,255,.6);font-family:inherit;transition:all .12s}
+.role-btn:hover{background:rgba(255,255,255,.1);color:#fff}
+.role-btn.active{background:#fff;color:var(--navy)}
+
+.content{padding:0;flex:1}
+.view-panel{display:none;padding:24px 28px 56px}
+.view-panel.active{display:block}
+
+/* ── PROFILE HEADER ── */
+.profile-header{background:var(--surface);border:1px solid var(--border);border-radius:var(--rxl);padding:22px 24px;margin-bottom:20px;display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap}
+.ph-avatar-wrap{position:relative;flex-shrink:0}
+.ph-avatar{width:72px;height:72px;border-radius:50%;background:var(--teal-bg);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:var(--teal-t);border:3px solid var(--border);cursor:pointer;overflow:hidden}
+.ph-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.ph-avatar-edit{position:absolute;bottom:0;right:0;width:22px;height:22px;border-radius:50%;background:var(--navy);border:2px solid var(--surface);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.ph-avatar-edit i{font-size:10px;color:#fff}
+.ph-main{flex:1;min-width:0}
+.ph-name-row{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap}
+.ph-name{font-size:20px;font-weight:700;color:var(--t1)}
+.ph-edit-btn{background:none;border:none;cursor:pointer;color:var(--t3);font-size:14px;padding:2px}
+.ph-edit-btn:hover{color:var(--navy-mid)}
+.ph-status-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.status-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.sd-available{background:#16a34a}
+.sd-busy{background:var(--red)}
+.sd-focus{background:var(--amber-t)}
+.sd-away{background:var(--t3)}
+.ph-status-text{font-size:13px;color:var(--t2)}
+.ph-status-msg{font-size:13px;color:var(--t2);font-style:italic}
+.ph-status-edit{background:none;border:none;cursor:pointer;color:var(--t3);font-size:12px;padding:1px 4px}
+.ph-ns-fields{display:grid;grid-template-columns:repeat(5,1fr);gap:0;border-top:1px solid var(--border);padding-top:12px;margin-top:4px}
+.ph-ns-field{padding-right:16px;border-right:1px solid var(--border)}
+.ph-ns-field:last-child{border-right:none}
+.ph-ns-label{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px;display:flex;align-items:center;gap:5px}
+.ns-badge{font-size:9px;font-weight:600;background:var(--blue-bg);color:var(--blue-t);padding:1px 5px;border-radius:3px}
+.ph-ns-value{font-size:12.5px;color:var(--t1);font-weight:500}
+.ph-ns-change{font-size:10.5px;color:var(--t3);margin-top:1px}
+.ph-ns-link{color:var(--navy-mid);text-decoration:none;font-size:12.5px;font-weight:500}
+.ph-ns-link:hover{text-decoration:underline}
+.ph-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0}
+.cycle-badge{background:var(--navy);color:#fff;font-size:11px;font-weight:500;padding:4px 12px;border-radius:20px;display:flex;align-items:center;gap:5px}
+
+/* ── STAT STRIP ── */
+.stat-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.stat-tile{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:16px 18px;cursor:pointer;transition:box-shadow .15s,border-color .15s;text-decoration:none;display:block}
+.stat-tile:hover{box-shadow:0 4px 16px rgba(0,0,0,.08);border-color:var(--border-mid)}
+.st-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px}
+.st-icon{width:34px;height:34px;border-radius:var(--rmd);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.st-trend{display:flex;align-items:center;gap:3px;font-size:11px;font-weight:600}
+.trend-up{color:var(--teal-t)}
+.trend-down{color:var(--red-t)}
+.trend-flat{color:var(--t3)}
+.st-value{font-size:28px;font-weight:700;color:var(--t1);line-height:1;margin-bottom:3px}
+.st-label{font-size:12px;font-weight:500;color:var(--t1);margin-bottom:2px}
+.st-sub{font-size:11px;color:var(--t3)}
+.st-bar{height:3px;background:#e8eaed;border-radius:2px;overflow:hidden;margin-top:8px}
+.st-bar-fill{height:100%;border-radius:2px}
+
+/* ── GRID LAYOUT ── */
+.content-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px}
+.content-grid-2{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:20px}
+.panel-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:16px 18px}
+.panel-card.full{grid-column:1/-1}
+.pc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.pc-title{font-size:13px;font-weight:600;color:var(--t1)}
+.pc-link{font-size:12px;color:var(--navy-mid);text-decoration:none;display:flex;align-items:center;gap:3px}
+.pc-link:hover{text-decoration:underline}
+
+/* Goals mini list */
+.goal-mini-list{display:flex;flex-direction:column;gap:8px}
+.goal-mini{padding:9px 11px;background:#f7f8fa;border-radius:var(--rmd);border:1px solid var(--border);cursor:pointer;transition:border-color .12s}
+.goal-mini:hover{border-color:var(--border-mid)}
+.gm-top{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:5px}
+.gm-title{font-size:12.5px;font-weight:600;color:var(--t1);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gm-pct{font-size:11px;font-weight:700;color:var(--t2)}
+.gm-bar{height:4px;background:#e8eaed;border-radius:2px;overflow:hidden}
+.gm-fill{height:100%;border-radius:2px}
+.gm-meta{display:flex;gap:6px;margin-top:4px;flex-wrap:wrap}
+.fw-tag{display:inline-flex;align-items:center;font-size:9.5px;font-weight:600;padding:1px 6px;border-radius:3px}
+.fw-smart{background:#dbeafe;color:#1e40af}
+.fw-okr{background:var(--purple-bg);color:var(--purple-t)}
+.fw-woop{background:var(--teal-bg);color:var(--teal-t)}
+.fw-asp{background:var(--orange-bg);color:var(--orange-t)}
+
+/* Recognition mini */
+.rec-mini-list{display:flex;flex-direction:column;gap:7px}
+.rec-mini{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;background:#f7f8fa;border-radius:var(--rmd);border:1px solid var(--border)}
+.rec-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0}
+.av-t{background:var(--teal-bg);color:var(--teal-t)}
+.av-b{background:var(--blue-bg);color:var(--blue-t)}
+.av-p{background:var(--purple-bg);color:var(--purple-t)}
+.av-a{background:var(--amber-bg);color:var(--amber-t)}
+.rec-body{flex:1;min-width:0}
+.rec-from{font-size:11px;color:var(--t2);margin-bottom:2px}
+.rec-from a{color:var(--navy-mid);text-decoration:none;font-weight:500}
+.rec-msg{font-size:12px;color:var(--t1);line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.rec-badge{font-size:9.5px;font-weight:500;padding:1px 6px;border-radius:3px;background:var(--amber-bg);color:var(--amber-t);margin-top:3px;display:inline-block}
+
+/* Evidence mini */
+.ev-mini-list{display:flex;flex-direction:column;gap:7px}
+.ev-mini{display:flex;align-items:center;gap:9px;padding:8px 10px;background:#f7f8fa;border-radius:var(--rmd);border:1px solid var(--border)}
+.ev-mini-icon{width:30px;height:30px;border-radius:var(--rsm);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.ev-mini-body{flex:1;min-width:0}
+.ev-mini-title{font-size:12px;font-weight:600;color:var(--t1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ev-mini-meta{font-size:10.5px;color:var(--t3);margin-top:1px}
+.ev-mini-status{font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;flex-shrink:0}
+.evs-approved{background:var(--teal-bg);color:var(--teal-t)}
+.evs-pending{background:var(--amber-bg);color:var(--amber-t)}
+
+/* Activity feed */
+.activity-list{display:flex;flex-direction:column;gap:0}
+.activity-item{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.activity-item:last-child{border-bottom:none}
+.act-icon{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;margin-top:1px}
+.act-body{flex:1;min-width:0}
+.act-text{font-size:12.5px;color:var(--t1);line-height:1.4}
+.act-text a{color:var(--navy-mid);text-decoration:none;font-weight:500}
+.act-time{font-size:11px;color:var(--t3);margin-top:2px}
+
+/* Pending actions */
+.pending-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.pending-card{background:#f7f8fa;border:1px solid var(--border);border-radius:var(--rlg);padding:12px 14px;position:relative;cursor:pointer;transition:border-color .12s}
+.pending-card:hover{border-color:var(--border-mid)}
+.pending-card.has-items{border-left:3px solid var(--red-t)}
+.pc-badge{position:absolute;top:10px;right:10px;background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:10px;min-width:18px;text-align:center}
+.pc-icon-wrap{width:32px;height:32px;border-radius:var(--rmd);display:flex;align-items:center;justify-content:center;font-size:14px;margin-bottom:7px}
+.pc-card-title{font-size:12.5px;font-weight:600;color:var(--t1);margin-bottom:2px}
+.pc-card-sub{font-size:11px;color:var(--t3)}
+.pc-review-btn{margin-top:8px;font-size:11px;font-weight:600;color:var(--navy-mid);background:none;border:none;cursor:pointer;font-family:inherit;padding:0;display:flex;align-items:center;gap:3px}
+
+/* Saved search portlet */
+.portlet-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:16px 18px;margin-bottom:16px}
+.portlet-empty{background:#f7f8fa;border:1.5px dashed var(--border-mid);border-radius:var(--rlg);padding:20px;text-align:center;margin-bottom:16px;cursor:pointer;transition:border-color .12s}
+.portlet-empty:hover{border-color:var(--navy-mid)}
+.portlet-table{width:100%;border-collapse:collapse;font-size:12px}
+.portlet-table th{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;padding:7px 8px;text-align:left;border-bottom:1px solid var(--border)}
+.portlet-table td{padding:7px 8px;border-bottom:1px solid var(--border);color:var(--t1)}
+.portlet-table tr:last-child td{border-bottom:none}
+
+/* Score history */
+.score-history{display:flex;gap:8px;align-items:flex-end;height:60px;margin-bottom:6px}
+.sh-bar-wrap{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1}
+.sh-bar{width:100%;border-radius:3px 3px 0 0;background:var(--navy-mid);transition:height .3s}
+.sh-label{font-size:9px;color:var(--t3);text-align:center;line-height:1.2}
+.sh-score{font-size:9.5px;font-weight:600;color:var(--t2)}
+.sh-bar.legacy{background:var(--border-mid);opacity:.7}
+.legacy-badge{font-size:9px;font-weight:600;background:#f0f2f5;color:var(--t3);padding:1px 5px;border-radius:3px;margin-top:2px}
+
+/* Section divider */
+.sec-divider{display:flex;align-items:center;gap:12px;margin:20px 0 16px}
+.sec-divider-line{flex:1;height:1px;background:var(--border)}
+.sec-divider-lbl{font-size:11px;font-weight:600;color:var(--t2);white-space:nowrap;display:flex;align-items:center;gap:6px}
+
+/* Supervisor team table */
+.team-table{width:100%;border-collapse:collapse}
+.team-table th{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;padding:8px 10px;text-align:left;border-bottom:1px solid var(--border);background:#f7f8fa}
+.team-table td{padding:9px 10px;border-bottom:1px solid var(--border);font-size:12.5px;color:var(--t1);vertical-align:middle}
+.team-table tr:last-child td{border-bottom:none}
+.team-table tr:hover td{background:#fafbfc;cursor:pointer}
+.emp-name-link{color:var(--navy-mid);text-decoration:none;font-weight:600}
+.emp-name-link:hover{text-decoration:underline}
+
+/* HR Company Health */
+.health-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.health-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:14px 16px}
+.hc-label{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.hc-value{font-size:26px;font-weight:700;color:var(--t1);margin-bottom:2px;line-height:1}
+.hc-bar{height:4px;background:#e8eaed;border-radius:2px;overflow:hidden;margin-top:6px}
+.hc-fill{height:100%;border-radius:2px}
+
+/* Phase 2 gate */
+.p2-gate{background:var(--surface);border:1.5px dashed var(--border-mid);border-radius:var(--rlg);padding:14px 16px;display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.p2-gate i{font-size:20px;color:var(--border-mid);flex-shrink:0}
+.p2-title{font-size:12.5px;font-weight:600;color:var(--t2);margin-bottom:2px}
+.p2-sub{font-size:11.5px;color:var(--t3)}
+.p2-badge{display:inline-block;background:var(--purple-bg);color:var(--purple-t);font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;margin-top:4px}
+
+/* Buttons */
+.btn-p{background:var(--navy);color:#fff;border:none;border-radius:var(--rmd);padding:7px 14px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;transition:background .12s;white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+.btn-p:hover{background:var(--navy-h)}
+.btn-g{background:transparent;color:var(--t2);border:1px solid var(--border-mid);border-radius:var(--rmd);padding:7px 12px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+.btn-g:hover{background:#f5f6f8}
+.btn-sm{padding:5px 10px;font-size:11.5px}
+.chip{display:inline-flex;align-items:center;font-size:10.5px;font-weight:500;padding:2px 8px;border-radius:20px}
+.chip-pass{background:var(--teal-bg);color:var(--teal-t)}
+.chip-fail{background:var(--red-bg);color:var(--red-t)}
+.chip-warn{background:var(--amber-bg);color:var(--amber-t)}
+
+/* Status dropdown */
+.status-picker{position:relative;display:inline-block}
+.status-picker-btn{background:none;border:1px solid var(--border-mid);border-radius:20px;padding:3px 10px 3px 8px;font-family:inherit;font-size:12.5px;color:var(--t2);cursor:pointer;display:flex;align-items:center;gap:5px}
+.status-picker-btn:hover{background:#f5f6f8}
+.status-dropdown{display:none;position:absolute;top:calc(100% + 4px);left:0;background:var(--surface);border:1px solid var(--border-mid);border-radius:var(--rmd);box-shadow:0 4px 16px rgba(0,0,0,.1);z-index:100;min-width:160px;padding:4px 0}
+.status-picker:hover .status-dropdown{display:block}
+.sd-opt{display:flex;align-items:center;gap:8px;padding:7px 12px;font-size:12.5px;color:var(--t1);cursor:pointer}
+.sd-opt:hover{background:#f5f6f8}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- ══ SIDEBAR ══ -->
+<aside class="sidebar" id="sidebar">
+  <div class="logo-zone">
+    <div class="client-logo-img"><svg viewBox="0 0 36 36" width="28" height="28"><circle cx="18" cy="18" r="18" fill="#e8002d"/><text x="18" y="23" text-anchor="middle" font-size="9" fill="white" font-weight="700" font-family="Inter,sans-serif">CW</text></svg></div>
+    <div class="logo-text"><div class="logo-title">Cascades West</div><div class="logo-sub">Performance Center</div></div>
+  </div>
+
+  <nav class="nav-section">
+    <a class="nav-item active" href="#">
+      <div class="av-nav">CD</div>
+      <span class="nav-label">My Profile</span>
+      <span class="nav-tip">My Profile</span>
+    </a>
+    <div class="nav-div"></div>
+    <a class="nav-item" href="#"><i class="ti ti-home"></i><span class="nav-label">Overview</span><span class="nav-tip">Overview</span></a>
+    <a class="nav-item" href="#"><i class="ti ti-file-text"></i><span class="nav-label">Reviews</span><span class="nav-tip">Reviews</span></a>
+    <div class="nav-div"></div>
+    <a class="nav-item" href="#"><i class="ti ti-target"></i><span class="nav-label">Goals</span><span class="nav-badge">2</span><span class="nav-tip">Goals (2 pending)</span></a>
+    <a class="nav-item" href="#"><i class="ti ti-star"></i><span class="nav-label">Recognition</span><span class="nav-tip">Recognition</span></a>
+    <a class="nav-item" href="#"><i class="ti ti-address-book"></i><span class="nav-label">Directory</span><span class="nav-tip">Directory</span></a>
+    <div class="nav-div"></div>
+    <a class="nav-item" href="#"><i class="ti ti-speakerphone"></i><span class="nav-label">News</span><span class="nav-tip">News</span></a>
+    <a class="nav-item" href="#"><i class="ti ti-file"></i><span class="nav-label">Documents</span><span class="nav-tip">Documents</span></a>
+    <a class="nav-item" href="#"><i class="ti ti-coin"></i><span class="nav-label">Financial</span><span class="nav-tip">Financial</span></a>
+    <a class="nav-item" href="#"><i class="ti ti-video"></i><span class="nav-label">Meetings</span><span class="nav-tip">Meetings</span></a>
+    <div class="nav-div"></div>
+    <a class="nav-item" href="#"><i class="ti ti-refresh"></i><span class="nav-label">Review Cycles</span><span class="nav-tip">Review Cycles</span></a>
+    <a class="nav-item" href="#"><i class="ti ti-settings"></i><span class="nav-label">Configuration</span><span class="nav-tip">Configuration</span></a>
+  </nav>
+
+  <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">
+    <i class="ti ti-chevrons-left"></i>
+    <span class="sidebar-toggle-label">Collapse</span>
+  </button>
+
+  <div class="footer-zone">
+    <span class="powered-txt">Powered by</span>
+    <a href="#" class="ats-link">
+      <i class="ats-icon ti ti-bolt"></i>
+      <span class="ats-wm">ATS360 by NetDynamic</span>
+    </a>
+  </div>
+</aside>
+
+<!-- ══ MAIN ══ -->
+<div class="main">
+  <div class="role-banner">
+    <span class="role-label">Viewing as</span>
+    <div class="role-btns">
+      <button class="role-btn active" onclick="switchRole('employee',this)">Employee</button>
+      <button class="role-btn" onclick="switchRole('supervisor',this)">Supervisor</button>
+      <button class="role-btn" onclick="switchRole('hr',this)">HR Admin</button>
+    </div>
+  </div>
+
+  <!-- ══ EMPLOYEE VIEW ══ -->
+  <div class="view-panel active" id="view-employee">
+
+    <!-- Profile header -->
+    <div class="profile-header">
+      <div class="ph-avatar-wrap">
+        <div class="ph-avatar">
+          <img src="https://i.pravatar.cc/150?img=47" alt="Cynthia Diaz" onerror="this.style.display='none'"/>
+          CD
+        </div>
+        <div class="ph-avatar-edit"><i class="ti ti-camera"></i></div>
+      </div>
+      <div class="ph-main">
+        <div class="ph-name-row">
+          <span class="ph-name">Cynthia Diaz</span>
+          <button class="ph-edit-btn"><i class="ti ti-edit"></i></button>
+        </div>
+        <div class="ph-status-row">
+          <div class="status-picker">
+            <button class="status-picker-btn">
+              <div class="status-dot sd-available"></div>
+              Available
+              <i class="ti ti-chevron-down" style="font-size:11px"></i>
+            </button>
+            <div class="status-dropdown">
+              <div class="sd-opt"><div class="status-dot sd-available"></div>Available</div>
+              <div class="sd-opt"><div class="status-dot sd-busy"></div>Busy</div>
+              <div class="sd-opt"><div class="status-dot sd-focus"></div>Focus</div>
+              <div class="sd-opt"><div class="status-dot sd-away"></div>Away</div>
+              <div class="sd-opt"><div class="status-dot" style="background:var(--t3)"></div>Out of office</div>
+            </div>
+          </div>
+          <span class="ph-status-msg">Hire Faster, Hire Smarter</span>
+          <button class="ph-status-edit"><i class="ti ti-edit" style="font-size:11px"></i></button>
+        </div>
+        <div class="ph-ns-fields">
+          <div class="ph-ns-field"><div class="ph-ns-label">Email <span class="ns-badge">NetSuite</span></div><div class="ph-ns-value"><a href="mailto:cynthia@netdynamic.ca" class="ph-ns-link">cynthia@netdynamic.ca</a></div><div class="ph-ns-change">Change via HR in NetSuite</div></div>
+          <div class="ph-ns-field"><div class="ph-ns-label">Department <span class="ns-badge">NetSuite</span></div><div class="ph-ns-value">Professional Services</div><div class="ph-ns-change">Change via HR in NetSuite</div></div>
+          <div class="ph-ns-field"><div class="ph-ns-label">Supervisor <span class="ns-badge">NetSuite</span></div><div class="ph-ns-value"><a href="#" class="ph-ns-link">Christopher Kim</a></div><div class="ph-ns-change">Change via HR in NetSuite</div></div>
+          <div class="ph-ns-field"><div class="ph-ns-label">Location <span class="ns-badge">NetSuite</span></div><div class="ph-ns-value">Mississauga, ON</div><div class="ph-ns-change">Change via HR in NetSuite</div></div>
+          <div class="ph-ns-field"><div class="ph-ns-label">Join date <span class="ns-badge">NetSuite</span></div><div class="ph-ns-value">May 27, 2026</div><div class="ph-ns-change" style="color:var(--teal-t);font-weight:500">1 yr 2 mo tenure</div></div>
+        </div>
+      </div>
+      <div class="ph-right">
+        <span class="cycle-badge"><i class="ti ti-refresh" style="font-size:11px"></i>Mid Year Review · Jan–Jun 2026</span>
+        <button class="btn-g btn-sm"><i class="ti ti-download"></i>Download profile</button>
+        <button class="btn-g btn-sm"><i class="ti ti-history"></i>View history</button>
+      </div>
+    </div>
+
+    <!-- Stat strip — clickable -->
+    <div class="stat-strip">
+      <a class="stat-tile" href="#" title="Go to Goals tab">
+        <div class="st-top">
+          <div class="st-icon" style="background:var(--teal-bg)"><i class="ti ti-target" style="color:var(--teal-t)"></i></div>
+          <span class="st-trend trend-up"><i class="ti ti-trending-up" style="font-size:12px"></i>+2</span>
+        </div>
+        <div class="st-value">6</div>
+        <div class="st-label">Goals on track</div>
+        <div class="st-sub">of 8 active this period</div>
+        <div class="st-bar"><div class="st-bar-fill" style="width:75%;background:var(--teal-t)"></div></div>
+      </a>
+      <a class="stat-tile" href="#" title="Go to Recognition tab">
+        <div class="st-top">
+          <div class="st-icon" style="background:var(--amber-bg)"><i class="ti ti-star" style="color:var(--amber-t)"></i></div>
+          <span class="st-trend trend-up"><i class="ti ti-trending-up" style="font-size:12px"></i>+4</span>
+        </div>
+        <div class="st-value">14</div>
+        <div class="st-label">Recognitions received</div>
+        <div class="st-sub">vs 10 last period</div>
+        <div class="st-bar"><div class="st-bar-fill" style="width:70%;background:var(--amber-t)"></div></div>
+      </a>
+      <a class="stat-tile" href="#" title="Go to Evidence Locker">
+        <div class="st-top">
+          <div class="st-icon" style="background:var(--blue-bg)"><i class="ti ti-folder" style="color:var(--blue-t)"></i></div>
+          <span class="st-trend trend-flat"><i class="ti ti-minus" style="font-size:12px"></i>same</span>
+        </div>
+        <div class="st-value">5</div>
+        <div class="st-label">Evidence items</div>
+        <div class="st-sub">approved this cycle</div>
+        <div class="st-bar"><div class="st-bar-fill" style="width:50%;background:var(--blue-t)"></div></div>
+      </a>
+      <a class="stat-tile" href="#" title="Go to Reviews tab">
+        <div class="st-top">
+          <div class="st-icon" style="background:var(--purple-bg)"><i class="ti ti-chart-bar" style="color:var(--purple-t)"></i></div>
+          <span class="st-trend trend-up"><i class="ti ti-trending-up" style="font-size:12px"></i>+4%</span>
+        </div>
+        <div class="st-value">76<span style="font-size:16px;font-weight:500;color:var(--t3)">%</span></div>
+        <div class="st-label">Last review score</div>
+        <div class="st-sub">3.8 / 5 · hover for raw</div>
+        <div class="st-bar"><div class="st-bar-fill" style="width:76%;background:var(--purple-t)"></div></div>
+      </a>
+    </div>
+
+    <!-- Score history -->
+    <div class="panel-card" style="margin-bottom:16px">
+      <div class="pc-header">
+        <div class="pc-title">Review score history</div>
+        <a href="#" class="pc-link">View all results <i class="ti ti-arrow-right" style="font-size:11px"></i></a>
+      </div>
+      <div class="score-history">
+        <div class="sh-bar-wrap"><div class="sh-score">3.2</div><div class="sh-bar legacy" style="height:45%"></div><div class="sh-label">2023<br>Annual</div><div class="legacy-badge">Legacy</div></div>
+        <div class="sh-bar-wrap"><div class="sh-score">3.5</div><div class="sh-bar legacy" style="height:55%"></div><div class="sh-label">2024<br>Annual</div><div class="legacy-badge">Legacy</div></div>
+        <div class="sh-bar-wrap"><div class="sh-score">3.4</div><div class="sh-bar" style="height:52%;background:var(--border-mid)"></div><div class="sh-label">Jan<br>Monthly</div></div>
+        <div class="sh-bar-wrap"><div class="sh-score">3.6</div><div class="sh-bar" style="height:58%"></div><div class="sh-label">Feb<br>Monthly</div></div>
+        <div class="sh-bar-wrap"><div class="sh-score">3.5</div><div class="sh-bar" style="height:55%"></div><div class="sh-label">Mar<br>Monthly</div></div>
+        <div class="sh-bar-wrap"><div class="sh-score">3.7</div><div class="sh-bar" style="height:62%"></div><div class="sh-label">Apr<br>Monthly</div></div>
+        <div class="sh-bar-wrap"><div class="sh-score">3.8</div><div class="sh-bar" style="height:68%"></div><div class="sh-label">May<br>Monthly</div></div>
+        <div class="sh-bar-wrap"><div class="sh-score" style="color:var(--teal-t);font-weight:700">3.8</div><div class="sh-bar" style="height:68%;background:var(--teal-t)"></div><div class="sh-label">Mid Year<br>Review</div></div>
+      </div>
+      <div style="font-size:11px;color:var(--t3);margin-top:4px">Grey bars = muted (monthly check-ins). Legacy scores shown with badge — contributed to crescendo weighting.</div>
+    </div>
+
+    <!-- 3-column grid -->
+    <div class="content-grid">
+      <!-- Goals -->
+      <div class="panel-card">
+        <div class="pc-header"><div class="pc-title"><i class="ti ti-target" style="font-size:14px;color:var(--teal-t);margin-right:4px"></i>Goals</div><a href="#" class="pc-link">View all <i class="ti ti-arrow-right" style="font-size:11px"></i></a></div>
+        <div class="goal-mini-list">
+          <div class="goal-mini">
+            <div class="gm-top"><span class="gm-title">Close Essen Healthcare deal</span><span class="gm-pct" style="color:var(--teal-t)">100%</span></div>
+            <div class="gm-bar"><div class="gm-fill" style="width:100%;background:var(--teal-t)"></div></div>
+            <div class="gm-meta"><span class="fw-tag fw-smart">SMART</span><span class="fw-tag fw-okr">OKR</span></div>
+          </div>
+          <div class="goal-mini">
+            <div class="gm-top"><span class="gm-title">Reach $1M in new sales revenue</span><span class="gm-pct">75%</span></div>
+            <div class="gm-bar"><div class="gm-fill" style="width:75%;background:var(--navy-mid)"></div></div>
+            <div class="gm-meta"><span class="fw-tag fw-smart">SMART</span><span class="fw-tag fw-okr">OKR</span></div>
+          </div>
+          <div class="goal-mini">
+            <div class="gm-top"><span class="gm-title">Mentor 2 junior consultants</span><span class="gm-pct">60%</span></div>
+            <div class="gm-bar"><div class="gm-fill" style="width:60%;background:var(--amber-t)"></div></div>
+            <div class="gm-meta"><span class="fw-tag fw-woop">WOOP</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recognition -->
+      <div class="panel-card">
+        <div class="pc-header"><div class="pc-title"><i class="ti ti-star" style="font-size:14px;color:var(--amber-t);margin-right:4px"></i>Recognition received</div><a href="#" class="pc-link">View all <i class="ti ti-arrow-right" style="font-size:11px"></i></a></div>
+        <div class="rec-mini-list">
+          <div class="rec-mini"><div class="rec-av av-b">CK</div><div class="rec-body"><div class="rec-from"><a href="#">Chris Kim</a> · Jul 2</div><div class="rec-msg">Ring ring — welcome Essen to the NetDynamic family.</div><span class="rec-badge">Client Focus</span></div></div>
+          <div class="rec-mini"><div class="rec-av av-t">MH</div><div class="rec-body"><div class="rec-from"><a href="#">Mary Higgins</a> · Jun 30</div><div class="rec-msg">Cynthia drove the Essen deal from first call to signed contract.</div><span class="rec-badge">Going above and beyond</span></div></div>
+          <div class="rec-mini"><div class="rec-av av-p">AS</div><div class="rec-body"><div class="rec-from"><a href="#">Aiden Somerhalder</a> · Jun 20</div><div class="rec-msg">Best discovery call process I have seen on an enterprise deal.</div><span class="rec-badge">Teamwork</span></div></div>
+        </div>
+      </div>
+
+      <!-- Evidence locker -->
+      <div class="panel-card">
+        <div class="pc-header"><div class="pc-title"><i class="ti ti-folder" style="font-size:14px;color:var(--blue-t);margin-right:4px"></i>Evidence locker</div><a href="#" class="pc-link">View all <i class="ti ti-arrow-right" style="font-size:11px"></i></a></div>
+        <div class="ev-mini-list">
+          <div class="ev-mini"><div class="ev-mini-icon" style="background:var(--amber-bg)"><i class="ti ti-certificate" style="color:var(--amber-t)"></i></div><div class="ev-mini-body"><div class="ev-mini-title">NetSuite ERP Certification</div><div class="ev-mini-meta">Certification · May 14</div></div><span class="ev-mini-status evs-approved">Approved</span></div>
+          <div class="ev-mini"><div class="ev-mini-icon" style="background:#fce7f3"><i class="ti ti-award" style="color:#9d174d"></i></div><div class="ev-mini-body"><div class="ev-mini-title">Commendation — Essen deal</div><div class="ev-mini-meta">By Christopher Kim · Jul 2</div></div><span class="ev-mini-status evs-approved">Approved</span></div>
+          <div class="ev-mini"><div class="ev-mini-icon" style="background:var(--purple-bg)"><i class="ti ti-notes" style="color:var(--purple-t)"></i></div><div class="ev-mini-body"><div class="ev-mini-title">Q2 self-assessment note</div><div class="ev-mini-meta">Self-assessment · Jul 1</div></div><span class="ev-mini-status evs-pending">Pending</span></div>
+        </div>
+        <button class="btn-g btn-sm" style="margin-top:10px;width:100%;justify-content:center"><i class="ti ti-plus"></i>Add evidence</button>
+      </div>
+    </div>
+
+    <!-- Activity + Pending actions -->
+    <div class="content-grid-2">
+      <div class="panel-card">
+        <div class="pc-header"><div class="pc-title"><i class="ti ti-activity" style="font-size:14px;color:var(--t3);margin-right:4px"></i>Recent activity</div></div>
+        <div class="activity-list">
+          <div class="activity-item"><div class="act-icon" style="background:var(--teal-bg)"><i class="ti ti-circle-check" style="color:var(--teal-t)"></i></div><div class="act-body"><div class="act-text">Goal <a href="#">Close Essen Healthcare deal</a> marked complete</div><div class="act-time">Today, 10:42am</div></div></div>
+          <div class="activity-item"><div class="act-icon" style="background:var(--amber-bg)"><i class="ti ti-star" style="color:var(--amber-t)"></i></div><div class="act-body"><div class="act-text">Recognition received from <a href="#">Christopher Kim</a> — Client Focus badge</div><div class="act-time">Yesterday, 3:15pm</div></div></div>
+          <div class="activity-item"><div class="act-icon" style="background:var(--blue-bg)"><i class="ti ti-folder" style="color:var(--blue-t)"></i></div><div class="act-body"><div class="act-text">Evidence item <a href="#">NetSuite ERP Certification</a> approved by HR</div><div class="act-time">Jun 30, 9:00am</div></div></div>
+          <div class="activity-item"><div class="act-icon" style="background:var(--purple-bg)"><i class="ti ti-refresh" style="color:var(--purple-t)"></i></div><div class="act-body"><div class="act-text">Review cycle <a href="#">Mid Year Peer Review</a> results released</div><div class="act-time">Jun 30, 8:00am</div></div></div>
+          <div class="activity-item"><div class="act-icon" style="background:var(--border)"><i class="ti ti-school" style="color:var(--t2)"></i></div><div class="act-body"><div class="act-text">Supervisor note — Skill Development added by <a href="#">Christopher Kim</a></div><div class="act-time">Jun 15, 11:30am</div></div></div>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <div class="pc-header"><div class="pc-title"><i class="ti ti-alert-circle" style="font-size:14px;color:var(--red-t);margin-right:4px"></i>Pending actions</div></div>
+        <div class="pending-grid">
+          <div class="pending-card has-items"><div class="pc-badge">2</div><div class="pc-icon-wrap" style="background:var(--amber-bg)"><i class="ti ti-target" style="color:var(--amber-t);font-size:15px"></i></div><div class="pc-card-title">Goal assignments</div><div class="pc-card-sub">Awaiting your acceptance</div><button class="pc-review-btn">Review <i class="ti ti-arrow-right" style="font-size:11px"></i></button></div>
+          <div class="pending-card"><div class="pc-icon-wrap" style="background:var(--blue-bg)"><i class="ti ti-file-text" style="color:var(--blue-t);font-size:15px"></i></div><div class="pc-card-title">Review forms</div><div class="pc-card-sub">Nothing due right now</div></div>
+          <div class="pending-card has-items"><div class="pc-badge">1</div><div class="pc-icon-wrap" style="background:var(--purple-bg)"><i class="ti ti-pen" style="color:var(--purple-t);font-size:15px"></i></div><div class="pc-card-title">Documents to sign</div><div class="pc-card-sub">Review results available</div><button class="pc-review-btn">Sign now <i class="ti ti-arrow-right" style="font-size:11px"></i></button></div>
+          <div class="pending-card"><div class="pc-icon-wrap" style="background:var(--teal-bg)"><i class="ti ti-folder" style="color:var(--teal-t);font-size:15px"></i></div><div class="pc-card-title">Evidence to submit</div><div class="pc-card-sub">1 draft not yet submitted</div><button class="pc-review-btn">View draft <i class="ti ti-arrow-right" style="font-size:11px"></i></button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Saved search portlet -->
+    <div class="panel-card" style="margin-bottom:16px">
+      <div class="pc-header">
+        <div class="pc-title"><i class="ti ti-table" style="font-size:14px;color:var(--t3);margin-right:4px"></i>My saved search portlet</div>
+        <div style="display:flex;gap:6px">
+          <select style="font-family:inherit;font-size:12px;color:var(--t1);background:var(--surface);border:1px solid var(--border-mid);border-radius:var(--rmd);padding:4px 8px;outline:none">
+            <option>My open deals pipeline</option>
+            <option>My client satisfaction scores</option>
+            <option>Team certification status</option>
+          </select>
+          <button class="btn-g btn-sm"><i class="ti ti-refresh"></i></button>
+        </div>
+      </div>
+      <table class="portlet-table">
+        <thead><tr><th>Opportunity</th><th>Stage</th><th>Value</th><th>Expected close</th><th>Probability</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--navy-mid);font-weight:500">Pyramid Network — NetSuite ERP</td><td><span class="chip chip-warn">Demo scheduled</span></td><td>$85,000</td><td>Aug 15, 2026</td><td>65%</td></tr>
+          <tr><td style="color:var(--navy-mid);font-weight:500">Hartwell Group — Implementation</td><td><span class="chip chip-warn">Proposal sent</span></td><td>$42,000</td><td>Sep 1, 2026</td><td>40%</td></tr>
+          <tr><td style="color:var(--navy-mid);font-weight:500">Meridian Foods — SuiteCommerce</td><td><span class="chip" style="background:#f0f2f5;color:var(--t2)">Prospecting</span></td><td>$28,000</td><td>Oct 30, 2026</td><td>20%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div><!-- /employee -->
+
+  <!-- ══ SUPERVISOR VIEW ══ -->
+  <div class="view-panel" id="view-supervisor">
+    <div class="profile-header">
+      <div class="ph-avatar-wrap">
+        <div class="ph-avatar" style="background:var(--blue-bg);color:var(--blue-t)">CK</div>
+        <div class="ph-avatar-edit"><i class="ti ti-camera"></i></div>
+      </div>
+      <div class="ph-main">
+        <div class="ph-name-row"><span class="ph-name">Christopher Kim</span><button class="ph-edit-btn"><i class="ti ti-edit"></i></button></div>
+        <div class="ph-status-row">
+          <div class="status-picker">
+            <button class="status-picker-btn"><div class="status-dot sd-busy"></div>Busy<i class="ti ti-chevron-down" style="font-size:11px"></i></button>
+            <div class="status-dropdown">
+              <div class="sd-opt"><div class="status-dot sd-available"></div>Available</div>
+              <div class="sd-opt"><div class="status-dot sd-busy"></div>Busy</div>
+              <div class="sd-opt"><div class="status-dot sd-focus"></div>Focus</div>
+              <div class="sd-opt"><div class="status-dot sd-away"></div>Away</div>
+            </div>
+          </div>
+          <span class="ph-status-msg">In client calls until 3pm</span>
+          <button class="ph-status-edit"><i class="ti ti-edit" style="font-size:11px"></i></button>
+        </div>
+        <div class="ph-ns-fields">
+          <div class="ph-ns-field"><div class="ph-ns-label">Email <span class="ns-badge">NetSuite</span></div><div class="ph-ns-value"><a href="#" class="ph-ns-link">chris@netdynamic.ca</a></div><div class="ph-ns-change">Change via HR in NetSuite</div></div>
+          <div class="ph-ns-field"><div class="ph-ns-label">Department <span class="ns-badge">NetSuite</span></div><div class="ph-ns-value">Executive</div><div class="ph-ns-change">Change via HR in NetSuite</div></div>
+          <div class="ph-ns-field"><div class="ph-ns-label">Direct reports <span class="ns-badge">NetSuite</span></div><div class="ph-ns-value">8 employees</div><div class="ph-ns-change">Change via HR in NetSuite</div></div>
+          <div class="ph-ns-field"><div class="ph-ns-label">Location <span class="ns-badge">NetSuite</span></div><div class="ph-ns-value">Mississauga, ON</div><div class="ph-ns-change">Change via HR in NetSuite</div></div>
+          <div class="ph-ns-field"><div class="ph-ns-label">Join date <span class="ns-badge">NetSuite</span></div><div class="ph-ns-value">Jan 15, 2019</div><div class="ph-ns-change" style="color:var(--teal-t);font-weight:500">7 yr 6 mo tenure</div></div>
+        </div>
+      </div>
+      <div class="ph-right">
+        <span class="cycle-badge"><i class="ti ti-refresh" style="font-size:11px"></i>Mid Year Review · Jan–Jun 2026</span>
+        <button class="btn-g btn-sm"><i class="ti ti-download"></i>Download profile</button>
+      </div>
+    </div>
+
+    <!-- Supervisor stat strip -->
+    <div class="stat-strip">
+      <a class="stat-tile" href="#">
+        <div class="st-top"><div class="st-icon" style="background:var(--teal-bg)"><i class="ti ti-users" style="color:var(--teal-t)"></i></div><span class="st-trend trend-up"><i class="ti ti-trending-up" style="font-size:12px"></i>+1</span></div>
+        <div class="st-value">6<span style="font-size:15px;font-weight:400;color:var(--t3)">/8</span></div>
+        <div class="st-label">Team goals on track</div>
+        <div class="st-sub">2 members at risk</div>
+        <div class="st-bar"><div class="st-bar-fill" style="width:75%;background:var(--teal-t)"></div></div>
+      </a>
+      <a class="stat-tile" href="#">
+        <div class="st-top"><div class="st-icon" style="background:var(--red-bg)"><i class="ti ti-file-alert" style="color:var(--red-t)"></i></div><span class="st-trend trend-down"><i class="ti ti-trending-down" style="font-size:12px"></i>due soon</span></div>
+        <div class="st-value" style="color:var(--red-t)">3</div>
+        <div class="st-label">Reviews to submit</div>
+        <div class="st-sub">Closes in 3 days</div>
+        <div class="st-bar"><div class="st-bar-fill" style="width:25%;background:var(--red-t)"></div></div>
+      </a>
+      <a class="stat-tile" href="#">
+        <div class="st-top"><div class="st-icon" style="background:var(--amber-bg)"><i class="ti ti-star" style="color:var(--amber-t)"></i></div><span class="st-trend trend-flat"><i class="ti ti-minus" style="font-size:12px"></i>same</span></div>
+        <div class="st-value">7</div>
+        <div class="st-label">Recognition given</div>
+        <div class="st-sub">This period</div>
+        <div class="st-bar"><div class="st-bar-fill" style="width:70%;background:var(--amber-t)"></div></div>
+      </a>
+      <a class="stat-tile" href="#">
+        <div class="st-top"><div class="st-icon" style="background:var(--orange-bg)"><i class="ti ti-alert-triangle" style="color:var(--orange-t)"></i></div><span class="st-trend trend-down" style="color:var(--amber-t)">needs attention</span></div>
+        <div class="st-value" style="color:var(--amber-t)">2</div>
+        <div class="st-label">Team members at risk</div>
+        <div class="st-sub">Goals below 50%</div>
+        <div class="st-bar"><div class="st-bar-fill" style="width:25%;background:var(--amber-t)"></div></div>
+      </a>
+    </div>
+
+    <!-- Own score history -->
+    <div class="panel-card" style="margin-bottom:16px">
+      <div class="pc-header"><div class="pc-title">Your review score history</div><a href="#" class="pc-link">View your results <i class="ti ti-arrow-right" style="font-size:11px"></i></a></div>
+      <div class="score-history">
+        <div class="sh-bar-wrap"><div class="sh-score">4.0</div><div class="sh-bar legacy" style="height:72%"></div><div class="sh-label">2023<br>Annual</div><div class="legacy-badge">Legacy</div></div>
+        <div class="sh-bar-wrap"><div class="sh-score">4.2</div><div class="sh-bar legacy" style="height:80%"></div><div class="sh-label">2024<br>Annual</div><div class="legacy-badge">Legacy</div></div>
+        <div class="sh-bar-wrap"><div class="sh-score">4.1</div><div class="sh-bar" style="height:76%;background:var(--navy-mid)"></div><div class="sh-label">Mid Year<br>2025</div></div>
+        <div class="sh-bar-wrap"><div class="sh-score" style="color:var(--teal-t);font-weight:700">4.3</div><div class="sh-bar" style="height:85%;background:var(--teal-t)"></div><div class="sh-label">Annual<br>2025</div></div>
+      </div>
+    </div>
+
+    <!-- Team section divider -->
+    <div class="sec-divider">
+      <div class="sec-divider-line"></div>
+      <div class="sec-divider-lbl"><i class="ti ti-users" style="font-size:13px"></i>My Team</div>
+      <div class="sec-divider-line"></div>
+    </div>
+
+    <!-- Team table -->
+    <div class="panel-card" style="margin-bottom:16px">
+      <div class="pc-header"><div class="pc-title">Direct reports — goal and review health</div><a href="#" class="pc-link">Full team view <i class="ti ti-arrow-right" style="font-size:11px"></i></a></div>
+      <table class="team-table">
+        <thead><tr><th>Employee</th><th>Role</th><th>Goals on track</th><th>Last recognition</th><th>Review pending</th><th>Last score</th></tr></thead>
+        <tbody>
+          <tr><td><a class="emp-name-link" href="#">Cynthia Diaz</a></td><td style="color:var(--t2);font-size:12px">Sr. Solutions Consultant</td><td><span style="color:var(--teal-t);font-weight:600">5/6</span></td><td style="font-size:12px;color:var(--t2)">Jul 2</td><td><span class="chip chip-pass">Submitted</span></td><td><span style="font-weight:600;color:var(--teal-t)">76%</span></td></tr>
+          <tr><td><a class="emp-name-link" href="#">Aiden Somerhalder</a></td><td style="color:var(--t2);font-size:12px">Solutions Consultant</td><td><span style="color:var(--teal-t);font-weight:600">4/5</span></td><td style="font-size:12px;color:var(--t2)">Jun 28</td><td><span class="chip chip-pass">Submitted</span></td><td><span style="font-weight:600;color:var(--teal-t)">82%</span></td></tr>
+          <tr style="background:#fff8f8"><td><a class="emp-name-link" href="#">Amy Nguyen</a></td><td style="color:var(--t2);font-size:12px">PS Consultant</td><td><span style="color:var(--amber-t);font-weight:600">1/4</span></td><td style="font-size:12px;color:var(--red-t)">45 days ago</td><td><span class="chip chip-fail">Not submitted</span></td><td><span style="font-weight:600;color:var(--amber-t)">72%</span></td></tr>
+          <tr style="background:#fff8f8"><td><a class="emp-name-link" href="#">Bon Ariola</a></td><td style="color:var(--t2);font-size:12px">Developer</td><td><span style="color:var(--red-t);font-weight:600">1/4</span></td><td style="font-size:12px;color:var(--red-t)">60 days ago</td><td><span class="chip chip-fail">Not submitted</span></td><td><span style="font-weight:600;color:var(--red-t)">58%</span></td></tr>
+          <tr><td><a class="emp-name-link" href="#">Wilver Guzman</a></td><td style="color:var(--t2);font-size:12px">Dev Lead</td><td><span style="color:var(--teal-t);font-weight:600">3/4</span></td><td style="font-size:12px;color:var(--t2)">Jul 1</td><td><span class="chip chip-pass">Submitted</span></td><td><span style="font-weight:600">78%</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Supervisor saved search portlet -->
+    <div class="panel-card">
+      <div class="pc-header">
+        <div class="pc-title"><i class="ti ti-table" style="font-size:14px;color:var(--t3);margin-right:4px"></i>Saved search portlet</div>
+        <select style="font-family:inherit;font-size:12px;color:var(--t1);background:var(--surface);border:1px solid var(--border-mid);border-radius:var(--rmd);padding:4px 8px;outline:none">
+          <option>Team goal completion rate</option>
+          <option>Open review submissions</option>
+          <option>Team recognition activity</option>
+        </select>
+      </div>
+      <table class="portlet-table">
+        <thead><tr><th>Employee</th><th>Goals complete</th><th>Goals at risk</th><th>Recognition this period</th><th>Review score</th></tr></thead>
+        <tbody>
+          <tr><td style="font-weight:500">Cynthia Diaz</td><td style="color:var(--teal-t);font-weight:600">4 / 6</td><td>1</td><td>14</td><td style="color:var(--teal-t);font-weight:600">76%</td></tr>
+          <tr><td style="font-weight:500">Aiden Somerhalder</td><td style="color:var(--teal-t);font-weight:600">3 / 5</td><td>0</td><td>11</td><td style="color:var(--teal-t);font-weight:600">82%</td></tr>
+          <tr style="background:#fff8f8"><td style="font-weight:500">Amy Nguyen</td><td style="color:var(--amber-t);font-weight:600">1 / 4</td><td>3</td><td>2</td><td style="color:var(--amber-t);font-weight:600">72%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div><!-- /supervisor -->
+
+  <!-- ══ HR VIEW ══ -->
+  <div class="view-panel" id="view-hr">
+    <div class="profile-header">
+      <div class="ph-avatar-wrap">
+        <div class="ph-avatar" style="background:var(--purple-bg);color:var(--purple-t);font-size:16px">HR</div>
+      </div>
+      <div class="ph-main">
+        <div class="ph-name-row"><span class="ph-name">HR Admin Dashboard</span></div>
+        <div class="ph-status-row"><span style="font-size:13px;color:var(--t2)">Organisation-wide performance health · Mid Year Review 2026</span></div>
+        <div class="ph-ns-fields">
+          <div class="ph-ns-field"><div class="ph-ns-label">Total employees</div><div class="ph-ns-value" style="font-size:16px;font-weight:700">112</div></div>
+          <div class="ph-ns-field"><div class="ph-ns-label">Active cycles</div><div class="ph-ns-value" style="font-size:16px;font-weight:700">2</div></div>
+          <div class="ph-ns-field"><div class="ph-ns-label">Pending approvals</div><div class="ph-ns-value" style="font-size:16px;font-weight:700;color:var(--amber-t)">18</div></div>
+          <div class="ph-ns-field"><div class="ph-ns-label">Overdue reviews</div><div class="ph-ns-value" style="font-size:16px;font-weight:700;color:var(--red-t)">12</div></div>
+          <div class="ph-ns-field"><div class="ph-ns-label">Legacy scores imported</div><div class="ph-ns-value" style="font-size:16px;font-weight:700">94</div></div>
+        </div>
+      </div>
+      <div class="ph-right">
+        <button class="btn-p btn-sm"><i class="ti ti-upload"></i>Import legacy scores</button>
+        <button class="btn-g btn-sm"><i class="ti ti-download"></i>Export org report</button>
+      </div>
+    </div>
+
+    <!-- Company health -->
+    <div style="font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Company health indices</div>
+    <div class="health-grid">
+      <div class="health-card"><div class="hc-label">Engagement index</div><div class="hc-value" style="color:var(--teal-t)">74<span style="font-size:16px;color:var(--t3)">%</span></div><div style="font-size:11px;color:var(--t3)">Recognition frequency + check-in rate</div><div class="hc-bar"><div class="hc-fill" style="width:74%;background:var(--teal-t)"></div></div></div>
+      <div class="health-card"><div class="hc-label">Performance index</div><div class="hc-value" style="color:var(--navy-mid)">68<span style="font-size:16px;color:var(--t3)">%</span></div><div style="font-size:11px;color:var(--t3)">Goal completion + review scores</div><div class="hc-bar"><div class="hc-fill" style="width:68%;background:var(--navy-mid)"></div></div></div>
+      <div class="health-card"><div class="hc-label">Wellness index</div><div style="font-size:18px;font-weight:600;color:var(--t3);margin-bottom:2px">—</div><div style="font-size:11px;color:var(--t3)">Requires Vacation Tracker module</div><div class="p2-badge" style="margin-top:4px">Phase 2</div></div>
+      <div class="health-card"><div class="hc-label">Retention risk</div><div class="hc-value" style="color:var(--amber-t)">5</div><div style="font-size:11px;color:var(--t3)">Employees flagged across 2+ signal categories</div><div class="hc-bar"><div class="hc-fill" style="width:100%;background:var(--amber-t)"></div></div></div>
+    </div>
+
+    <!-- HR stat strip -->
+    <div class="stat-strip" style="margin-bottom:16px">
+      <a class="stat-tile" href="#">
+        <div class="st-top"><div class="st-icon" style="background:var(--teal-bg)"><i class="ti ti-target" style="color:var(--teal-t)"></i></div><span class="st-trend trend-up"><i class="ti ti-trending-up" style="font-size:12px"></i>+3%</span></div>
+        <div class="st-value">61<span style="font-size:16px;font-weight:400;color:var(--t3)">%</span></div>
+        <div class="st-label">Org goal health</div>
+        <div class="st-sub">198 of 312 on track</div>
+        <div class="st-bar"><div class="st-bar-fill" style="width:61%;background:var(--teal-t)"></div></div>
+      </a>
+      <a class="stat-tile" href="#">
+        <div class="st-top"><div class="st-icon" style="background:var(--amber-bg)"><i class="ti ti-clock" style="color:var(--amber-t)"></i></div><span class="st-trend" style="color:var(--amber-t)">action needed</span></div>
+        <div class="st-value" style="color:var(--amber-t)">18</div>
+        <div class="st-label">Pending evidence approvals</div>
+        <div class="st-sub">Supervisor notes in queue</div>
+        <div class="st-bar"><div class="st-bar-fill" style="width:40%;background:var(--amber-t)"></div></div>
+      </a>
+      <a class="stat-tile" href="#">
+        <div class="st-top"><div class="st-icon" style="background:var(--blue-bg)"><i class="ti ti-refresh" style="color:var(--blue-t)"></i></div><span class="st-trend trend-flat">running</span></div>
+        <div class="st-value">2</div>
+        <div class="st-label">Active cycles</div>
+        <div class="st-sub">Mid Year + Monthly July</div>
+        <div class="st-bar"><div class="st-bar-fill" style="width:100%;background:var(--blue-t)"></div></div>
+      </a>
+      <a class="stat-tile" href="#">
+        <div class="st-top"><div class="st-icon" style="background:var(--red-bg)"><i class="ti ti-alert-triangle" style="color:var(--red-t)"></i></div><span class="st-trend trend-down" style="color:var(--amber-t)">monitor</span></div>
+        <div class="st-value" style="color:var(--amber-t)">5</div>
+        <div class="st-label">Employees flagged</div>
+        <div class="st-sub">Company Health signals</div>
+        <div class="st-bar"><div class="st-bar-fill" style="width:25%;background:var(--red-t)"></div></div>
+      </a>
+    </div>
+
+    <!-- Legacy score import panel -->
+    <div class="panel-card" style="margin-bottom:16px">
+      <div class="pc-header"><div class="pc-title"><i class="ti ti-history" style="font-size:14px;color:var(--t3);margin-right:4px"></i>Legacy score management</div><div style="display:flex;gap:6px"><button class="btn-g btn-sm"><i class="ti ti-download"></i>Download template CSV</button><button class="btn-p btn-sm"><i class="ti ti-upload"></i>Bulk import</button></div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+        <div style="background:#f7f8fa;border-radius:var(--rmd);border:1px solid var(--border);padding:12px 14px">
+          <div style="font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">Bulk CSV import</div>
+          <div style="font-size:12.5px;color:var(--t2);line-height:1.5;margin-bottom:8px">Upload a CSV with columns: Employee ID, Cycle name, Score (decimal out of 5), Date (YYYY-MM-DD), Notes (optional). System creates legacy review records flagged with a Legacy badge.</div>
+          <div style="font-size:11px;color:var(--t3)">94 legacy records imported · Last import Jun 30, 2026</div>
+        </div>
+        <div style="background:#f7f8fa;border-radius:var(--rmd);border:1px solid var(--border);padding:12px 14px">
+          <div style="font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">Direct profile entry</div>
+          <div style="font-size:12.5px;color:var(--t2);line-height:1.5;margin-bottom:8px">Open any employee profile and add a single legacy score manually. Useful for corrections after bulk import or one-off historical entries.</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <select style="font-family:inherit;font-size:12px;border:1px solid var(--border-mid);border-radius:var(--rmd);padding:5px 8px;outline:none;flex:1">
+              <option>Select employee…</option><option>Cynthia Diaz</option><option>Amy Nguyen</option><option>Bon Ariola</option>
+            </select>
+            <button class="btn-p btn-sm">Add score</button>
+          </div>
+        </div>
+      </div>
+      <div class="info-note" style="background:#f7f8fa;border-radius:var(--rmd);padding:10px 14px;font-size:12px;color:var(--t3);display:flex;align-items:center;gap:7px"><i class="ti ti-info-circle" style="font-size:14px;flex-shrink:0"></i>Legacy scores contribute to the score history trend line on employee profiles and are available for the crescendo model (Phase 2). They are displayed with a Legacy badge so reviewers know the score came from a different system. Legacy records have no question responses, no evidence, and no reviewer — score and date only.</div>
+    </div>
+
+    <!-- HR saved search portlet -->
+    <div class="panel-card">
+      <div class="pc-header">
+        <div class="pc-title"><i class="ti ti-table" style="font-size:14px;color:var(--t3);margin-right:4px"></i>Saved search portlet</div>
+        <select style="font-family:inherit;font-size:12px;color:var(--t1);background:var(--surface);border:1px solid var(--border-mid);border-radius:var(--rmd);padding:4px 8px;outline:none">
+          <option>Employees with overdue reviews</option>
+          <option>Goal completion by department</option>
+          <option>Recognition frequency this period</option>
+          <option>Legacy score coverage report</option>
+        </select>
+      </div>
+      <table class="portlet-table">
+        <thead><tr><th>Employee</th><th>Department</th><th>Cycle</th><th>Overdue since</th><th>Supervisor</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td style="font-weight:500;color:var(--red-t)">Bon Ariola</td><td style="color:var(--t2);font-size:12px">Development</td><td style="font-size:12px">Mid Year Peer Review</td><td style="color:var(--red-t);font-size:12px;font-weight:500">Jun 30 — today</td><td style="font-size:12px;color:var(--t2)">Wilver Guzman</td><td><button class="btn-g btn-sm" style="font-size:11px">Nudge</button></td></tr>
+          <tr><td style="font-weight:500;color:var(--red-t)">Gabriel Guzman</td><td style="color:var(--t2);font-size:12px">Development</td><td style="font-size:12px">Mid Year Peer Review</td><td style="color:var(--red-t);font-size:12px;font-weight:500">Jun 30 — today</td><td style="font-size:12px;color:var(--t2)">Wilver Guzman</td><td><button class="btn-g btn-sm" style="font-size:11px">Nudge</button></td></tr>
+          <tr><td style="font-weight:500;color:var(--amber-t)">Amy Nguyen</td><td style="color:var(--t2);font-size:12px">Professional Services</td><td style="font-size:12px">Mid Year Peer Review</td><td style="color:var(--amber-t);font-size:12px;font-weight:500">Jun 30 — today</td><td style="font-size:12px;color:var(--t2)">Christopher Kim</td><td><button class="btn-g btn-sm" style="font-size:11px">Nudge</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div><!-- /hr -->
+
+</div><!-- /.main -->
+</div><!-- /.shell -->
+
+<script>
+// Sidebar toggle
+let sidebarCollapsed=false;
+function toggleSidebar(){
+  sidebarCollapsed=!sidebarCollapsed;
+  const sb=document.getElementById('sidebar');
+  sb.classList.toggle('collapsed',sidebarCollapsed);
+  // Persist to localStorage
+  try{localStorage.setItem('ats360_sidebar_collapsed',sidebarCollapsed)}catch(e){}
+}
+// Init from localStorage
+try{
+  const saved=localStorage.getItem('ats360_sidebar_collapsed');
+  if(saved==='true'){sidebarCollapsed=true;document.getElementById('sidebar').classList.add('collapsed')}
+}catch(e){}
+
+// Role switching
+function switchRole(role,btn){
+  document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.view-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('view-'+role).classList.add('active');
+}
+</script>
+</body>
+</html>
