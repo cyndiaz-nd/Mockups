@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Goals — Performance Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1a2332;--navy-h:#223044;--navy-mid:#2d4a7a;
+  --page:#f0f2f5;--surface:#fff;--border:#e2e5ea;--border-mid:#c8cdd6;
+  --t1:#0f1923;--t2:#5a6473;--t3:#8e97a3;
+  --teal-bg:#e1f5ee;--teal-t:#0f6e56;
+  --blue-bg:#e6f1fb;--blue-t:#185fa5;
+  --purple-bg:#eeedfe;--purple-t:#3c3489;
+  --amber-bg:#faeeda;--amber-t:#633806;
+  --green-bg:#eaf3de;--green-t:#3b6d11;
+  --red:#e8002d;--red-bg:#fde8ec;--red-t:#a51633;
+  --orange-bg:#fff3e0;--orange-t:#e65100;
+  font-family:'Inter',system-ui,sans-serif;font-size:14px;color:var(--t1);background:var(--page);
+  --rsm:6px;--rmd:8px;--rlg:12px;--rxl:16px;
+}
+.shell{display:flex;min-height:100vh}
+.sidebar{width:200px;min-height:100vh;background:var(--navy);display:flex;flex-direction:column;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto}
+.logo-zone{display:flex;flex-direction:column;align-items:center;padding:22px 16px 16px;border-bottom:1px solid rgba(255,255,255,.09);flex-shrink:0}
+.client-logo{width:54px;height:54px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.app-title{font-size:12px;font-weight:600;color:#fff;text-align:center}
+.nav-section{flex:1;padding:10px 0}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 16px;font-size:12.5px;color:rgba(255,255,255,.55);text-decoration:none;position:relative;transition:background .12s,color .12s}
+.nav-item:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.88)}
+.nav-item.active{background:rgba(255,255,255,.11);color:#fff}
+.nav-item i{font-size:15px;flex-shrink:0}
+.nav-badge{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:8px;min-width:16px;text-align:center}
+.nav-div{height:1px;background:rgba(255,255,255,.08);margin:5px 14px}
+.av-nav{width:26px;height:26px;border-radius:50%;background:var(--navy-mid);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#85b7eb;flex-shrink:0}
+.footer-zone{padding:12px 16px 18px;border-top:1px solid rgba(255,255,255,.09);display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0}
+.powered{font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.06em;text-transform:uppercase}
+.ats-badge{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.07);border-radius:var(--rsm);padding:5px 10px;text-decoration:none}
+.ats-wm{font-size:12px;font-weight:600;color:rgba(255,255,255,.72);line-height:1.2}
+.ats-sub{font-size:9px;color:rgba(255,255,255,.38);line-height:1.2}
+.main{flex:1;overflow-y:auto;min-width:0;display:flex;flex-direction:column}
+.role-banner{background:var(--navy);padding:10px 24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:2px solid var(--red);flex-shrink:0}
+.role-banner-label{font-size:11px;font-weight:600;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em}
+.role-btns{display:flex;gap:6px}
+.role-btn{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid rgba(255,255,255,.2);background:transparent;color:rgba(255,255,255,.6);font-family:inherit;transition:all .12s}
+.role-btn:hover{background:rgba(255,255,255,.1);color:#fff}
+.role-btn.active{background:#fff;color:var(--navy)}
+.role-badge{margin-left:auto;font-size:11px;color:rgba(255,255,255,.4);font-style:italic}
+.content{padding:24px 28px 56px;flex:1}
+.view-panel{display:none}
+.view-panel.active{display:block}
+/* Buttons */
+.btn-p{background:var(--navy);color:#fff;border:none;border-radius:var(--rmd);padding:8px 16px;font-size:12.5px;font-weight:500;cursor:pointer;font-family:inherit;transition:background .12s;white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+.btn-p:hover{background:var(--navy-h)}
+.btn-g{background:transparent;color:var(--t2);border:1px solid var(--border-mid);border-radius:var(--rmd);padding:8px 14px;font-size:12.5px;font-weight:500;cursor:pointer;font-family:inherit;white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+.btn-g:hover{background:#f5f6f8}
+.btn-accept{background:#16a34a;color:#fff;border:none;border-radius:var(--rmd);padding:7px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:4px}
+.btn-accept:hover{background:#15803d}
+.btn-decline{background:transparent;color:var(--red-t);border:1px solid #f5c6cc;border-radius:var(--rmd);padding:7px 12px;font-size:12px;cursor:pointer;font-family:inherit}
+.btn-sm{padding:6px 12px;font-size:12px}
+/* Stats */
+.stat-row{display:grid;gap:14px;margin-bottom:20px}
+.s4{grid-template-columns:repeat(4,1fr)}
+.s3{grid-template-columns:repeat(3,1fr)}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:14px 16px}
+.stat-label{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.stat-value{font-size:22px;font-weight:600;color:var(--t1);margin-bottom:2px}
+.stat-sub{font-size:11px;color:var(--t3)}
+/* Framework tags */
+.fw{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px}
+.fw-smart{background:#dbeafe;color:#1e40af}
+.fw-okr{background:var(--purple-bg);color:var(--purple-t)}
+.fw-woop{background:var(--teal-bg);color:var(--teal-t)}
+.fw-asp{background:var(--orange-bg);color:var(--orange-t)}
+/* Category */
+.cat{display:inline-flex;align-items:center;font-size:11px;font-weight:500;padding:2px 9px;border-radius:20px}
+.cat-m{background:#fce7f3;color:#9d174d}
+.cat-o{background:var(--blue-bg);color:var(--blue-t)}
+.cat-t{background:#f0f2f5;color:var(--t2)}
+.cat-c{background:var(--amber-bg);color:var(--amber-t)}
+/* Status */
+.st{display:inline-flex;align-items:center;font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px}
+.st-ns{background:#f0f2f5;color:var(--t2)}
+.st-ip{background:var(--blue-bg);color:var(--blue-t)}
+.st-ar{background:var(--red-bg);color:var(--red-t)}
+.st-done{background:var(--teal-bg);color:var(--teal-t)}
+/* Filter bar */
+.filter-bar{display:flex;gap:8px;align-items:center;margin-bottom:20px;flex-wrap:wrap}
+.fselect{font-family:inherit;font-size:12.5px;color:var(--t1);background:var(--surface);border:1px solid var(--border-mid);border-radius:var(--rmd);padding:7px 10px;outline:none}
+.fsearch{font-family:inherit;font-size:12.5px;color:var(--t1);background:var(--surface);border:1px solid var(--border-mid);border-radius:var(--rmd);padding:7px 11px;outline:none;width:200px}
+.fsearch::placeholder{color:var(--t3)}
+.fchip{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid var(--border-mid);background:var(--surface);color:var(--t2);font-family:inherit;transition:all .12s}
+.fchip.on{border-color:var(--navy-mid);background:var(--blue-bg);color:var(--blue-t)}
+/* Goal cards */
+.goals-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+.goal-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:16px 18px;cursor:pointer;transition:box-shadow .15s,border-color .15s;display:flex;flex-direction:column;gap:10px}
+.goal-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.08);border-color:var(--border-mid)}
+.goal-card.risk{border-left:3px solid var(--red-t)}
+.goal-card.overdue{border-left:3px solid var(--red)}
+.goal-card.pending-accept{border-left:3px solid var(--amber-t);background:#fffbf0}
+.goal-card.private{border-style:dashed}
+.gc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.gc-title{font-size:13.5px;font-weight:600;color:var(--t1);line-height:1.4;flex:1}
+.gc-meta{display:flex;gap:8px;flex-wrap:wrap}
+.gc-mi{font-size:11.5px;color:var(--t2);display:flex;align-items:center;gap:3px}
+.gc-mi i{font-size:12px;color:var(--t3)}
+.gc-fws{display:flex;gap:4px;flex-wrap:wrap}
+.gc-prog{display:flex;flex-direction:column;gap:4px}
+.gc-prog-row{display:flex;justify-content:space-between;font-size:11px}
+.gc-prog-lbl{color:var(--t2)}
+.gc-prog-pct{font-weight:600;color:var(--t1)}
+.gc-bar{height:5px;background:#e8eaed;border-radius:3px;overflow:hidden}
+.gc-fill{height:100%;border-radius:3px}
+.fill-done{background:var(--teal-t)}
+.fill-good{background:var(--navy)}
+.fill-risk{background:var(--amber-t)}
+.fill-over{background:var(--red-t)}
+.gc-bottom{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.gc-rec{display:flex;align-items:center;gap:4px;font-size:11.5px;color:var(--t2)}
+.gc-rec i{font-size:13px;color:var(--amber-t)}
+.gc-priv{display:flex;align-items:center;gap:3px;font-size:10.5px;color:var(--t3)}
+.gc-weight{font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;background:var(--purple-bg);color:var(--purple-t)}
+/* Pending assignment */
+.pending-assign{background:var(--surface);border:1.5px solid var(--amber-t);border-radius:var(--rlg);padding:16px 18px;margin-bottom:10px}
+.pa-from{font-size:12px;color:var(--amber-t);font-weight:600;margin-bottom:3px;display:flex;align-items:center;gap:5px}
+.pa-title{font-size:13.5px;font-weight:600;color:var(--t1);margin-bottom:4px}
+.pa-desc{font-size:12.5px;color:var(--t2);line-height:1.5;margin-bottom:10px}
+.pa-meta{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.pa-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+/* Hierarchy */
+.hier-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:12px 16px;margin-bottom:20px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12.5px;color:var(--t2)}
+.hier-badge{font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px}
+.hb-co{background:var(--navy);color:#fff}
+.hb-te{background:var(--blue-bg);color:var(--blue-t)}
+.hb-in{background:var(--teal-bg);color:var(--teal-t)}
+/* Section divider */
+.section-divider{display:flex;align-items:center;gap:12px;margin:28px 0 20px}
+.section-divider-line{flex:1;height:1px;background:var(--border)}
+.section-divider-label{font-size:12px;font-weight:600;color:var(--t2);white-space:nowrap;display:flex;align-items:center;gap:6px}
+/* Recognition meter */
+.rec-meter{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:18px 20px;margin-bottom:20px}
+.rec-meter-title{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.rec-meter-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.rec-meter-card{background:#f7f8fa;border-radius:var(--rmd);padding:12px 14px;border:1px solid var(--border)}
+.rmc-label{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.rmc-value{font-size:20px;font-weight:600;color:var(--t1);margin-bottom:2px}
+.rmc-trend{font-size:11px;display:flex;align-items:center;gap:3px}
+.trend-up{color:var(--teal-t)}
+.trend-down{color:var(--red-t)}
+.trend-flat{color:var(--t3)}
+/* Sparkline bars */
+.sparkline{display:flex;align-items:flex-end;gap:3px;height:32px;margin-top:8px}
+.spark-bar{border-radius:2px 2px 0 0;flex:1;background:var(--navy);opacity:.25;transition:opacity .12s}
+.spark-bar.current{opacity:1;background:var(--navy)}
+.spark-bar:hover{opacity:.7}
+/* Rec by goal type */
+.rec-by-type{display:flex;flex-direction:column;gap:7px}
+.rbt-row{display:flex;align-items:center;gap:10px}
+.rbt-label{font-size:12px;color:var(--t1);width:100px;flex-shrink:0}
+.rbt-bar-wrap{flex:1;height:6px;background:#e8eaed;border-radius:3px;overflow:hidden}
+.rbt-bar{height:100%;border-radius:3px;background:var(--navy-mid)}
+.rbt-count{font-size:11px;color:var(--t2);width:24px;text-align:right;flex-shrink:0}
+/* Supervisor team section */
+.team-section{margin-top:8px}
+.team-member-row{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border)}
+.team-member-row:last-child{border-bottom:none}
+.tm-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
+.av-t{background:var(--teal-bg);color:var(--teal-t)}
+.av-b{background:var(--blue-bg);color:var(--blue-t)}
+.av-p{background:var(--purple-bg);color:var(--purple-t)}
+.av-a{background:var(--amber-bg);color:var(--amber-t)}
+.av-g{background:var(--green-bg);color:var(--green-t)}
+.tm-info{flex:1;min-width:0}
+.tm-name{font-size:13px;font-weight:600;color:var(--navy-mid);text-decoration:none}
+.tm-name:hover{text-decoration:underline}
+.tm-role{font-size:11px;color:var(--t3)}
+.tm-goals{display:flex;align-items:center;gap:6px;flex-shrink:0;min-width:120px}
+.tm-prog-wrap{flex:1;height:5px;background:#e8eaed;border-radius:3px;overflow:hidden}
+.tm-prog-fill{height:100%;border-radius:3px}
+.tm-score{font-size:11.5px;font-weight:600;flex-shrink:0;width:48px;text-align:right}
+.tm-actions{display:flex;gap:6px;flex-shrink:0}
+/* HR weight config */
+.weight-config{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:20px 22px;margin-bottom:20px}
+.wc-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px}
+.wc-title{font-size:14px;font-weight:600;color:var(--t1)}
+.wc-hr-badge{font-size:10px;font-weight:600;background:var(--purple-bg);color:var(--purple-t);padding:2px 8px;border-radius:4px}
+.wc-sub{font-size:12px;color:var(--t3);margin-bottom:16px}
+.weight-rows{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.weight-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:#f7f8fa;border-radius:var(--rmd);border:1px solid var(--border)}
+.wr-cat{display:flex;align-items:center;gap:8px;width:150px;flex-shrink:0;font-size:13px;font-weight:500;color:var(--t1)}
+.wr-icon{font-size:18px}
+.wr-desc{flex:1;font-size:12px;color:var(--t2)}
+.wr-input-wrap{display:flex;align-items:center;gap:5px;flex-shrink:0}
+.wr-input{width:64px;font-family:inherit;font-size:13px;font-weight:600;color:var(--t1);background:var(--surface);border:1px solid var(--border-mid);border-radius:var(--rmd);padding:6px 8px;outline:none;text-align:center}
+.wr-input:focus{border-color:var(--navy-mid)}
+.wr-pct{font-size:12px;color:var(--t2)}
+.wtb-row{display:flex;justify-content:space-between;font-size:12px;color:var(--t2);margin-bottom:5px}
+.wtb-bar{height:8px;background:#e8eaed;border-radius:4px;overflow:hidden;display:flex;gap:1px}
+.wtb-seg{height:100%;border-radius:2px;transition:width .3s}
+.wtb-legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
+.wtb-leg{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--t2)}
+.wtb-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+/* Diminishing returns config */
+.dr-config{background:#f7f8fa;border:1px solid var(--border);border-radius:var(--rmd);padding:14px 16px;margin-top:12px}
+.dr-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+.dr-row:last-child{margin-bottom:0}
+.dr-label{font-size:13px;color:var(--t1);flex:1}
+.dr-sub{font-size:11px;color:var(--t3);margin-top:1px}
+.toggle{position:relative;width:38px;height:22px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-track{position:absolute;inset:0;border-radius:22px;background:#d0d5dd;cursor:pointer;transition:background .18s}
+.toggle input:checked+.toggle-track{background:var(--navy)}
+.toggle-dot{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .18s;pointer-events:none}
+.toggle input:checked~.toggle-dot{transform:translateX(16px)}
+.dr-inline-input{width:56px;font-family:inherit;font-size:12.5px;color:var(--t1);background:var(--surface);border:1px solid var(--border-mid);border-radius:var(--rsm);padding:4px 7px;outline:none;text-align:center}
+/* HR dept health */
+.dept-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.dept-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:14px 16px}
+.dept-name{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:8px}
+.dept-prog-row{display:flex;justify-content:space-between;font-size:11px;color:var(--t2);margin-bottom:3px}
+.dept-prog-bar{height:5px;background:#e8eaed;border-radius:3px;overflow:hidden;margin-bottom:8px}
+.dept-prog-fill{height:100%;border-radius:3px}
+.dept-stats{display:flex;gap:10px;flex-wrap:wrap}
+.dstat{font-size:11px;color:var(--t2)}
+.dstat b{color:var(--t1)}
+/* Phase 3 gate */
+.phase-gate{background:var(--surface);border:1.5px dashed var(--border-mid);border-radius:var(--rlg);padding:28px 24px;text-align:center;margin-bottom:20px}
+.phase-gate i{font-size:32px;color:var(--border-mid);display:block;margin-bottom:10px}
+.phase-gate-title{font-size:14px;font-weight:600;color:var(--t2);margin-bottom:6px}
+.phase-gate-sub{font-size:12px;color:var(--t3);line-height:1.5}
+/* Table */
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);overflow:hidden;margin-bottom:16px}
+.t{width:100%;border-collapse:collapse}
+.t th{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;padding:11px 14px;text-align:left;background:#f7f8fa;border-bottom:1px solid var(--border)}
+.t td{padding:11px 14px;border-bottom:1px solid var(--border);font-size:13px;color:var(--t1);vertical-align:middle}
+.t tr:last-child td{border-bottom:none}
+.t tr:hover td{background:#fafbfc}
+.emp-link{color:var(--navy-mid);text-decoration:none;font-weight:500}
+.emp-link:hover{text-decoration:underline}
+/* Modals */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.goal-popup{background:var(--surface);border-radius:var(--rxl);width:900px;max-width:96vw;height:600px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.18);transform:translateY(8px);transition:transform .2s}
+.modal-overlay.open .goal-popup{transform:translateY(0)}
+.form-modal{background:var(--surface);border-radius:var(--rxl);width:700px;max-width:96vw;max-height:92vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.18);padding:28px;transform:translateY(8px);transition:transform .2s}
+.modal-overlay.open .form-modal{transform:translateY(0)}
+.small-modal{background:var(--surface);border-radius:var(--rxl);width:480px;max-width:96vw;box-shadow:0 8px 40px rgba(0,0,0,.18);padding:28px;transform:translateY(8px);transition:transform .2s}
+.modal-overlay.open .small-modal{transform:translateY(0)}
+/* Popup */
+.gp-hd{padding:16px 20px 0;flex-shrink:0;border-bottom:1px solid var(--border)}
+.gp-h1{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px}
+.gp-title{font-size:17px;font-weight:600;color:var(--t1);flex:1;line-height:1.3}
+.gp-close{background:none;border:none;cursor:pointer;color:var(--t3);font-size:22px;line-height:1}
+.gp-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
+.gp-status{font-family:inherit;font-size:12px;font-weight:500;border:1px solid var(--border-mid);border-radius:20px;padding:3px 10px;outline:none;cursor:pointer;background:var(--surface)}
+.gp-metrics{display:flex;gap:16px;padding:10px 20px;border-bottom:1px solid var(--border);background:#f9fafb;flex-wrap:wrap}
+.gp-metric{display:flex;flex-direction:column;gap:2px}
+.gp-metric-lbl{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.04em}
+.gp-metric-val{font-size:14px;font-weight:600;color:var(--t1)}
+.gp-metric-sub{font-size:10.5px;color:var(--t2)}
+.gp-div{width:1px;background:var(--border);flex-shrink:0;margin:2px 0}
+.gp-body{flex:1;overflow-y:auto;display:grid;grid-template-columns:1fr 1fr}
+.gp-left{padding:16px 20px;border-right:1px solid var(--border);display:flex;flex-direction:column;gap:14px}
+.gp-right{padding:16px 20px;display:flex;flex-direction:column;gap:14px}
+.gp-sec{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.gp-text{font-size:13px;color:var(--t1);line-height:1.6}
+.kr-list{display:flex;flex-direction:column;gap:5px}
+.kr-item{display:flex;align-items:center;gap:7px;padding:7px 10px;background:#f7f8fa;border-radius:var(--rmd);border:1px solid var(--border)}
+.kr-check{width:16px;height:16px;border-radius:50%;border:2px solid var(--border-mid);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .12s}
+.kr-check.done{background:var(--teal-t);border-color:var(--teal-t)}
+.kr-check.done i{font-size:10px;color:#fff}
+.kr-text{flex:1;font-size:12.5px;color:var(--t1)}
+.kr-text.done-text{color:var(--t3);text-decoration:line-through}
+.kr-due{font-size:11px;color:var(--t3)}
+.rec-attached{display:flex;flex-direction:column;gap:5px}
+.rec-item{display:flex;align-items:flex-start;gap:7px;padding:8px 10px;background:#f7f8fa;border-radius:var(--rmd);border:1px solid var(--border)}
+.rec-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0}
+.rec-body{flex:1}
+.rec-from{font-size:11px;color:var(--t2);margin-bottom:2px}
+.rec-from a{color:var(--navy-mid);text-decoration:none}
+.rec-msg{font-size:12px;color:var(--t1);line-height:1.4}
+.rec-badge{font-size:10px;font-weight:500;padding:1px 6px;border-radius:3px;background:var(--amber-bg);color:var(--amber-t);margin-top:3px;display:inline-block}
+.priv-note{background:var(--amber-bg);border:1px solid #f0c06a;border-radius:var(--rmd);padding:8px 12px;font-size:12px;color:var(--amber-t);display:flex;align-items:center;gap:6px}
+.upd-prog{display:flex;align-items:center;gap:7px;padding:9px 12px;background:var(--blue-bg);border:1px solid #b5d4f4;border-radius:var(--rmd)}
+.upd-prog span{font-size:12px;color:var(--blue-t);flex:1}
+.upd-prog input{width:64px;font-family:inherit;font-size:12px;color:var(--t1);border:1px solid var(--border-mid);border-radius:var(--rsm);padding:4px 7px;outline:none;text-align:center;background:var(--surface)}
+/* Create form */
+.form-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px}
+.form-title{font-size:16px;font-weight:600;color:var(--t1)}
+.form-sub{font-size:12px;color:var(--t2);margin-top:3px}
+.form-close{background:none;border:none;cursor:pointer;color:var(--t3);font-size:22px;line-height:1}
+.bsec{margin-bottom:20px}
+.bsec-title{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid var(--border)}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.flabel{font-size:11.5px;font-weight:600;color:var(--t3);letter-spacing:.04em;text-transform:uppercase;margin-bottom:5px;display:flex;align-items:center;gap:5px}
+.freq{color:var(--red)}
+.finfo{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;background:var(--border-mid);color:var(--t2);font-size:9px;font-weight:700;cursor:help;position:relative;font-style:normal}
+.finfo-tip{display:none;position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;font-size:11px;padding:7px 10px;border-radius:var(--rmd);pointer-events:none;z-index:10;width:200px;white-space:normal;line-height:1.4;font-weight:400;text-transform:none;letter-spacing:0}
+.finfo:hover .finfo-tip{display:block}
+.finput,.fselect,.ftextarea{width:100%;font-family:inherit;font-size:13px;color:var(--t1);background:var(--surface);border:1px solid var(--border-mid);border-radius:var(--rmd);padding:8px 11px;outline:none;transition:border-color .12s}
+.finput:focus,.fselect:focus,.ftextarea:focus{border-color:var(--navy-mid)}
+.ftextarea{resize:vertical;min-height:65px;line-height:1.5}
+.cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.cat-opt{border:1.5px solid var(--border-mid);border-radius:var(--rmd);padding:10px 8px;text-align:center;cursor:pointer;transition:all .12s;background:var(--surface)}
+.cat-opt:hover{border-color:var(--navy-mid)}
+.cat-opt.sel{border-color:var(--navy-mid);background:var(--blue-bg)}
+.cat-opt-icon{font-size:20px;margin-bottom:4px}
+.cat-opt-name{font-size:12px;font-weight:600;color:var(--t1)}
+.cat-opt-desc{font-size:10.5px;color:var(--t3);margin-top:2px;line-height:1.3}
+.metric-builder{display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
+.metric-row-b{background:#f7f8fa;border:1px solid var(--border);border-radius:var(--rmd);padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.mr-top{display:grid;grid-template-columns:2fr 1fr;gap:8px}
+.mr-bottom{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end}
+.mr-bottom .finput,.mr-bottom .fselect{font-size:12px;padding:5px 8px}
+.mr-sentence{font-size:11.5px;color:var(--blue-t);padding:6px 10px;background:var(--blue-bg);border-radius:var(--rmd);margin-top:4px;line-height:1.5}
+.del-btn{width:26px;height:26px;border-radius:var(--rsm);border:1px solid var(--border-mid);background:var(--surface);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t2);flex-shrink:0;align-self:flex-end}
+.del-btn:hover{background:var(--red-bg);color:var(--red-t);border-color:var(--red-bg)}
+.kr-builder{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}
+.kr-row-b{display:flex;align-items:center;gap:7px;padding:7px 10px;background:#f7f8fa;border-radius:var(--rmd);border:1px solid var(--border)}
+.kr-row-b input{flex:1;font-family:inherit;font-size:12.5px;color:var(--t1);background:var(--surface);border:1px solid var(--border-mid);border-radius:var(--rsm);padding:5px 8px;outline:none}
+.kr-row-b input[type=date]{width:130px;flex:none}
+.fw-preview{display:flex;gap:6px;flex-wrap:wrap;padding:10px 12px;background:#f7f8fa;border-radius:var(--rmd);border:1px solid var(--border);margin-top:8px;align-items:center}
+.fw-prev-lbl{font-size:11px;color:var(--t3);margin-right:4px}
+.vis-warn{background:var(--amber-bg);border:1px solid #f0c06a;border-radius:var(--rmd);padding:10px 14px;font-size:12px;color:var(--amber-t);display:none;align-items:flex-start;gap:7px;margin-top:8px}
+.vis-warn.show{display:flex}
+.vis-warn i{font-size:15px;flex-shrink:0}
+.info-note{font-size:12px;color:var(--t3);background:#f7f8fa;border-radius:var(--rmd);padding:10px 14px;display:flex;align-items:center;gap:7px;margin-bottom:12px}
+.info-note i{font-size:14px;flex-shrink:0}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
+.page-row{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;gap:12px;flex-wrap:wrap}
+.sec-lbl{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
+</style>
+</head>
+<body>
+<div class="shell">
+<aside class="sidebar">
+  <div class="logo-zone">
+    <div class="client-logo"><svg viewBox="0 0 54 54" width="38" height="38"><circle cx="27" cy="27" r="27" fill="#e8002d"/><text x="27" y="32" text-anchor="middle" font-size="11" fill="white" font-weight="700" font-family="Inter,sans-serif">CLIENT</text></svg></div>
+    <div class="app-title">Performance Center</div>
+  </div>
+  <nav class="nav-section">
+    <a href="#" class="nav-item"><div class="av-nav">CD</div><span>My Profile</span></a>
+    <div class="nav-div"></div>
+    <a href="#" class="nav-item"><i class="ti ti-home"></i><span>Overview</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-file-text"></i><span>Reviews</span></a>
+    <div class="nav-div"></div>
+    <a href="#" class="nav-item active"><i class="ti ti-target"></i><span>Goals</span><span class="nav-badge" id="navBadge" style="display:none">2</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-star"></i><span>Recognition</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-address-book"></i><span>Directory</span></a>
+    <div class="nav-div"></div>
+    <a href="#" class="nav-item"><i class="ti ti-speakerphone"></i><span>News</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-file"></i><span>Documents</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-coin"></i><span>Financial</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-video"></i><span>Meetings</span></a>
+    <div class="nav-div"></div>
+    <a href="#" class="nav-item"><i class="ti ti-refresh"></i><span>Review Cycles</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-settings"></i><span>Configuration</span></a>
+  </nav>
+  <div class="footer-zone">
+    <span class="powered">Powered by</span>
+    <a href="#" class="ats-badge"><div><div class="ats-wm">ATS360</div><div class="ats-sub">by NetDynamic</div></div><i class="ti ti-external-link" style="font-size:11px;color:rgba(255,255,255,.35)"></i></a>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="role-banner">
+    <span class="role-banner-label">Previewing as</span>
+    <div class="role-btns">
+      <button class="role-btn active" onclick="switchRole('employee',this)">Employee</button>
+      <button class="role-btn" onclick="switchRole('supervisor',this)">Supervisor</button>
+      <button class="role-btn" onclick="switchRole('hr',this)">HR Admin</button>
+    </div>
+    <span class="role-badge" id="roleBadge">Employee — own goals + pending assignments</span>
+  </div>
+
+  <div class="content">
+
+  <!-- ══ EMPLOYEE ══ -->
+  <div class="view-panel active" id="view-employee">
+    <div class="page-row">
+      <div><div style="font-size:20px;font-weight:600;color:var(--t1);margin-bottom:2px">Goals</div><div style="font-size:13px;color:var(--t2)">Your personal goals and OKR hierarchy.</div></div>
+      <button class="btn-p" onclick="openModal('createModal')"><i class="ti ti-plus"></i>New goal</button>
+    </div>
+
+    <!-- Pending assignments -->
+    <div class="sec-lbl">Pending — requires your acceptance <span style="background:var(--red);color:#fff;font-size:10px;padding:1px 6px;border-radius:8px;margin-left:4px">2</span></div>
+    <div class="pending-assign">
+      <div class="pa-from"><i class="ti ti-user-check" style="font-size:13px"></i>Assigned by <a href="#" style="color:var(--amber-t);text-decoration:none;font-weight:600">Christopher Kim</a> · Jun 15, 2026</div>
+      <div class="pa-title">Close 3 new enterprise accounts before Q3</div>
+      <div class="pa-desc">Close a minimum of 3 new enterprise-level NetSuite accounts before July 1. Priority prospects: Essen Healthcare, Pyramid Network, plus one from your pipeline.</div>
+      <div class="pa-meta">
+        <span class="gc-mi"><i class="ti ti-calendar" style="font-size:12px;color:var(--t3)"></i>Due Jun 30, 2026</span>
+        <span class="gc-mi"><i class="ti ti-sitemap" style="font-size:12px;color:var(--t3)"></i>Parent: Close 10 enterprise accounts (Team)</span>
+        <span class="gc-weight" style="font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;background:var(--purple-bg);color:var(--purple-t)">20% of review score</span>
+        <span class="cat cat-o">Objective</span>
+      </div>
+      <div class="pa-actions">
+        <button class="btn-accept"><i class="ti ti-check" style="font-size:12px"></i>Accept</button>
+        <button class="btn-g btn-sm">Request changes</button>
+        <button class="btn-decline btn-sm">Decline</button>
+        <span style="font-size:11px;color:var(--t3)">Declining requires a reason and notifies your manager.</span>
+      </div>
+    </div>
+
+    <div class="pending-assign" style="margin-bottom:20px">
+      <div class="pa-from"><i class="ti ti-users" style="font-size:13px"></i>Bulk-assigned to team by <a href="#" style="color:var(--amber-t);text-decoration:none;font-weight:600">Christopher Kim</a> · Jun 1, 2026</div>
+      <div class="pa-title">Complete 20 client follow-up calls per week</div>
+      <div class="pa-desc">Maintain 20 outbound client follow-up calls each week throughout Q3. Tracked against your CRM call log.</div>
+      <div class="pa-meta">
+        <span class="gc-mi"><i class="ti ti-refresh" style="font-size:12px;color:var(--t3)"></i>Recurring weekly</span>
+        <span class="gc-weight" style="font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;background:var(--purple-bg);color:var(--purple-t)">10% of review score</span>
+        <span class="cat cat-t">Task</span>
+      </div>
+      <div class="pa-actions">
+        <button class="btn-accept"><i class="ti ti-check" style="font-size:12px"></i>Accept</button>
+        <button class="btn-g btn-sm">Request changes</button>
+      </div>
+    </div>
+
+    <!-- Hierarchy -->
+    <div class="hier-bar">
+      <i class="ti ti-sitemap" style="font-size:14px;color:var(--t3)"></i>
+      <span style="font-size:11px;font-weight:600;color:var(--t3)">YOUR PATH:</span>
+      <span class="hier-badge hb-co">Company</span><span style="font-size:12.5px">Expand market share by 15% in Q3</span>
+      <i class="ti ti-chevron-right" style="color:var(--t3);font-size:12px"></i>
+      <span class="hier-badge hb-te">Team</span><span style="font-size:12.5px">Close 10 new enterprise accounts</span>
+      <i class="ti ti-chevron-right" style="color:var(--t3);font-size:12px"></i>
+      <span class="hier-badge hb-in">You</span><span style="font-size:12.5px">Close 3 accounts by Q3</span>
+    </div>
+
+    <!-- Recognition meter -->
+    <div class="rec-meter">
+      <div class="rec-meter-title">
+        <span>Recognition received — personal insight</span>
+        <span style="font-size:11px;color:var(--t3);font-weight:400">This period vs last period</span>
+      </div>
+      <div class="rec-meter-grid">
+        <div class="rec-meter-card">
+          <div class="rmc-label">Received this month</div>
+          <div class="rmc-value">14</div>
+          <div class="rmc-trend trend-up"><i class="ti ti-trending-up" style="font-size:12px"></i>+4 vs last month</div>
+          <div class="sparkline">
+            <div class="spark-bar" style="height:40%"></div>
+            <div class="spark-bar" style="height:55%"></div>
+            <div class="spark-bar" style="height:35%"></div>
+            <div class="spark-bar" style="height:70%"></div>
+            <div class="spark-bar" style="height:60%"></div>
+            <div class="spark-bar" style="height:80%"></div>
+            <div class="spark-bar current" style="height:100%"></div>
+          </div>
+        </div>
+        <div class="rec-meter-card">
+          <div class="rmc-label">Given this month</div>
+          <div class="rmc-value">7</div>
+          <div class="rmc-trend trend-flat"><i class="ti ti-minus" style="font-size:12px"></i>Same as last month</div>
+          <div class="sparkline">
+            <div class="spark-bar" style="height:60%"></div>
+            <div class="spark-bar" style="height:80%"></div>
+            <div class="spark-bar" style="height:50%"></div>
+            <div class="spark-bar" style="height:70%"></div>
+            <div class="spark-bar" style="height:90%"></div>
+            <div class="spark-bar" style="height:70%"></div>
+            <div class="spark-bar current" style="height:70%"></div>
+          </div>
+        </div>
+        <div class="rec-meter-card">
+          <div class="rmc-label">Attached to goals</div>
+          <div class="rmc-value">8</div>
+          <div class="rmc-trend" style="color:var(--t3);font-size:11px">of 14 received this month</div>
+        </div>
+        <div class="rec-meter-card">
+          <div class="rmc-label">Top focus area</div>
+          <div class="rmc-value" style="font-size:15px;padding-top:4px">Client Focus</div>
+          <div class="rmc-trend" style="color:var(--t3);font-size:11px">6 of 14 recognitions tagged</div>
+        </div>
+      </div>
+      <div class="sec-lbl" style="margin-bottom:8px">Recognition by goal category</div>
+      <div class="rec-by-type">
+        <div class="rbt-row"><span class="rbt-label">🏆 Milestone</span><div class="rbt-bar-wrap"><div class="rbt-bar" style="width:85%"></div></div><span class="rbt-count">6</span></div>
+        <div class="rbt-row"><span class="rbt-label">📈 Objective</span><div class="rbt-bar-wrap"><div class="rbt-bar" style="width:57%"></div></div><span class="rbt-count">4</span></div>
+        <div class="rbt-row"><span class="rbt-label">✅ Task</span><div class="rbt-bar-wrap"><div class="rbt-bar" style="width:14%"></div></div><span class="rbt-count">1</span></div>
+        <div class="rbt-row"><span class="rbt-label">🤝 Commitment</span><div class="rbt-bar-wrap"><div class="rbt-bar" style="width:28%"></div></div><span class="rbt-count">2</span></div>
+      </div>
+      <div class="info-note" style="margin-top:12px;margin-bottom:0"><i class="ti ti-info-circle"></i>Tasks attract very little recognition — your effort may not be visible to peers. Consider sharing your weekly task progress more openly.</div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stat-row s4">
+      <div class="stat-card"><div class="stat-label">Active goals</div><div class="stat-value">7</div><div class="stat-sub">This period</div></div>
+      <div class="stat-card"><div class="stat-label">On track</div><div class="stat-value" style="color:var(--teal-t)">4</div><div class="stat-sub">≥50% progress</div></div>
+      <div class="stat-card"><div class="stat-label">At risk</div><div class="stat-value" style="color:var(--red-t)">2</div></div>
+      <div class="stat-card"><div class="stat-label">Avg progress</div><div class="stat-value">63%</div></div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-bar">
+      <input class="fsearch" type="text" placeholder="Search goals…"/>
+      <select class="fselect"><option>All categories</option><option>Milestone</option><option>Objective</option><option>Task</option><option>Commitment</option></select>
+      <select class="fselect"><option>All statuses</option><option>In progress</option><option>At risk</option><option>Complete</option></select>
+      <button class="fchip on" onclick="toggleChip(this)">All</button>
+      <button class="fchip" onclick="toggleChip(this)"><span class="fw fw-smart">SMART</span></button>
+      <button class="fchip" onclick="toggleChip(this)"><span class="fw fw-okr">OKR</span></button>
+      <button class="fchip" onclick="toggleChip(this)"><span class="fw fw-woop">WOOP</span></button>
+      <button class="fchip" onclick="toggleChip(this)"><span class="fw fw-asp">Aspirational</span></button>
+      <button class="fchip" onclick="toggleChip(this)"><i class="ti ti-star" style="font-size:12px;color:var(--amber-t)"></i>Has recognition</button>
+      <button class="fchip" onclick="toggleChip(this)"><i class="ti ti-paperclip" style="font-size:12px"></i>Has evidence</button>
+    </div>
+
+    <!-- Goal cards -->
+    <div class="goals-grid">
+      <div class="goal-card" onclick="openModal('detailModal')">
+        <div class="gc-top"><div class="gc-title">Close Essen Healthcare deal</div><span class="cat cat-m">Milestone</span></div>
+        <div class="gc-meta"><span class="gc-mi"><i class="ti ti-calendar"></i>Jun 30, 2026</span><span class="gc-mi"><i class="ti ti-list-check"></i>4/4 KR done</span></div>
+        <div class="gc-fws"><span class="fw fw-smart">SMART</span><span class="fw fw-okr">OKR</span><span class="fw fw-woop">WOOP</span></div>
+        <div class="gc-prog"><div class="gc-prog-row"><span class="gc-prog-lbl">Completed</span><span class="gc-prog-pct">100%</span></div><div class="gc-bar"><div class="gc-fill fill-done" style="width:100%"></div></div></div>
+        <div class="gc-bottom"><div class="gc-rec"><i class="ti ti-star-filled"></i>5 recognitions · <i class="ti ti-paperclip" style="color:var(--t3);margin-left:4px"></i>3 evidence</div><span class="st st-done">Complete</span></div>
+      </div>
+      <div class="goal-card" onclick="openModal('detailModal')">
+        <div class="gc-top"><div class="gc-title">Reach $1M in new sales revenue by Q4</div><span class="cat cat-o">Objective</span></div>
+        <div class="gc-meta"><span class="gc-mi"><i class="ti ti-calendar"></i>Dec 31, 2026</span><span class="gc-mi"><i class="ti ti-chart-bar"></i>3 metrics</span></div>
+        <div class="gc-fws"><span class="fw fw-smart">SMART</span><span class="fw fw-okr">OKR</span></div>
+        <div class="gc-prog"><div class="gc-prog-row"><span class="gc-prog-lbl">$750K of $1M</span><span class="gc-prog-pct">75%</span></div><div class="gc-bar"><div class="gc-fill fill-good" style="width:75%"></div></div></div>
+        <div class="gc-bottom"><div class="gc-rec"><i class="ti ti-star-filled"></i>8 recognitions</div><div style="display:flex;gap:4px;align-items:center"><span style="font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;background:var(--purple-bg);color:var(--purple-t)">20% score</span><span class="st st-ip">In progress</span></div></div>
+      </div>
+      <div class="goal-card risk" onclick="openModal('detailModal')">
+        <div class="gc-top"><div class="gc-title">Complete 20 client follow-up calls per week</div><span class="cat cat-t">Task</span></div>
+        <div class="gc-meta"><span class="gc-mi"><i class="ti ti-refresh"></i>Recurring weekly</span><span class="gc-mi" style="color:var(--red-t)"><i class="ti ti-trending-down" style="color:var(--red-t)"></i>Falling behind</span></div>
+        <div class="gc-fws"><span class="fw fw-smart">SMART</span></div>
+        <div class="gc-prog"><div class="gc-prog-row"><span class="gc-prog-lbl">12 of 20 this week</span><span class="gc-prog-pct" style="color:var(--red-t)">60%</span></div><div class="gc-bar"><div class="gc-fill fill-risk" style="width:60%"></div></div></div>
+        <div class="gc-bottom"><div class="gc-rec" style="color:var(--t3)"><i class="ti ti-star" style="color:var(--t3)"></i>No recognition yet</div><span class="st st-ar">At risk</span></div>
+      </div>
+      <div class="goal-card private" onclick="openModal('detailModal')">
+        <div class="gc-top"><div class="gc-title">Prepare for senior consultant application</div><span class="cat cat-c">Commitment</span></div>
+        <div class="gc-meta"><span class="gc-mi"><i class="ti ti-calendar"></i>Sep 30, 2026</span></div>
+        <div class="gc-fws"><span class="fw fw-woop">WOOP</span></div>
+        <div class="gc-prog"><div class="gc-prog-row"><span class="gc-prog-lbl">Progress</span><span class="gc-prog-pct">40%</span></div><div class="gc-bar"><div class="gc-fill fill-good" style="width:40%"></div></div></div>
+        <div class="gc-bottom"><div class="gc-priv"><i class="ti ti-lock" style="font-size:12px"></i>Private — only you</div><span class="st st-ip">In progress</span></div>
+      </div>
+      <div class="goal-card" onclick="openModal('detailModal')">
+        <div class="gc-top"><div class="gc-title">Become the most client-centric team in the org</div><span class="cat cat-c">Commitment</span></div>
+        <div class="gc-meta"><span class="gc-mi" style="color:var(--orange-t)"><i class="ti ti-calendar" style="color:var(--orange-t)"></i>No deadline — Aspirational</span></div>
+        <div class="gc-fws"><span class="fw fw-asp">Aspirational</span></div>
+        <div class="gc-prog"><div class="gc-prog-row"><span class="gc-prog-lbl">Qualitative progress</span><span class="gc-prog-pct">—</span></div><div class="gc-bar"><div class="gc-fill fill-good" style="width:0%"></div></div></div>
+        <div class="gc-bottom"><div class="gc-rec"><i class="ti ti-star-filled"></i>12 recognitions</div><span class="st st-ip">In progress</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SUPERVISOR — BLENDED ══ -->
+  <div class="view-panel" id="view-supervisor">
+    <div class="page-row">
+      <div><div style="font-size:20px;font-weight:600;color:var(--t1);margin-bottom:2px">Goals</div><div style="font-size:13px;color:var(--t2)">Your own goals and your team's goal health.</div></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn-g" onclick="openModal('createModal')"><i class="ti ti-plus"></i>My goal</button>
+        <button class="btn-p" onclick="openModal('createModal')"><i class="ti ti-users"></i>Assign to team</button>
+      </div>
+    </div>
+
+    <!-- Supervisor's own pending assignment -->
+    <div class="pending-assign" style="margin-bottom:20px">
+      <div class="pa-from"><i class="ti ti-user-check" style="font-size:13px"></i>Assigned to you by <a href="#" style="color:var(--amber-t);text-decoration:none;font-weight:600">Christopher Kim</a> · Jun 15, 2026</div>
+      <div class="pa-title">Grow Professional Services revenue by 20% in H2</div>
+      <div class="pa-desc">Lead the PS team to exceed H2 revenue targets by 20% over H1. Includes expanding existing accounts and closing new logos.</div>
+      <div class="pa-meta"><span class="gc-mi"><i class="ti ti-calendar" style="font-size:12px;color:var(--t3)"></i>Due Dec 31, 2026</span><span class="cat cat-o">Objective</span><span style="font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;background:var(--purple-bg);color:var(--purple-t)">25% of your review score</span></div>
+      <div class="pa-actions"><button class="btn-accept"><i class="ti ti-check" style="font-size:12px"></i>Accept</button><button class="btn-g btn-sm">Request changes</button></div>
+    </div>
+
+    <!-- Supervisor's own hierarchy -->
+    <div class="hier-bar">
+      <i class="ti ti-sitemap" style="font-size:14px;color:var(--t3)"></i>
+      <span style="font-size:11px;font-weight:600;color:var(--t3)">YOUR PATH:</span>
+      <span class="hier-badge hb-co">Company</span><span style="font-size:12.5px">Expand market share by 15%</span>
+      <i class="ti ti-chevron-right" style="color:var(--t3);font-size:12px"></i>
+      <span class="hier-badge hb-te">You (Supervisor)</span><span style="font-size:12.5px">Grow PS revenue 20% in H2</span>
+      <i class="ti ti-chevron-right" style="color:var(--t3);font-size:12px"></i>
+      <span class="hier-badge hb-in">Your team</span><span style="font-size:12.5px">Individual sales and delivery goals</span>
+    </div>
+
+    <!-- Supervisor's own goal cards -->
+    <div class="stat-row s4">
+      <div class="stat-card"><div class="stat-label">My active goals</div><div class="stat-value">5</div></div>
+      <div class="stat-card"><div class="stat-label">On track</div><div class="stat-value" style="color:var(--teal-t)">3</div></div>
+      <div class="stat-card"><div class="stat-label">At risk</div><div class="stat-value" style="color:var(--amber-t)">1</div></div>
+      <div class="stat-card"><div class="stat-label">Avg progress</div><div class="stat-value">58%</div></div>
+    </div>
+
+    <div class="filter-bar" style="margin-bottom:14px">
+      <button class="fchip on" onclick="toggleChip(this)">All</button>
+      <button class="fchip" onclick="toggleChip(this)"><span class="fw fw-smart">SMART</span></button>
+      <button class="fchip" onclick="toggleChip(this)"><span class="fw fw-okr">OKR</span></button>
+      <button class="fchip" onclick="toggleChip(this)"><span class="fw fw-woop">WOOP</span></button>
+      <button class="fchip" onclick="toggleChip(this)"><span class="fw fw-asp">Aspirational</span></button>
+    </div>
+
+    <div class="goals-grid" style="margin-bottom:4px">
+      <div class="goal-card" onclick="openModal('detailModal')">
+        <div class="gc-top"><div class="gc-title">Grow Professional Services revenue by 20% in H2</div><span class="cat cat-o">Objective</span></div>
+        <div class="gc-meta"><span class="gc-mi"><i class="ti ti-calendar"></i>Dec 31, 2026</span><span class="gc-mi"><i class="ti ti-chart-bar"></i>2 metrics</span></div>
+        <div class="gc-fws"><span class="fw fw-smart">SMART</span><span class="fw fw-okr">OKR</span></div>
+        <div class="gc-prog"><div class="gc-prog-row"><span class="gc-prog-lbl">H1 baseline set</span><span class="gc-prog-pct">12%</span></div><div class="gc-bar"><div class="gc-fill fill-good" style="width:12%"></div></div></div>
+        <div class="gc-bottom"><div class="gc-rec"><i class="ti ti-star-filled"></i>3 recognitions</div><span class="st st-ip">In progress</span></div>
+      </div>
+      <div class="goal-card" onclick="openModal('detailModal')">
+        <div class="gc-top"><div class="gc-title">Complete Q3 performance reviews for all 8 direct reports</div><span class="cat cat-t">Task</span></div>
+        <div class="gc-meta"><span class="gc-mi"><i class="ti ti-calendar"></i>Jul 31, 2026</span></div>
+        <div class="gc-fws"><span class="fw fw-smart">SMART</span></div>
+        <div class="gc-prog"><div class="gc-prog-row"><span class="gc-prog-lbl">0 of 8 started</span><span class="gc-prog-pct">0%</span></div><div class="gc-bar"><div class="gc-fill fill-good" style="width:0%"></div></div></div>
+        <div class="gc-bottom"><div class="gc-rec" style="color:var(--t3)"><i class="ti ti-star" style="color:var(--t3)"></i>No recognition</div><span class="st st-ns">Not started</span></div>
+      </div>
+      <div class="goal-card risk" onclick="openModal('detailModal')">
+        <div class="gc-top"><div class="gc-title">Reduce team average deal cycle from 45 to 30 days</div><span class="cat cat-o">Objective</span></div>
+        <div class="gc-meta"><span class="gc-mi"><i class="ti ti-calendar"></i>Sep 30, 2026</span></div>
+        <div class="gc-fws"><span class="fw fw-smart">SMART</span><span class="fw fw-okr">OKR</span></div>
+        <div class="gc-prog"><div class="gc-prog-row"><span class="gc-prog-lbl">42 days avg (target: 30)</span><span class="gc-prog-pct" style="color:var(--red-t)">20%</span></div><div class="gc-bar"><div class="gc-fill fill-risk" style="width:20%"></div></div></div>
+        <div class="gc-bottom"><div class="gc-rec" style="color:var(--t3)"><i class="ti ti-star" style="color:var(--t3)"></i>No recognition</div><span class="st st-ar">At risk</span></div>
+      </div>
+    </div>
+
+    <!-- DIVIDER -->
+    <div class="section-divider">
+      <div class="section-divider-line"></div>
+      <div class="section-divider-label"><i class="ti ti-users" style="font-size:14px"></i>My Team — Goal Health</div>
+      <div class="section-divider-line"></div>
+    </div>
+
+    <div class="stat-row s4" style="margin-bottom:16px">
+      <div class="stat-card"><div class="stat-label">Team goals</div><div class="stat-value">24</div><div class="stat-sub">8 direct reports</div></div>
+      <div class="stat-card"><div class="stat-label">On track</div><div class="stat-value" style="color:var(--teal-t)">17</div></div>
+      <div class="stat-card"><div class="stat-label">At risk</div><div class="stat-value" style="color:var(--red-t)">5</div></div>
+      <div class="stat-card"><div class="stat-label">Pending acceptance</div><div class="stat-value" style="color:var(--amber-t)">4</div></div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="t">
+        <thead><tr><th>Team member</th><th>Goals on track</th><th>At risk</th><th>Pending</th><th>Avg progress</th><th>Actions</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><div style="display:flex;align-items:center;gap:8px"><div class="tm-av av-t" style="width:30px;height:30px;font-size:10px">AS</div><div><a class="emp-link" href="#">Aiden Somerhalder</a><div style="font-size:11px;color:var(--t3)">Solutions Consultant</div></div></div></td>
+            <td><span style="color:var(--teal-t);font-weight:600">4/5</span></td>
+            <td>0</td>
+            <td>1 <span style="color:var(--amber-t);font-size:11px">pending</span></td>
+            <td><div style="display:flex;align-items:center;gap:7px"><div class="tm-prog-wrap"><div class="tm-prog-fill" style="width:80%;background:var(--teal-t)"></div></div><span style="font-size:11.5px;font-weight:600;color:var(--teal-t)">80%</span></div></td>
+            <td><div style="display:flex;gap:5px"><button class="btn-g btn-sm">View goals</button><button class="btn-g btn-sm"><i class="ti ti-target"></i>Assign</button></div></td>
+          </tr>
+          <tr>
+            <td><div style="display:flex;align-items:center;gap:8px"><div class="tm-av av-b" style="width:30px;height:30px;font-size:10px">AW</div><div><a class="emp-link" href="#">Alex Wolfe</a><div style="font-size:11px;color:var(--t3)">Implementation Specialist</div></div></div></td>
+            <td><span style="color:var(--teal-t);font-weight:600">3/4</span></td>
+            <td>0</td>
+            <td>—</td>
+            <td><div style="display:flex;align-items:center;gap:7px"><div class="tm-prog-wrap"><div class="tm-prog-fill" style="width:75%;background:var(--navy)"></div></div><span style="font-size:11.5px;font-weight:600">75%</span></div></td>
+            <td><div style="display:flex;gap:5px"><button class="btn-g btn-sm">View goals</button><button class="btn-g btn-sm"><i class="ti ti-target"></i>Assign</button></div></td>
+          </tr>
+          <tr style="background:#fff8f8">
+            <td><div style="display:flex;align-items:center;gap:8px"><div class="tm-av av-p" style="width:30px;height:30px;font-size:10px">AN</div><div><a class="emp-link" href="#">Amy Nguyen</a><div style="font-size:11px;color:var(--t3)">PS Consultant</div></div></div></td>
+            <td><span style="color:var(--amber-t);font-weight:600">1/4</span></td>
+            <td><span style="color:var(--red-t);font-weight:600">3</span></td>
+            <td>2 <span style="color:var(--amber-t);font-size:11px">pending</span></td>
+            <td><div style="display:flex;align-items:center;gap:7px"><div class="tm-prog-wrap"><div class="tm-prog-fill" style="width:25%;background:var(--red-t)"></div></div><span style="font-size:11.5px;font-weight:600;color:var(--red-t)">25%</span></div></td>
+            <td><div style="display:flex;gap:5px"><button class="btn-p btn-sm">View goals</button><button class="btn-g btn-sm"><i class="ti ti-target"></i>Assign</button></div></td>
+          </tr>
+          <tr>
+            <td><div style="display:flex;align-items:center;gap:8px"><div class="tm-av av-a" style="width:30px;height:30px;font-size:10px">BA</div><div><a class="emp-link" href="#">Bon Ariola</a><div style="font-size:11px;color:var(--t3)">Developer</div></div></div></td>
+            <td><span style="color:var(--teal-t);font-weight:600">2/4</span></td>
+            <td><span style="color:var(--amber-t);font-weight:600">1</span></td>
+            <td>1 <span style="color:var(--amber-t);font-size:11px">pending</span></td>
+            <td><div style="display:flex;align-items:center;gap:7px"><div class="tm-prog-wrap"><div class="tm-prog-fill" style="width:50%;background:var(--amber-t)"></div></div><span style="font-size:11.5px;font-weight:600;color:var(--amber-t)">50%</span></div></td>
+            <td><div style="display:flex;gap:5px"><button class="btn-g btn-sm">View goals</button><button class="btn-g btn-sm"><i class="ti ti-target"></i>Assign</button></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ HR VIEW ══ -->
+  <div class="view-panel" id="view-hr">
+    <div class="page-row">
+      <div><div style="font-size:20px;font-weight:600;color:var(--t1);margin-bottom:2px">Goals</div><div style="font-size:13px;color:var(--t2)">Org-wide goal health, weight and recognition configuration.</div></div>
+    </div>
+
+    <div class="stat-row s4">
+      <div class="stat-card"><div class="stat-label">Total active goals</div><div class="stat-value">312</div><div class="stat-sub">Across the org</div></div>
+      <div class="stat-card"><div class="stat-label">On track</div><div class="stat-value" style="color:var(--teal-t)">61%</div><div class="stat-sub">198 of 312</div></div>
+      <div class="stat-card"><div class="stat-label">At risk / overdue</div><div class="stat-value" style="color:var(--red-t)">47</div></div>
+      <div class="stat-card"><div class="stat-label">Pending acceptance</div><div class="stat-value" style="color:var(--amber-t)">18</div></div>
+    </div>
+
+    <div class="sec-lbl">Goal health by department</div>
+    <div class="dept-grid">
+      <div class="dept-card"><div class="dept-name">Professional Services</div><div class="dept-prog-row"><span>On track</span><span>74%</span></div><div class="dept-prog-bar"><div class="dept-prog-fill" style="width:74%;background:var(--navy)"></div></div><div class="dept-stats"><span class="dstat"><b>89</b> active</span><span class="dstat" style="color:var(--teal-t)"><b>66</b> on track</span><span class="dstat" style="color:var(--red-t)"><b>12</b> at risk</span></div></div>
+      <div class="dept-card"><div class="dept-name">Development</div><div class="dept-prog-row"><span>On track</span><span>48%</span></div><div class="dept-prog-bar"><div class="dept-prog-fill" style="width:48%;background:var(--amber-t)"></div></div><div class="dept-stats"><span class="dstat"><b>72</b> active</span><span class="dstat" style="color:var(--amber-t)"><b>35</b> on track</span><span class="dstat" style="color:var(--red-t)"><b>22</b> at risk</span></div></div>
+      <div class="dept-card"><div class="dept-name">Sales &amp; Marketing</div><div class="dept-prog-row"><span>On track</span><span>82%</span></div><div class="dept-prog-bar"><div class="dept-prog-fill" style="width:82%;background:var(--teal-t)"></div></div><div class="dept-stats"><span class="dstat"><b>63</b> active</span><span class="dstat" style="color:var(--teal-t)"><b>52</b> on track</span><span class="dstat" style="color:var(--red-t)"><b>7</b> at risk</span></div></div>
+    </div>
+
+    <!-- Weight configuration -->
+    <div class="weight-config">
+      <div class="wc-header"><div class="wc-title">Goal category weights</div><span class="wc-hr-badge">HR Admin only</span></div>
+      <div class="wc-sub">How much each goal category contributes to the overall goal score in a review cycle. All weights must total 100%.</div>
+      <div class="weight-rows" id="weightRows">
+        <div class="weight-row"><div class="wr-cat"><span class="wr-icon">🏆</span>Milestone</div><div class="wr-desc">Significant achievements. Binary — done or not done.</div><div class="wr-input-wrap"><input type="number" class="wr-input" value="30" min="0" max="100" oninput="updateBar()"/><span class="wr-pct">%</span></div></div>
+        <div class="weight-row"><div class="wr-cat"><span class="wr-icon">📈</span>Objective</div><div class="wr-desc">Measurable targets with numeric progress.</div><div class="wr-input-wrap"><input type="number" class="wr-input" value="40" min="0" max="100" oninput="updateBar()"/><span class="wr-pct">%</span></div></div>
+        <div class="weight-row"><div class="wr-cat"><span class="wr-icon">✅</span>Task</div><div class="wr-desc">Recurring operational responsibilities.</div><div class="wr-input-wrap"><input type="number" class="wr-input" value="20" min="0" max="100" oninput="updateBar()"/><span class="wr-pct">%</span></div></div>
+        <div class="weight-row"><div class="wr-cat"><span class="wr-icon">🤝</span>Commitment</div><div class="wr-desc">Behavioural goals. Qualitatively assessed.</div><div class="wr-input-wrap"><input type="number" class="wr-input" value="10" min="0" max="100" oninput="updateBar()"/><span class="wr-pct">%</span></div></div>
+      </div>
+      <div class="wtb-row"><span>Total</span><span id="wtbTotal" style="font-weight:700;color:var(--teal-t)">100% ✓</span></div>
+      <div class="wtb-bar" id="wtbBar">
+        <div class="wtb-seg" style="width:30%;background:#9d174d" id="seg0"></div>
+        <div class="wtb-seg" style="width:40%;background:var(--navy-mid)" id="seg1"></div>
+        <div class="wtb-seg" style="width:20%;background:var(--t2)" id="seg2"></div>
+        <div class="wtb-seg" style="width:10%;background:var(--amber-t)" id="seg3"></div>
+      </div>
+      <div class="wtb-legend">
+        <span class="wtb-leg"><span class="wtb-dot" style="background:#9d174d"></span>Milestone</span>
+        <span class="wtb-leg"><span class="wtb-dot" style="background:var(--navy-mid)"></span>Objective</span>
+        <span class="wtb-leg"><span class="wtb-dot" style="background:var(--t2)"></span>Task</span>
+        <span class="wtb-leg"><span class="wtb-dot" style="background:var(--amber-t)"></span>Commitment</span>
+      </div>
+
+      <!-- Diminishing returns config -->
+      <div class="dr-config">
+        <div style="font-size:12px;font-weight:600;color:var(--t2);margin-bottom:10px;display:flex;align-items:center;gap:6px"><i class="ti ti-adjustments" style="font-size:14px"></i>Recognition scoring rules</div>
+        <div class="dr-row">
+          <div><div class="dr-label">Enable diminishing returns on repeated recognition</div><div class="dr-sub">If one person sends the same employee multiple recognitions in a short window, later ones carry less weight in scoring.</div></div>
+          <label class="toggle"><input type="checkbox" id="drToggle" onchange="toggleDR(this)"/><div class="toggle-track"></div><div class="toggle-dot"></div></label>
+        </div>
+        <div id="drSettings" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
+          <div class="dr-row">
+            <div><div class="dr-label">Recognition window (days)</div><div class="dr-sub">Recognitions from the same sender to the same person within this window are subject to diminishing returns.</div></div>
+            <input type="number" class="dr-inline-input" value="7"/>
+          </div>
+          <div class="dr-row" style="margin-top:8px">
+            <div><div class="dr-label">Weight reduction per additional recognition</div><div class="dr-sub">Each additional recognition in the window carries this much less weight than the previous one.</div></div>
+            <div style="display:flex;align-items:center;gap:5px"><input type="number" class="dr-inline-input" value="25"/><span style="font-size:12px;color:var(--t2)">%</span></div>
+          </div>
+        </div>
+        <div class="dr-row" style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
+          <div><div class="dr-label">Show Top Recognition Giver spotlight on Overview</div><div class="dr-sub">Rewards the employee who gives the most recognition in a period. Entirely separate from the diminishing returns rule above.</div></div>
+          <label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div><div class="toggle-dot"></div></label>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-top:14px">
+        <button class="btn-p btn-sm">Save configuration</button>
+        <button class="btn-g btn-sm">Reset to defaults</button>
+      </div>
+    </div>
+
+    <!-- All goals -->
+    <div class="sec-lbl">All employee goals</div>
+    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+      <select class="fselect"><option>All departments</option><option>Professional Services</option><option>Development</option><option>Sales</option></select>
+      <select class="fselect"><option>All categories</option><option>Milestone</option><option>Objective</option><option>Task</option><option>Commitment</option></select>
+      <select class="fselect"><option>All statuses</option><option>At risk</option><option>Overdue</option><option>Pending acceptance</option></select>
+      <input class="fsearch" type="text" placeholder="Search employee or goal…"/>
+      <button class="btn-g btn-sm"><i class="ti ti-download"></i>Export</button>
+    </div>
+    <div class="table-wrap">
+      <table class="t">
+        <thead><tr><th>Employee</th><th>Goal</th><th>Category</th><th>Framework</th><th>Recognitions</th><th>Progress</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td><a class="emp-link" href="#">Cynthia Diaz</a></td><td style="font-size:12.5px">Close Essen Healthcare deal</td><td><span class="cat cat-m" style="font-size:10.5px;padding:1px 7px">Milestone</span></td><td><div style="display:flex;gap:3px"><span class="fw fw-smart">SMART</span><span class="fw fw-okr">OKR</span></div></td><td style="font-size:12px"><span style="color:var(--amber-t)">★</span> 5 attached</td><td><div style="display:flex;align-items:center;gap:7px"><div style="flex:1;height:4px;background:#e8eaed;border-radius:2px;min-width:60px;overflow:hidden"><div style="height:100%;width:100%;background:var(--teal-t);border-radius:2px"></div></div><span style="font-size:11px;font-weight:600;color:var(--teal-t)">100%</span></div></td><td><span class="st st-done">Complete</span></td></tr>
+          <tr style="background:#fff8f8"><td><a class="emp-link" href="#">Amy Nguyen</a></td><td style="font-size:12.5px">Complete 20 client calls per week</td><td><span class="cat cat-t" style="font-size:10.5px;padding:1px 7px">Task</span></td><td><span class="fw fw-smart">SMART</span></td><td style="font-size:12px;color:var(--t3)">None</td><td><div style="display:flex;align-items:center;gap:7px"><div style="flex:1;height:4px;background:#e8eaed;border-radius:2px;min-width:60px;overflow:hidden"><div style="height:100%;width:35%;background:var(--red-t);border-radius:2px"></div></div><span style="font-size:11px;font-weight:600;color:var(--red-t)">35%</span></div></td><td><span class="st st-ar">At risk</span></td></tr>
+          <tr><td><a class="emp-link" href="#">Aiden Somerhalder</a></td><td style="font-size:12.5px">Reach $1M in new sales revenue</td><td><span class="cat cat-o" style="font-size:10.5px;padding:1px 7px">Objective</span></td><td><span class="fw fw-smart">SMART</span></td><td style="font-size:12px"><span style="color:var(--amber-t)">★</span> 8 attached</td><td><div style="display:flex;align-items:center;gap:7px"><div style="flex:1;height:4px;background:#e8eaed;border-radius:2px;min-width:60px;overflow:hidden"><div style="height:100%;width:75%;background:var(--navy);border-radius:2px"></div></div><span style="font-size:11px;color:var(--t2)">75%</span></div></td><td><span class="st st-ip">In progress</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Phase 3 gate -->
+    <div class="sec-lbl">Performance Score system <span style="background:var(--purple-bg);color:var(--purple-t);font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;margin-left:4px">Phase 3</span></div>
+    <div class="phase-gate">
+      <i class="ti ti-trophy"></i>
+      <div class="phase-gate-title">Merit, demerit, and reward system</div>
+      <div class="phase-gate-sub">Configure point thresholds for goal completion, recognition, and review scores. Set demerit triggers for missed goals. Connect reward budgets from the Financial tab. Architecture is in place — UI ships Phase 3.</div>
+      <span style="display:inline-block;background:var(--purple-bg);color:var(--purple-t);font-size:11px;font-weight:600;padding:3px 10px;border-radius:4px;margin-top:10px">Phase 3 — Architecture ready · customrecord_ats_pm_performance_score</span>
+    </div>
+  </div>
+
+  </div><!-- /.content -->
+</div><!-- /.main -->
+</div><!-- /.shell -->
+
+<!-- GOAL DETAIL POPUP -->
+<div class="modal-overlay" id="detailModal">
+  <div class="goal-popup">
+    <div class="gp-hd">
+      <div class="gp-h1">
+        <div class="gp-title">Close Essen Healthcare deal</div>
+        <div style="display:flex;gap:6px;align-items:center;flex-shrink:0">
+          <button class="btn-g btn-sm"><i class="ti ti-edit"></i>Edit</button>
+          <button class="btn-p btn-sm" onclick="openModal('completePromptModal')"><i class="ti ti-circle-check"></i>Mark complete</button>
+          <button class="gp-close" onclick="closeModal('detailModal')">×</button>
+        </div>
+      </div>
+      <div class="gp-tags">
+        <span class="cat cat-m" style="font-size:11px;padding:2px 9px;border-radius:20px">Milestone</span>
+        <span class="fw fw-smart">SMART</span><span class="fw fw-okr">OKR</span><span class="fw fw-woop">WOOP</span>
+        <select class="gp-status"><option>● Complete</option><option>● Not started</option><option>● In progress</option><option>● At risk</option></select>
+        <span style="font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;background:var(--purple-bg);color:var(--purple-t)">20% of review score</span>
+        <span style="font-size:11px;color:var(--t3)">Due Jun 30, 2026 · <a href="#" style="color:var(--navy-mid);text-decoration:none">Cynthia Diaz</a> · Visible to team</span>
+      </div>
+    </div>
+    <div class="gp-metrics">
+      <div class="gp-metric"><div class="gp-metric-lbl">Progress</div><div class="gp-metric-val" style="color:var(--teal-t)">100%</div></div>
+      <div class="gp-div"></div>
+      <div class="gp-metric"><div class="gp-metric-lbl">Key results</div><div class="gp-metric-val">4/4</div><div class="gp-metric-sub">All complete</div></div>
+      <div class="gp-div"></div>
+      <div class="gp-metric"><div class="gp-metric-lbl">Recognition</div><div class="gp-metric-val">5</div><div class="gp-metric-sub">Attached by peers</div></div>
+      <div class="gp-div"></div>
+      <div class="gp-metric"><div class="gp-metric-lbl">Evidence</div><div class="gp-metric-val">3</div></div>
+      <div class="gp-div"></div>
+      <div class="gp-metric"><div class="gp-metric-lbl">Parent goal</div><div class="gp-metric-val" style="font-size:12px">Close 10 enterprise accounts</div><div class="gp-metric-sub">Team · Q3 2026</div></div>
+    </div>
+    <div class="gp-body">
+      <div class="gp-left">
+        <div><div class="gp-sec">Wish</div><div class="gp-text">Sign Essen Healthcare as a new NetSuite client and complete kickoff before end of Q2 2026.</div></div>
+        <div><div class="gp-sec">Outcome — what does success look like?</div><div class="gp-text">Signed SOW, deposit received, kickoff call completed, client onboarded. Team celebrating with a GIF. ✓</div></div>
+        <div><div class="gp-sec">Obstacle</div><div class="gp-text">Procurement delays. Competing vendors. Decision-maker availability.</div></div>
+        <div>
+          <div class="gp-sec">Key results</div>
+          <div class="kr-list">
+            <div class="kr-item"><div class="kr-check done"><i class="ti ti-check"></i></div><div class="kr-text done-text">Initial discovery call completed</div><div class="kr-due">Jun 5</div></div>
+            <div class="kr-item"><div class="kr-check done"><i class="ti ti-check"></i></div><div class="kr-text done-text">Demo delivered to decision makers</div><div class="kr-due">Jun 12</div></div>
+            <div class="kr-item"><div class="kr-check done"><i class="ti ti-check"></i></div><div class="kr-text done-text">SOW sent and negotiated</div><div class="kr-due">Jun 20</div></div>
+            <div class="kr-item"><div class="kr-check done"><i class="ti ti-check"></i></div><div class="kr-text done-text">Contract signed and deposit received</div><div class="kr-due">Jun 30</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="gp-right">
+        <div><div class="gp-sec">Progress</div><div class="upd-prog"><span>Update manually</span><input type="number" value="100" min="0" max="100"/><span style="font-size:12px;color:var(--blue-t)">%</span><button class="btn-p" style="padding:5px 10px;font-size:11.5px">Save</button></div></div>
+        <div>
+          <div class="gp-sec">Recognition attached to this goal (5) <span style="font-size:10px;color:var(--t3);font-weight:400;text-transform:none;letter-spacing:0;margin-left:4px">— attached by senders, not by you</span></div>
+          <div class="rec-attached">
+            <div class="rec-item"><div class="rec-av av-t">MH</div><div class="rec-body"><div class="rec-from"><a href="#">Mary Higgins</a> · Jun 30</div><div class="rec-msg">"Cynthia drove this from first call to signed contract."</div><span class="rec-badge">Going above and beyond</span></div></div>
+            <div class="rec-item"><div class="rec-av av-b">CK</div><div class="rec-body"><div class="rec-from"><a href="#">Chris Kim</a> · Jul 2</div><div class="rec-msg">"Ring ring — welcome Essen Healthcare to the NetDynamic family."</div><span class="rec-badge">Client Focus</span></div></div>
+            <div style="font-size:11px;color:var(--t3);padding:4px 0">+ 3 more recognitions</div>
+          </div>
+        </div>
+        <div>
+          <div class="gp-sec">Evidence (3)</div>
+          <div style="display:flex;flex-direction:column;gap:5px">
+            <div style="display:flex;align-items:center;gap:7px;padding:7px 10px;background:#f7f8fa;border-radius:var(--rmd);border:1px solid var(--border);font-size:12px;color:var(--t2)"><i class="ti ti-link" style="color:var(--blue-t)"></i>Signed SOW — Essen Healthcare</div>
+            <div style="display:flex;align-items:center;gap:7px;padding:7px 10px;background:#f7f8fa;border-radius:var(--rmd);border:1px solid var(--border);font-size:12px;color:var(--t2)"><i class="ti ti-notes" style="color:var(--purple-t)"></i>Discovery call notes — May 28</div>
+          </div>
+          <button class="btn-g btn-sm" style="margin-top:8px"><i class="ti ti-plus"></i>Attach evidence</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GOAL COMPLETE PROMPT -->
+<div class="modal-overlay" id="completePromptModal">
+  <div class="small-modal">
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:36px;margin-bottom:8px">🎉</div>
+      <div style="font-size:16px;font-weight:600;color:var(--t1);margin-bottom:6px">Goal completed!</div>
+      <div style="font-size:13px;color:var(--t2);line-height:1.5"><strong>Close Essen Healthcare deal</strong> is now marked as complete. Would you like to request recognition or feedback from colleagues?</div>
+    </div>
+    <div style="background:#f7f8fa;border-radius:var(--rlg);padding:14px 16px;margin-bottom:16px">
+      <div style="font-size:12px;font-weight:600;color:var(--t2);margin-bottom:10px">Suggested people to reach out to</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;color:var(--t1)"><input type="checkbox" checked style="accent-color:var(--navy)"/><div class="rec-av av-b" style="width:28px;height:28px;font-size:10px">CK</div>Christopher Kim <span style="font-size:11px;color:var(--t3);margin-left:2px">(your manager)</span></label>
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;color:var(--t1)"><input type="checkbox" checked style="accent-color:var(--navy)"/><div class="rec-av av-t" style="width:28px;height:28px;font-size:10px">MH</div>Mary Higgins <span style="font-size:11px;color:var(--t3);margin-left:2px">(worked on this deal)</span></label>
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;color:var(--t1)"><input type="checkbox" style="accent-color:var(--navy)"/><div class="rec-av av-p" style="width:28px;height:28px;font-size:10px">AS</div>Aiden Somerhalder</label>
+      </div>
+      <div style="margin-top:10px;font-size:11.5px;color:var(--t3)">Recipients will receive a notification with a pre-filled recognition request linked to this goal. They respond from their Recognition tab.</div>
+    </div>
+    <div class="modal-footer" style="padding-top:0;border-top:none">
+      <button class="btn-g" onclick="closeModal('completePromptModal')">Skip for now</button>
+      <button class="btn-p" onclick="closeModal('completePromptModal');closeModal('detailModal')"><i class="ti ti-send"></i>Send recognition requests</button>
+    </div>
+  </div>
+</div>
+
+<!-- CREATE GOAL MODAL -->
+<div class="modal-overlay" id="createModal">
+  <div class="form-modal">
+    <div class="form-hd">
+      <div><div class="form-title">New goal</div><div class="form-sub">Framework tags apply automatically as you fill in fields — no manual selection needed.</div></div>
+      <button class="form-close" onclick="closeModal('createModal')">×</button>
+    </div>
+    <div class="bsec">
+      <div class="bsec-title">Category</div>
+      <div class="cat-grid">
+        <div class="cat-opt sel" onclick="selCat(this,'milestone')"><div class="cat-opt-icon">🏆</div><div class="cat-opt-name">Milestone</div><div class="cat-opt-desc">Significant achievement. Done or not done.</div></div>
+        <div class="cat-opt" onclick="selCat(this,'objective')"><div class="cat-opt-icon">📈</div><div class="cat-opt-name">Objective</div><div class="cat-opt-desc">Measurable target with numeric progress.</div></div>
+        <div class="cat-opt" onclick="selCat(this,'task')"><div class="cat-opt-icon">✅</div><div class="cat-opt-name">Task</div><div class="cat-opt-desc">Recurring operational responsibility.</div></div>
+        <div class="cat-opt" onclick="selCat(this,'commitment')"><div class="cat-opt-icon">🤝</div><div class="cat-opt-name">Commitment</div><div class="cat-opt-desc">Behavioural goal. Scored qualitatively.</div></div>
+      </div>
+    </div>
+    <div class="bsec">
+      <div class="bsec-title">Basics</div>
+      <div style="margin-bottom:12px"><label class="flabel">Goal title <span class="freq">*</span> <i class="finfo">i<span class="finfo-tip">Be specific enough that someone else could understand what you're trying to achieve.</span></i></label><input class="finput" type="text" id="gTitle" placeholder="What do you want to achieve?" oninput="updateFW()"/></div>
+      <div class="fg2">
+        <div><label class="flabel">Owner</label><input class="finput" type="text" value="Cynthia Diaz"/></div>
+        <div><label class="flabel">Due date <i class="finfo">i<span class="finfo-tip">Without a deadline the system tags this goal Aspirational — directional but not time-bound. Add a date to enable the SMART tag.</span></i></label><input class="finput" type="date" id="gDue" onchange="updateFW()"/></div>
+        <div><label class="flabel">Parent goal <i class="finfo">i<span class="finfo-tip">Links this goal into the OKR hierarchy. Required for the OKR tag (along with at least one key result).</span></i></label><select class="fselect" style="width:100%" id="gParent" onchange="updateFW()"><option value="">— None —</option><option value="team">Close 10 enterprise accounts (Team)</option><option value="company">Expand market share 15% (Company)</option></select></div>
+        <div><label class="flabel">Linked cycle</label><select class="fselect" style="width:100%"><option>— None —</option><option>Mid Year Peer Review</option><option>Annual Review 2026</option></select></div>
+        <div><label class="flabel">Focus area <i class="finfo">i<span class="finfo-tip">Links to a review template competency. Scoring below threshold on this focus area may flag a training gap at cycle close.</span></i></label><select class="fselect" style="width:100%"><option>— None —</option><option>Teamwork</option><option>Client Focus</option><option>Technical Delivery</option><option>Leadership</option><option>Communication</option></select></div>
+        <div><label class="flabel">Visibility <i class="finfo">i<span class="finfo-tip">Private goals cannot have recognition attached. Shared goals allow peers to attach recognition when sending it to you.</span></i></label><select class="fselect" style="width:100%" id="gVis" onchange="checkVis(this)"><option>Private (only me)</option><option>Team</option><option>Department</option><option>Company-wide</option></select></div>
+      </div>
+      <div class="vis-warn" id="visWarn"><i class="ti ti-alert-triangle"></i><div>Setting this to <strong>Company-wide</strong> means all employees can see this goal. Continuing in <span id="visCt">10</span>s — <button onclick="clearVis()" style="background:none;border:none;cursor:pointer;color:var(--amber-t);font-weight:600;text-decoration:underline;font-family:inherit;padding:0">confirm now</button>.</div></div>
+    </div>
+    <div class="bsec">
+      <div class="bsec-title">Description <span style="font-size:10px;font-weight:400;color:var(--t3);text-transform:none;letter-spacing:0">Fill Outcome + Obstacle to earn the WOOP tag</span></div>
+      <div style="margin-bottom:10px"><label class="flabel">Wish — what do you want to achieve? <span class="freq">*</span></label><textarea class="ftextarea" id="gWish" placeholder="Describe the goal in your own words…" oninput="updateFW()"></textarea></div>
+      <div style="margin-bottom:10px"><label class="flabel">Outcome <i class="finfo">i<span class="finfo-tip">What will be different when this goal is achieved? The O in WOOP.</span></i></label><textarea class="ftextarea" id="gOutcome" placeholder="What does success look like?" oninput="updateFW()" style="min-height:56px"></textarea></div>
+      <div><label class="flabel">Obstacle <i class="finfo">i<span class="finfo-tip">Naming obstacles makes them manageable. The second O in WOOP.</span></i></label><textarea class="ftextarea" id="gObstacle" placeholder="What might get in the way?" oninput="updateFW()" style="min-height:56px"></textarea></div>
+    </div>
+    <div class="bsec" id="metricsSection">
+      <div class="bsec-title">Metrics <span style="font-size:10px;font-weight:400;color:var(--t3);text-transform:none;letter-spacing:0">Up to 3 · A target value earns the SMART tag</span></div>
+      <div class="info-note" id="metricHint"><i class="ti ti-info-circle"></i><span id="metricHintText">For a <strong>Milestone</strong>, completion is the only metric — the goal is 0% or 100%. Use key results below to show progress steps.</span></div>
+      <div class="metric-builder" id="metricBuilder"></div>
+      <button class="btn-g btn-sm" id="addMetricBtn" onclick="addMetric()" style="display:none"><i class="ti ti-plus"></i>Add metric</button>
+    </div>
+    <div class="bsec">
+      <div class="bsec-title">Key results <span style="font-size:10px;font-weight:400;color:var(--t3);text-transform:none;letter-spacing:0">Sequential milestones · KR + parent goal = OKR tag</span></div>
+      <div class="kr-builder" id="krBuilder">
+        <div class="kr-row-b"><i class="ti ti-grip-vertical" style="color:var(--t3);font-size:15px;flex-shrink:0"></i><input type="text" placeholder="e.g. Discovery call completed"/><input type="date"/><div class="del-btn" onclick="this.closest('.kr-row-b').remove();updateFW()"><i class="ti ti-trash" style="font-size:13px"></i></div></div>
+      </div>
+      <button class="btn-g btn-sm" onclick="addKR()"><i class="ti ti-plus"></i>Add key result</button>
+    </div>
+    <div class="fw-preview" id="fwPrev"><span class="fw-prev-lbl">Framework tags:</span><span style="font-size:12px;color:var(--t3);font-style:italic">Fill in more fields to earn tags</span></div>
+    <div class="modal-footer">
+      <button class="btn-g" onclick="closeModal('createModal')">Cancel</button>
+      <button class="btn-p"><i class="ti ti-check"></i>Create goal</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchRole(role,btn){
+  document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.view-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('view-'+role).classList.add('active');
+  const badges={employee:'Employee — own goals + pending assignments + recognition meter',supervisor:'Supervisor — blended: own goals above, team health below',hr:'HR Admin — org health + weight & recognition configuration'};
+  document.getElementById('roleBadge').textContent=badges[role];
+  document.getElementById('navBadge').style.display=role==='employee'?'block':'none';
+}
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.modal-overlay').forEach(o=>{o.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})});
+function toggleChip(el){document.querySelectorAll('.fchip').forEach(c=>c.classList.remove('on'));el.classList.add('on')}
+let currentCat='milestone';
+function selCat(el,cat){
+  document.querySelectorAll('.cat-opt').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');currentCat=cat;
+  const hints={milestone:'For a <strong>Milestone</strong>, completion is the only metric — done or not done. Use key results to show progress steps.',objective:'For an <strong>Objective</strong>, define what you\'re measuring, your target value, and your starting point. The sentence preview shows how your metric reads.',task:'For a <strong>Task</strong>, define the expected count or frequency (e.g. 20 calls per week). Update current value each period.',commitment:'For a <strong>Commitment</strong>, there is no numeric metric. Your reviewer will score this qualitatively based on observed behaviour.'};
+  document.getElementById('metricHintText').innerHTML=hints[cat];
+  document.getElementById('addMetricBtn').style.display=(cat==='objective'||cat==='task')?'inline-flex':'none';
+  if(cat==='objective'||cat==='task'){if(!document.getElementById('metricBuilder').children.length)addMetric();}
+  else document.getElementById('metricBuilder').innerHTML='';
+  updateFW();
+}
+function addMetric(){
+  const mb=document.getElementById('metricBuilder');
+  if(mb.children.length>=3)return;
+  const idx=mb.children.length;
+  const row=document.createElement('div');row.className='metric-row-b';
+  row.innerHTML=`<div class="mr-top"><div><label class="flabel" style="font-size:10px">I want to achieve</label><input class="finput" type="text" placeholder="e.g. Revenue, Deals closed, CSAT score" oninput="updSentence(this)"/></div><div><label class="flabel" style="font-size:10px">Measured in</label><select class="fselect" onchange="updSentence(this)"><option>Currency ($)</option><option>Number (#)</option><option>Percentage (%)</option><option>Custom</option></select></div></div><div class="mr-bottom"><div><label class="flabel" style="font-size:10px">Target value <i class="finfo" style="font-size:9px">i<span class="finfo-tip">The number you're aiming to reach by the due date.</span></i></label><input class="finput" type="number" placeholder="e.g. 1000000" oninput="updSentence(this);updateFW()"/></div><div><label class="flabel" style="font-size:10px">Current value <i class="finfo" style="font-size:9px">i<span class="finfo-tip">Where you are right now. Update this over time to track progress.</span></i></label><input class="finput" type="number" placeholder="e.g. 0"/></div><div class="del-btn" onclick="this.closest('.metric-row-b').remove();updateFW()"><i class="ti ti-trash" style="font-size:13px"></i></div></div><div class="mr-sentence" id="ms${idx}">Fill in the fields above to see your metric as a sentence ↑</div>`;
+  mb.appendChild(row);updateFW();
+}
+function updSentence(el){
+  const row=el.closest('.metric-row-b');
+  const s=row.querySelector('.mr-sentence');if(!s)return;
+  const name=row.querySelector('input[type=text]')?.value||'[metric]';
+  const type=row.querySelector('select')?.value||'';
+  const target=row.querySelectorAll('input[type=number]')[0]?.value||'[target]';
+  const current=row.querySelectorAll('input[type=number]')[1]?.value||'[current]';
+  const sym={'Currency ($)':'$','Number (#)':'','Percentage (%)':'%','Custom':''}[type]||'';
+  s.innerHTML=`Goal: achieve <b>${sym}${target}</b> in <b>${name}</b> · currently at <b>${sym}${current}</b>`;
+}
+function addKR(){
+  const row=document.createElement('div');row.className='kr-row-b';
+  row.innerHTML=`<i class="ti ti-grip-vertical" style="color:var(--t3);font-size:15px;flex-shrink:0"></i><input type="text" placeholder="Key result…"/><input type="date"/><div class="del-btn" onclick="this.closest('.kr-row-b').remove();updateFW()"><i class="ti ti-trash" style="font-size:13px"></i></div>`;
+  document.getElementById('krBuilder').appendChild(row);updateFW();
+}
+function updateFW(){
+  const title=document.getElementById('gTitle')?.value.trim();
+  const due=document.getElementById('gDue')?.value;
+  const parent=document.getElementById('gParent')?.value;
+  const wish=document.getElementById('gWish')?.value.trim();
+  const outcome=document.getElementById('gOutcome')?.value.trim();
+  const obstacle=document.getElementById('gObstacle')?.value.trim();
+  const hasTarget=[...document.querySelectorAll('#metricBuilder input[type=number]')].some(i=>i.value);
+  const hasKR=[...document.querySelectorAll('#krBuilder input[type=text]')].some(i=>i.value.trim());
+  const tags=[];
+  if(title&&wish&&due&&hasTarget)tags.push({c:'fw-smart',l:'SMART'});
+  if(parent&&hasKR)tags.push({c:'fw-okr',l:'OKR'});
+  if(wish&&outcome&&obstacle)tags.push({c:'fw-woop',l:'WOOP'});
+  if(title&&!due&&!hasTarget&&!tags.length)tags.push({c:'fw-asp',l:'Aspirational'});
+  const p=document.getElementById('fwPrev');
+  p.innerHTML='<span class="fw-prev-lbl">Framework tags:</span>';
+  if(!tags.length){p.innerHTML+='<span style="font-size:12px;color:var(--t3);font-style:italic">Fill in more fields to earn tags</span>';return;}
+  tags.forEach(t=>{const s=document.createElement('span');s.className='fw '+t.c;s.textContent=t.l;p.appendChild(s);});
+}
+let visTimer=null;
+function checkVis(el){
+  const w=document.getElementById('visWarn');
+  if(el.value==='Company-wide'){
+    w.classList.add('show');let c=10;document.getElementById('visCt').textContent=c;
+    clearInterval(visTimer);
+    visTimer=setInterval(()=>{c--;document.getElementById('visCt').textContent=c;if(c<=0){clearInterval(visTimer);w.classList.remove('show');}},1000);
+  }else{clearInterval(visTimer);w.classList.remove('show');}
+}
+function clearVis(){clearInterval(visTimer);document.getElementById('visWarn').classList.remove('show');}
+function toggleDR(el){document.getElementById('drSettings').style.display=el.checked?'block':'none';}
+function updateBar(){
+  const inputs=document.querySelectorAll('.wr-input');
+  const vals=[...inputs].map(i=>parseFloat(i.value)||0);
+  const total=vals.reduce((a,b)=>a+b,0);
+  vals.forEach((v,i)=>{const s=document.getElementById('seg'+i);if(s)s.style.width=(total>0?v/total*100:0)+'%';});
+  const t=document.getElementById('wtbTotal');
+  if(total===100){t.textContent='100% ✓';t.style.color='var(--teal-t)';}
+  else if(total<100){t.textContent=total+'% — '+(100-total)+'% remaining';t.style.color='var(--amber-t)';}
+  else{t.textContent=total+'% — '+(total-100)+'% over';t.style.color='var(--red-t)';}
+}
+switchRole('employee',document.querySelector('.role-btn.active'));
+</script>
+</body>
+</html>
