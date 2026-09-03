@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Recognition — Performance Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1a2332;--navy-h:#223044;--navy-mid:#2d4a7a;
+  --white:#fff;--page:#f0f2f5;--surface:#fff;
+  --border:#e2e5ea;--border-mid:#c8cdd6;
+  --t1:#0f1923;--t2:#5a6473;--t3:#8e97a3;
+  --teal-bg:#e1f5ee;--teal-t:#0f6e56;
+  --blue-bg:#e6f1fb;--blue-t:#185fa5;
+  --purple-bg:#eeedfe;--purple-t:#3c3489;
+  --amber-bg:#faeeda;--amber-t:#633806;
+  --green-bg:#eaf3de;--green-t:#3b6d11;
+  --pink-bg:#fbeaf0;--pink-t:#72243e;
+  --red:#e8002d;
+  --rsm:6px;--rmd:8px;--rlg:12px;--rxl:16px;
+  font-family:'Inter',system-ui,sans-serif;font-size:14px;color:var(--t1);background:var(--page);
+}
+.shell{display:flex;min-height:100vh}
+
+/* Sidebar */
+.sidebar{width:200px;min-height:100vh;background:var(--navy);display:flex;flex-direction:column;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto}
+.logo-zone{display:flex;flex-direction:column;align-items:center;padding:22px 16px 16px;border-bottom:1px solid rgba(255,255,255,0.09);flex-shrink:0}
+.client-logo{width:54px;height:54px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.app-title{font-size:12px;font-weight:600;color:#fff;text-align:center;letter-spacing:.02em}
+.nav-section{flex:1;padding:10px 0}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 16px;font-size:12.5px;color:rgba(255,255,255,0.55);cursor:pointer;text-decoration:none;transition:background .12s,color .12s}
+.nav-item:hover{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.88)}
+.nav-item.active{background:rgba(255,255,255,0.11);color:#fff}
+.nav-item i{font-size:15px;flex-shrink:0}
+.nav-div{height:1px;background:rgba(255,255,255,0.08);margin:5px 14px}
+.av-nav{width:26px;height:26px;border-radius:50%;background:var(--navy-mid);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#85b7eb;flex-shrink:0}
+.footer-zone{padding:12px 16px 18px;border-top:1px solid rgba(255,255,255,0.09);display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0}
+.powered{font-size:9px;color:rgba(255,255,255,0.3);letter-spacing:.06em;text-transform:uppercase}
+.ats-badge{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,0.07);border-radius:var(--rsm);padding:5px 10px;text-decoration:none;transition:background .12s}
+.ats-badge:hover{background:rgba(255,255,255,0.13)}
+.ats-wm{font-size:12px;font-weight:600;color:rgba(255,255,255,0.72);line-height:1.2}
+.ats-sub{font-size:9px;color:rgba(255,255,255,0.38);line-height:1.2}
+
+/* Main */
+.main{flex:1;padding:28px 28px 56px;overflow-y:auto}
+.page-heading{font-size:20px;font-weight:600;color:var(--t1);margin-bottom:3px}
+.page-sub{font-size:13px;color:var(--t2);margin-bottom:20px}
+
+/* Mode toggle */
+.mode-toggle{display:inline-flex;background:#e8eaed;border-radius:var(--rmd);padding:3px;margin-bottom:22px}
+.mode-btn{padding:7px 20px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--t2);font-family:inherit;transition:background .15s,color .15s}
+.mode-btn.active{background:var(--white);color:var(--t1);box-shadow:0 1px 3px rgba(0,0,0,0.1)}
+
+/* Two column layout */
+.two-col{display:grid;grid-template-columns:400px 1fr;gap:20px;align-items:start}
+
+/* Compose card */
+.compose-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:22px;position:sticky;top:20px}
+.compose-title{font-size:15px;font-weight:600;color:var(--t1);margin-bottom:16px}
+
+/* Send/Request subtoggle */
+.sr-toggle{display:flex;gap:0;border:1px solid var(--border-mid);border-radius:var(--rmd);overflow:hidden;margin-bottom:16px}
+.sr-btn{flex:1;padding:8px;font-size:12.5px;font-weight:500;cursor:pointer;border:none;background:var(--surface);color:var(--t2);font-family:inherit;transition:background .12s,color .12s;text-align:center}
+.sr-btn.active{background:var(--navy);color:#fff}
+.sr-btn:first-child{border-right:1px solid var(--border-mid)}
+
+.field-label{font-size:11.5px;font-weight:600;color:var(--t3);letter-spacing:.04em;text-transform:uppercase;margin-bottom:6px}
+.field-wrap{margin-bottom:14px}
+.field-select,.field-input,.field-textarea{width:100%;font-family:inherit;font-size:13px;color:var(--t1);background:var(--surface);border:1px solid var(--border-mid);border-radius:var(--rmd);padding:8px 11px;outline:none;transition:border-color .12s}
+.field-select:focus,.field-input:focus,.field-textarea:focus{border-color:var(--navy-mid)}
+.field-textarea{resize:vertical;min-height:80px;line-height:1.5}
+
+/* Badge picker */
+.badge-grid{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
+.badge-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid transparent;transition:all .12s;user-select:none}
+.badge-chip.sel-teamwork{background:var(--teal-bg);color:var(--teal-t);border-color:var(--teal-t)}
+.badge-chip.teamwork{background:var(--teal-bg);color:var(--teal-t);opacity:.6}
+.badge-chip.teamwork:hover{opacity:1;border-color:var(--teal-t)}
+.badge-chip.sel-innovation{background:var(--purple-bg);color:var(--purple-t);border-color:var(--purple-t)}
+.badge-chip.innovation{background:var(--purple-bg);color:var(--purple-t);opacity:.6}
+.badge-chip.innovation:hover{opacity:1;border-color:var(--purple-t)}
+.badge-chip.sel-leadership{background:var(--blue-bg);color:var(--blue-t);border-color:var(--blue-t)}
+.badge-chip.leadership{background:var(--blue-bg);color:var(--blue-t);opacity:.6}
+.badge-chip.leadership:hover{opacity:1;border-color:var(--blue-t)}
+.badge-chip.sel-above{background:var(--amber-bg);color:var(--amber-t);border-color:var(--amber-t)}
+.badge-chip.above{background:var(--amber-bg);color:var(--amber-t);opacity:.6}
+.badge-chip.above:hover{opacity:1;border-color:var(--amber-t)}
+.badge-chip.sel-customer{background:var(--green-bg);color:var(--green-t);border-color:var(--green-t)}
+.badge-chip.customer{background:var(--green-bg);color:var(--green-t);opacity:.6}
+.badge-chip.customer:hover{opacity:1;border-color:var(--green-t)}
+.badge-chip.sel-redbull{background:var(--pink-bg);color:var(--pink-t);border-color:var(--pink-t)}
+.badge-chip.redbull{background:var(--pink-bg);color:var(--pink-t);opacity:.6}
+.badge-chip.redbull:hover{opacity:1;border-color:var(--pink-t)}
+
+/* Tag input */
+.tag-row{display:flex;flex-wrap:wrap;gap:6px;padding:8px;border:1px solid var(--border-mid);border-radius:var(--rmd);min-height:40px;cursor:text;margin-bottom:14px}
+.tag-pill{display:inline-flex;align-items:center;gap:4px;background:#e8eaed;color:var(--t2);font-size:11.5px;padding:2px 8px;border-radius:20px}
+.tag-pill button{background:none;border:none;cursor:pointer;color:var(--t3);font-size:12px;line-height:1;padding:0 1px}
+.tag-ghost-input{border:none;outline:none;font-size:12.5px;font-family:inherit;color:var(--t1);background:transparent;min-width:80px;flex:1}
+
+/* Attachment row */
+.attach-row{display:flex;gap:8px;margin-bottom:16px}
+.attach-btn{display:flex;align-items:center;gap:5px;padding:6px 11px;border:1px solid var(--border-mid);border-radius:var(--rmd);font-size:12px;font-weight:500;color:var(--t2);cursor:pointer;background:var(--surface);font-family:inherit;transition:background .12s,border-color .12s}
+.attach-btn:hover{background:#f5f6f8;border-color:#b0b7c2}
+.attach-btn i{font-size:14px}
+
+/* Visibility row */
+.vis-row{display:flex;gap:8px;margin-bottom:18px}
+.vis-opt{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 6px;border:1.5px solid var(--border);border-radius:var(--rmd);cursor:pointer;transition:all .12s;font-size:11px;color:var(--t2);text-align:center}
+.vis-opt.active{border-color:var(--navy-mid);background:var(--blue-bg);color:var(--blue-t)}
+.vis-opt i{font-size:18px}
+
+.btn-submit{width:100%;background:var(--navy);color:#fff;border:none;border-radius:var(--rmd);padding:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .12s}
+.btn-submit:hover{background:var(--navy-h)}
+
+/* Feed */
+.feed-col{}
+.feed-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:18px}
+.feed-tab{padding:10px 18px;font-size:13px;font-weight:500;color:var(--t2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .12s,border-color .12s}
+.feed-tab.active{color:var(--navy);border-bottom-color:var(--navy)}
+
+/* Stat strip */
+.stat-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.stat-mini{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:14px 16px}
+.stat-mini-label{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.stat-mini-value{font-size:22px;font-weight:600;color:var(--t1);margin-bottom:2px}
+.stat-mini-sub{font-size:11px;color:var(--t3)}
+
+/* Feed items */
+.feed-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:16px 18px;margin-bottom:12px}
+.feed-item-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
+.feed-item-left{display:flex;align-items:flex-start;gap:11px;flex:1}
+.feed-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0}
+.av-teal{background:var(--teal-bg);color:var(--teal-t)}
+.av-blue{background:var(--blue-bg);color:var(--blue-t)}
+.av-purple{background:var(--purple-bg);color:var(--purple-t)}
+.av-amber{background:var(--amber-bg);color:var(--amber-t)}
+.feed-meta{flex:1}
+.feed-who{font-size:13px;color:var(--t2);margin-bottom:2px;line-height:1.4}
+.feed-who strong{color:var(--t1);font-weight:500}
+.feed-who a{color:var(--navy-mid);text-decoration:none}
+.feed-who a:hover{text-decoration:underline}
+.feed-msg{font-size:13.5px;color:var(--t1);line-height:1.5;margin-bottom:8px}
+.feed-gif{border-radius:var(--rmd);max-height:140px;margin-bottom:8px;display:block}
+.feed-bottom{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.feed-badges{display:flex;flex-wrap:wrap;gap:5px}
+.feed-tags{display:flex;flex-wrap:wrap;gap:5px}
+.tag-small{font-size:10.5px;color:var(--t3);background:#f0f2f5;padding:2px 8px;border-radius:20px}
+.feed-date{font-size:11px;color:var(--t3)}
+.feed-vis{display:flex;align-items:center;gap:3px;font-size:11px;color:var(--t3)}
+.feed-vis i{font-size:12px}
+
+/* Badge pill small */
+.bp{display:inline-flex;align-items:center;gap:3px;font-size:10.5px;font-weight:500;padding:2px 9px;border-radius:20px}
+.bp-teamwork{background:var(--teal-bg);color:var(--teal-t)}
+.bp-innovation{background:var(--purple-bg);color:var(--purple-t)}
+.bp-leadership{background:var(--blue-bg);color:var(--blue-t)}
+.bp-above{background:var(--amber-bg);color:var(--amber-t)}
+.bp-customer{background:var(--green-bg);color:var(--green-t)}
+.bp-redbull{background:var(--pink-bg);color:var(--pink-t)}
+
+/* Feedback type indicator */
+.feed-type-tag{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:4px;letter-spacing:.02em}
+.ftt-feedback{background:#f0f2f5;color:var(--t2)}
+.ftt-coaching{background:#fef3c7;color:#92400e}
+.ftt-request{background:var(--blue-bg);color:var(--blue-t)}
+
+/* Rating row */
+.rating-row{display:flex;align-items:center;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.rating-label{font-size:11.5px;color:var(--t3)}
+.rating-opts{display:flex;gap:6px}
+.rating-opt{padding:4px 10px;border-radius:20px;font-size:11.5px;font-weight:500;cursor:pointer;border:1px solid var(--border-mid);background:var(--surface);color:var(--t2);font-family:inherit;transition:all .12s}
+.rating-opt:hover{border-color:var(--navy-mid);color:var(--navy)}
+.rating-opt.sel{background:var(--teal-bg);color:var(--teal-t);border-color:var(--teal-t)}
+
+/* Profile badge showcase */
+.badge-showcase{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:18px 20px;margin-bottom:18px}
+.badge-showcase-title{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:12px}
+.badge-list{display:flex;flex-wrap:wrap;gap:10px}
+.earned-badge{display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 14px;border-radius:var(--rlg);border:1px solid var(--border);background:var(--surface);min-width:80px;text-align:center}
+.earned-badge-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px}
+.earned-badge-name{font-size:11px;font-weight:600;color:var(--t1)}
+.earned-badge-count{font-size:10px;color:var(--t3)}
+
+/* Request card style */
+.request-item{background:var(--blue-bg);border:1px solid #b5d4f4;border-radius:var(--rlg);padding:14px 16px;margin-bottom:12px}
+.request-from{font-size:12px;color:var(--blue-t);margin-bottom:4px;font-weight:500}
+.request-msg{font-size:13px;color:var(--t1);margin-bottom:10px}
+.request-actions{display:flex;gap:8px}
+.btn-respond{background:var(--navy);color:#fff;border:none;border-radius:var(--rmd);padding:6px 14px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit}
+.btn-dismiss{background:transparent;color:var(--t2);border:1px solid var(--border-mid);border-radius:var(--rmd);padding:6px 14px;font-size:12px;cursor:pointer;font-family:inherit}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="logo-zone">
+    <div class="client-logo">
+      <svg viewBox="0 0 54 54" width="38" height="38" aria-hidden="true"><circle cx="27" cy="27" r="27" fill="#e8002d"/><text x="27" y="32" text-anchor="middle" font-size="11" fill="white" font-weight="700" font-family="Inter,sans-serif">CLIENT</text></svg>
+    </div>
+    <div class="app-title">Performance Center</div>
+  </div>
+  <nav class="nav-section">
+    <a href="#" class="nav-item"><div class="av-nav">CD</div><span>My Profile</span></a>
+    <div class="nav-div"></div>
+    <a href="#" class="nav-item"><i class="ti ti-home"></i><span>Overview</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-file-text"></i><span>Reviews</span></a>
+    <div class="nav-div"></div>
+    <a href="#" class="nav-item"><i class="ti ti-target"></i><span>Goals</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-paperclip"></i><span>Evidence</span></a>
+    <a href="#" class="nav-item active"><i class="ti ti-star"></i><span>Recognition</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-address-book"></i><span>Directory</span></a>
+    <div class="nav-div"></div>
+    <a href="#" class="nav-item"><i class="ti ti-speakerphone"></i><span>News</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-file"></i><span>Documents</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-coin"></i><span>Financial</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-video"></i><span>Meetings</span></a>
+    <div class="nav-div"></div>
+    <a href="#" class="nav-item"><i class="ti ti-layout-grid"></i><span>Templates</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-refresh"></i><span>Cycles</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-settings"></i><span>Configuration</span></a>
+  </nav>
+  <div class="footer-zone">
+    <span class="powered">Powered by</span>
+    <a href="https://netdynamicinc.com" target="_blank" rel="noopener" class="ats-badge">
+      <div><div class="ats-wm">ATS360</div><div class="ats-sub">by NetDynamic</div></div>
+      <i class="ti ti-external-link" style="font-size:11px;color:rgba(255,255,255,0.35)"></i>
+    </a>
+  </div>
+</aside>
+
+<!-- Main -->
+<main class="main">
+  <h1 class="page-heading">Recognition</h1>
+  <p class="page-sub">Celebrate colleagues, share feedback, and track your earned badges.</p>
+
+  <!-- Mode toggle: Recognition / Feedback -->
+  <div class="mode-toggle">
+    <button class="mode-btn active" id="modeRecog" onclick="switchMode('recog')">Recognition</button>
+    <button class="mode-btn" id="modeFeedback" onclick="switchMode('feedback')">Feedback</button>
+  </div>
+
+  <div class="two-col">
+
+    <!-- LEFT: Compose -->
+    <div>
+      <!-- RECOGNITION COMPOSE -->
+      <div class="compose-card" id="composeRecog">
+        <div class="compose-title">Recognise a colleague</div>
+
+        <div class="sr-toggle">
+          <button class="sr-btn active" id="srSend" onclick="switchSR('send')">
+            <i class="ti ti-send" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>Send recognition
+          </button>
+          <button class="sr-btn" id="srRequest" onclick="switchSR('request')">
+            <i class="ti ti-inbox" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>Request recognition
+          </button>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label" id="recipientLabel">Recipient *</div>
+          <select class="field-select" aria-label="Select colleague">
+            <option value="">Select a colleague…</option>
+            <option>Gabriel Guzman</option>
+            <option>Mary Higgins</option>
+            <option>Alex Wolfe</option>
+            <option>Amy Nguyen</option>
+            <option>Bon Ariola</option>
+          </select>
+        </div>
+
+        <div id="badgeSection">
+          <div class="field-label">Badge <span style="font-weight:400;color:var(--t3)">(optional)</span></div>
+          <div class="badge-grid">
+            <span class="badge-chip sel-teamwork" onclick="toggleBadge(this)"><i class="ti ti-users" style="font-size:12px"></i>Teamwork</span>
+            <span class="badge-chip innovation" onclick="toggleBadge(this)"><i class="ti ti-bulb" style="font-size:12px"></i>Innovation</span>
+            <span class="badge-chip leadership" onclick="toggleBadge(this)"><i class="ti ti-crown" style="font-size:12px"></i>Leadership</span>
+            <span class="badge-chip customer" onclick="toggleBadge(this)"><i class="ti ti-heart" style="font-size:12px"></i>Customer Focus</span>
+            <span class="badge-chip above" onclick="toggleBadge(this)"><i class="ti ti-rocket" style="font-size:12px"></i>Going Above and Beyond</span>
+            <span class="badge-chip redbull" onclick="toggleBadge(this)"><i class="ti ti-flame" style="font-size:12px"></i>Most Red Bulls 🔴</span>
+          </div>
+        </div>
+
+        <div class="field-wrap" id="messageSection">
+          <div class="field-label" id="messageLabel">Message *</div>
+          <textarea class="field-textarea" id="messageInput" placeholder="What did they do? Be specific…" aria-label="Recognition message"></textarea>
+        </div>
+
+        <div class="field-wrap" id="tagsSection">
+          <div class="field-label">Tags <span style="font-weight:400;color:var(--t3)">(optional)</span></div>
+          <div class="tag-row" onclick="document.getElementById('tagInput').focus()">
+            <span class="tag-pill">#quiethero <button onclick="this.parentElement.remove()" aria-label="remove tag">×</button></span>
+            <span class="tag-pill">#savedthelaunch <button onclick="this.parentElement.remove()" aria-label="remove tag">×</button></span>
+            <input id="tagInput" class="tag-ghost-input" placeholder="Add a tag…" aria-label="Add tag"/>
+          </div>
+        </div>
+
+        <div class="attach-row" id="attachSection">
+          <button class="attach-btn"><i class="ti ti-gif"></i>Add GIF</button>
+          <button class="attach-btn"><i class="ti ti-photo"></i>Attach photo</button>
+        </div>
+
+        <div id="visSection">
+          <div class="field-label" style="margin-bottom:8px">Visibility</div>
+          <div class="vis-row">
+            <div class="vis-opt active" onclick="setVis(this)">
+              <i class="ti ti-world"></i>Public
+            </div>
+            <div class="vis-opt" onclick="setVis(this)">
+              <i class="ti ti-users"></i>Team
+            </div>
+            <div class="vis-opt" onclick="setVis(this)">
+              <i class="ti ti-building"></i>Dept
+            </div>
+            <div class="vis-opt" onclick="setVis(this)">
+              <i class="ti ti-lock"></i>Private
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-submit" id="submitBtn">Send recognition</button>
+      </div>
+
+      <!-- FEEDBACK COMPOSE -->
+      <div class="compose-card" id="composeFeedback" style="display:none">
+        <div class="compose-title">Send or request feedback</div>
+
+        <div class="sr-toggle">
+          <button class="sr-btn active" id="fbSend" onclick="switchFB('send')">
+            <i class="ti ti-send" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>Send feedback
+          </button>
+          <button class="sr-btn" id="fbRequest" onclick="switchFB('request')">
+            <i class="ti ti-inbox" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>Request feedback
+          </button>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label" id="fbRecipientLabel">Recipient *</div>
+          <select class="field-select" aria-label="Select colleague">
+            <option value="">Select a colleague…</option>
+            <option>Gabriel Guzman</option>
+            <option>Mary Higgins</option>
+            <option>Alex Wolfe</option>
+            <option>Amy Nguyen</option>
+          </select>
+        </div>
+
+        <div class="field-wrap" id="fbTypeWrap">
+          <div class="field-label">Type *</div>
+          <select class="field-select" aria-label="Feedback type">
+            <option>Peer Feedback</option>
+            <option>Development Note</option>
+            <option disabled>── Supervisor only ──</option>
+            <option>Coaching Note</option>
+          </select>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label" id="fbMsgLabel">Message *</div>
+          <textarea class="field-textarea" placeholder="Be specific and constructive…" aria-label="Feedback message"></textarea>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">Link to review cycle <span style="font-weight:400;color:var(--t3)">(optional)</span></div>
+          <select class="field-select" aria-label="Link to cycle">
+            <option>— None —</option>
+            <option>Mid Year Peer Review</option>
+          </select>
+        </div>
+
+        <div id="fbVisSection">
+          <div class="field-label" style="margin-bottom:8px">Visibility</div>
+          <div class="vis-row">
+            <div class="vis-opt" onclick="setVis(this)">
+              <i class="ti ti-world"></i>Public
+            </div>
+            <div class="vis-opt" onclick="setVis(this)">
+              <i class="ti ti-users"></i>Team
+            </div>
+            <div class="vis-opt active" onclick="setVis(this)">
+              <i class="ti ti-lock"></i>Private
+            </div>
+          </div>
+          <p style="font-size:11px;color:var(--t3);margin-top:6px;margin-bottom:14px">Feedback defaults to private. Coaching notes are always private.</p>
+        </div>
+
+        <button class="btn-submit">Send feedback</button>
+      </div>
+    </div>
+
+    <!-- RIGHT: Feed -->
+    <div class="feed-col">
+
+      <!-- Earned badges showcase -->
+      <div class="badge-showcase">
+        <div class="badge-showcase-title">My earned badges</div>
+        <div class="badge-list">
+          <div class="earned-badge">
+            <div class="earned-badge-icon" style="background:var(--teal-bg)">🤝</div>
+            <div class="earned-badge-name">Team Player</div>
+            <div class="earned-badge-count">× 12 this cycle</div>
+          </div>
+          <div class="earned-badge">
+            <div class="earned-badge-icon" style="background:var(--purple-bg)">💡</div>
+            <div class="earned-badge-name">Innovator</div>
+            <div class="earned-badge-count">× 7 this cycle</div>
+          </div>
+          <div class="earned-badge">
+            <div class="earned-badge-icon" style="background:var(--amber-bg)">🚀</div>
+            <div class="earned-badge-name">Above & Beyond</div>
+            <div class="earned-badge-count">× 5 this cycle</div>
+          </div>
+          <div class="earned-badge" style="border:1.5px dashed var(--border-mid);opacity:.5">
+            <div class="earned-badge-icon" style="background:#f0f2f5">🏆</div>
+            <div class="earned-badge-name" style="color:var(--t3)">Top Caller</div>
+            <div class="earned-badge-count">3 / 5 needed</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats strip -->
+      <div class="stat-strip">
+        <div class="stat-mini">
+          <div class="stat-mini-label">Received</div>
+          <div class="stat-mini-value">24</div>
+          <div class="stat-mini-sub">This cycle</div>
+        </div>
+        <div class="stat-mini">
+          <div class="stat-mini-label">Sent</div>
+          <div class="stat-mini-value">11</div>
+          <div class="stat-mini-sub">This cycle</div>
+        </div>
+        <div class="stat-mini">
+          <div class="stat-mini-label">Feedback received</div>
+          <div class="stat-mini-value">6</div>
+          <div class="stat-mini-sub">This cycle</div>
+        </div>
+        <div class="stat-mini">
+          <div class="stat-mini-label">Pending requests</div>
+          <div class="stat-mini-value">2</div>
+          <div class="stat-mini-sub">Awaiting response</div>
+        </div>
+      </div>
+
+      <!-- Feed tabs -->
+      <div class="feed-tabs">
+        <div class="feed-tab active" onclick="setFeedTab(this)">All</div>
+        <div class="feed-tab" onclick="setFeedTab(this)">Received</div>
+        <div class="feed-tab" onclick="setFeedTab(this)">Sent</div>
+        <div class="feed-tab" onclick="setFeedTab(this)">Requests</div>
+        <div class="feed-tab" onclick="setFeedTab(this)">Feedback</div>
+      </div>
+
+      <!-- Pending request card -->
+      <div class="request-item">
+        <div class="request-from"><i class="ti ti-inbox" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>Recognition request from <strong><a href="#" style="color:var(--blue-t);text-decoration:none">Mary Higgins</a></strong></div>
+        <div class="request-msg">"Would you recognize me for leading the Q2 client onboarding sprint?"</div>
+        <div class="request-actions">
+          <button class="btn-respond">Respond</button>
+          <button class="btn-dismiss">Dismiss</button>
+        </div>
+      </div>
+
+      <!-- Feed item 1 — recognition with GIF -->
+      <div class="feed-item">
+        <div class="feed-item-top">
+          <div class="feed-item-left">
+            <div class="feed-av av-teal">GG</div>
+            <div class="feed-meta">
+              <div class="feed-who"><a href="#">Gabriel Guzman</a> recognized <strong>you</strong></div>
+              <div class="feed-msg">"Cynthia's intake workflow redesign saved the entire team two sprints of rework. Genuinely exceptional thinking."</div>
+              <img class="feed-gif" src="https://media.giphy.com/media/3oKIPnAiaMCws8nOsE/giphy.gif" alt="celebration gif"/>
+              <div class="feed-bottom">
+                <div class="feed-badges">
+                  <span class="bp bp-innovation"><i class="ti ti-bulb" style="font-size:10px"></i>Innovation</span>
+                  <span class="bp bp-above"><i class="ti ti-rocket" style="font-size:10px"></i>Going Above and Beyond</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div class="feed-vis"><i class="ti ti-world"></i> Public</div>
+                  <div class="feed-date">Jun 15, 2026</div>
+                </div>
+              </div>
+              <div class="feed-tags" style="margin-top:6px">
+                <span class="tag-small">#savedthelaunch</span>
+                <span class="tag-small">#quiethero</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feed item 2 — recognition -->
+      <div class="feed-item">
+        <div class="feed-item-top">
+          <div class="feed-item-left">
+            <div class="feed-av av-blue">NK</div>
+            <div class="feed-meta">
+              <div class="feed-who"><a href="#">Nick Kim</a> recognized <strong>you</strong></div>
+              <div class="feed-msg">"Stepped in to cover two crisis response shifts with zero notice. Exactly the kind of teammate we need."</div>
+              <div class="feed-bottom">
+                <div class="feed-badges">
+                  <span class="bp bp-teamwork"><i class="ti ti-users" style="font-size:10px"></i>Teamwork</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div class="feed-vis"><i class="ti ti-users"></i> Team</div>
+                  <div class="feed-date">Jun 13, 2026</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feed item 3 — feedback with rating -->
+      <div class="feed-item">
+        <div class="feed-item-top">
+          <div class="feed-item-left">
+            <div class="feed-av av-purple">MH</div>
+            <div class="feed-meta">
+              <div class="feed-who" style="margin-bottom:4px">
+                <span class="feed-type-tag ftt-feedback">Feedback</span>
+                &nbsp;<a href="#">Mary Higgins</a> → <strong>you</strong>
+              </div>
+              <div class="feed-msg">"Your client communication on the Cascades West account has been excellent. One thing to work on: send follow-up recaps within 24 hours of each call."</div>
+              <div class="feed-bottom">
+                <div class="feed-vis"><i class="ti ti-lock"></i> Private</div>
+                <div class="feed-date">Jun 12, 2026</div>
+              </div>
+              <div class="rating-row">
+                <span class="rating-label">Was this feedback helpful?</span>
+                <div class="rating-opts">
+                  <button class="rating-opt sel" onclick="setRating(this)">Helpful</button>
+                  <button class="rating-opt" onclick="setRating(this)">Somewhat</button>
+                  <button class="rating-opt" onclick="setRating(this)">Not really</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feed item 4 — coaching note -->
+      <div class="feed-item">
+        <div class="feed-item-top">
+          <div class="feed-item-left">
+            <div class="feed-av av-amber">CK</div>
+            <div class="feed-meta">
+              <div class="feed-who" style="margin-bottom:4px">
+                <span class="feed-type-tag ftt-coaching">Coaching note</span>
+                &nbsp;<a href="#">Christopher Kim</a> → <strong>you</strong>
+              </div>
+              <div class="feed-msg">"You're ready to lead the next client demo solo. Let's debrief afterward and capture what landed well for your evidence locker."</div>
+              <div class="feed-bottom">
+                <div class="feed-vis"><i class="ti ti-lock"></i> Private</div>
+                <div class="feed-date">Jun 10, 2026</div>
+              </div>
+              <div class="rating-row">
+                <span class="rating-label">Was this feedback helpful?</span>
+                <div class="rating-opts">
+                  <button class="rating-opt" onclick="setRating(this)">Helpful</button>
+                  <button class="rating-opt" onclick="setRating(this)">Somewhat</button>
+                  <button class="rating-opt" onclick="setRating(this)">Not really</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+</div>
+
+<script>
+function switchMode(mode){
+  document.getElementById('modeRecog').classList.toggle('active', mode==='recog');
+  document.getElementById('modeFeedback').classList.toggle('active', mode==='feedback');
+  document.getElementById('composeRecog').style.display = mode==='recog' ? 'block' : 'none';
+  document.getElementById('composeFeedback').style.display = mode==='feedback' ? 'block' : 'none';
+}
+
+function switchSR(mode){
+  document.getElementById('srSend').classList.toggle('active', mode==='send');
+  document.getElementById('srRequest').classList.toggle('active', mode==='request');
+  document.getElementById('recipientLabel').textContent = mode==='send' ? 'Recipient *' : 'Request from *';
+  document.getElementById('messageLabel').textContent = mode==='send' ? 'Message *' : 'What would you like recognition for? *';
+  document.getElementById('submitBtn').textContent = mode==='send' ? 'Send recognition' : 'Send request';
+  document.getElementById('badgeSection').style.display = mode==='send' ? 'block' : 'none';
+  document.getElementById('attachSection').style.display = mode==='send' ? 'flex' : 'none';
+}
+
+function switchFB(mode){
+  document.getElementById('fbSend').classList.toggle('active', mode==='send');
+  document.getElementById('fbRequest').classList.toggle('active', mode==='request');
+  document.getElementById('fbRecipientLabel').textContent = mode==='send' ? 'Recipient *' : 'Request from *';
+  document.getElementById('fbMsgLabel').textContent = mode==='send' ? 'Message *' : 'What would you like feedback on? *';
+  document.getElementById('fbTypeWrap').style.display = mode==='send' ? 'block' : 'none';
+  document.getElementById('fbVisSection').style.display = mode==='send' ? 'block' : 'none';
+}
+
+function toggleBadge(el){
+  const classes = Array.from(el.classList);
+  const type = classes.find(c => !c.includes('sel-') && c !== 'badge-chip');
+  if(!type) return;
+  const isSelected = classes.some(c => c.startsWith('sel-'));
+  document.querySelectorAll('.badge-chip').forEach(chip => {
+    const ct = Array.from(chip.classList).find(c => !c.includes('sel-') && c !== 'badge-chip');
+    chip.classList.remove('sel-'+ct);
+    chip.classList.add(ct);
+  });
+  if(!isSelected){
+    el.classList.remove(type);
+    el.classList.add('sel-'+type);
+  }
+}
+
+function setVis(el){
+  el.closest('.vis-row').querySelectorAll('.vis-opt').forEach(o => o.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function setFeedTab(el){
+  el.closest('.feed-tabs').querySelectorAll('.feed-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function setRating(el){
+  el.closest('.rating-opts').querySelectorAll('.rating-opt').forEach(o => o.classList.remove('sel'));
+  el.classList.add('sel');
+}
+</script>
+</body>
+</html>
