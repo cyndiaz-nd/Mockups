@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Manager Review — Performance Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1a2332;--navy-h:#223044;--navy-mid:#2d4a7a;
+  --page:#f0f2f5;--surface:#fff;--border:#e2e5ea;--border-mid:#c8cdd6;
+  --t1:#0f1923;--t2:#5a6473;--t3:#9ea8b3;
+  --teal:#0d9488;--teal-bg:#e6f7f5;--teal-t:#0f6e56;
+  --blue-bg:#e6f1fb;--blue-t:#185fa5;
+  --purple-bg:#eeedfe;--purple-t:#3c3489;
+  --amber:#d97706;--amber-bg:#fef3c7;--amber-t:#92400e;
+  --red:#e8002d;--red-bg:#fde8ec;--red-t:#a51633;
+  --green:#16a34a;--green-bg:#dcfce7;
+  font-family:'Inter',system-ui,sans-serif;font-size:14px;color:var(--t1);
+  --r6:6px;--r8:8px;--r12:12px;--r16:16px;
+}
+body{background:var(--page);min-height:100vh}
+
+/* ── HEADER ── */
+.form-header{background:var(--navy);padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:200;border-bottom:2px solid var(--red)}
+.fh-left{display:flex;align-items:center;gap:14px}
+.fh-logo-mark{width:26px;height:26px;border-radius:5px;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff}
+.fh-product{font-size:11.5px;font-weight:600;color:rgba(255,255,255,.45)}
+.fh-divider{width:1px;height:18px;background:rgba(255,255,255,.12)}
+.fh-title{font-size:13px;font-weight:500;color:#fff}
+.fh-right{display:flex;align-items:center;gap:10px}
+.fh-cycle{font-size:11px;color:rgba(255,255,255,.45);background:rgba(255,255,255,.08);padding:3px 9px;border-radius:20px}
+.fh-save{font-size:11.5px;color:rgba(255,255,255,.4);display:flex;align-items:center;gap:3px}
+
+/* ── EMPLOYEE SWITCHER ── */
+.emp-switcher{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 28px;display:flex;align-items:center;gap:16px;overflow-x:auto}
+.es-label{font-size:11px;font-weight:600;color:var(--t3);white-space:nowrap;text-transform:uppercase;letter-spacing:.04em}
+.emp-pills{display:flex;gap:8px;flex-shrink:0}
+.ep-pill{display:flex;align-items:center;gap:7px;padding:6px 12px;border-radius:20px;border:1.5px solid var(--border-mid);cursor:pointer;font-size:12.5px;font-weight:500;color:var(--t2);background:var(--surface);transition:all .12s;white-space:nowrap;font-family:inherit}
+.ep-pill:hover{border-color:var(--border-mid);background:#f7f8fa}
+.ep-pill.active{border-color:var(--navy);background:var(--navy);color:#fff}
+.ep-pill.done-pill{border-color:var(--teal);color:var(--teal-t);background:var(--teal-bg)}
+.ep-av{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;flex-shrink:0}
+.ep-status{font-size:10px;font-weight:600;padding:1px 5px;border-radius:3px;margin-left:2px}
+.eps-done{background:rgba(13,148,136,.15);color:var(--teal-t)}
+.eps-inprog{background:var(--amber-bg);color:var(--amber-t)}
+.eps-todo{background:#f0f2f5;color:var(--t3)}
+
+/* ── LAYOUT ── */
+.rev-layout{display:grid;grid-template-columns:1fr 280px;gap:18px;padding:20px 28px 80px;max-width:1080px;margin:0 auto}
+@media(max-width:840px){.rev-layout{grid-template-columns:1fr}.rev-sidebar{display:none}}
+
+/* ── PROGRESS STRIP ── */
+.progress-strip{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;display:flex;align-items:center;gap:0;overflow-x:auto}
+.ps-btn{display:flex;align-items:center;gap:7px;padding:12px 14px;font-size:12px;font-weight:500;color:var(--t3);border:none;background:none;cursor:pointer;font-family:inherit;border-bottom:2px solid transparent;transition:all .14s;white-space:nowrap}
+.ps-btn:hover{color:var(--t2)}
+.ps-btn.active{color:var(--navy);border-bottom-color:var(--navy);font-weight:600}
+.ps-btn.done{color:var(--teal);border-bottom-color:var(--teal)}
+.ps-dot{width:17px;height:17px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8.5px;font-weight:700;flex-shrink:0}
+.ps-dot-done{background:var(--teal);color:#fff}
+.ps-dot-active{background:var(--navy);color:#fff}
+.ps-dot-todo{background:var(--border);color:var(--t3)}
+.ps-chevron{font-size:11px;color:var(--border-mid)}
+
+/* ── CARDS ── */
+.section-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r16);margin-bottom:14px;overflow:hidden}
+.sc-header{padding:16px 20px 12px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:10px}
+.sc-icon{width:34px;height:34px;border-radius:var(--r8);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;margin-top:1px}
+.sc-titles{flex:1}
+.sc-title{font-size:13.5px;font-weight:600;color:var(--t1);margin-bottom:2px}
+.sc-sub{font-size:12px;color:var(--t2);line-height:1.5}
+.sc-body{padding:16px 20px}
+
+/* ── WEIGHT BADGE + TOOLTIP ── */
+.weight-tip-wrap{position:relative;flex-shrink:0}
+.sc-weight-badge{display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;background:var(--navy);color:#fff;padding:3px 9px;border-radius:20px;white-space:nowrap;cursor:default}
+.weight-tip{position:absolute;right:0;top:calc(100% + 6px);background:var(--navy-h);color:#fff;font-size:11.5px;font-weight:400;padding:9px 12px;border-radius:var(--r8);width:210px;line-height:1.5;z-index:50;opacity:0;pointer-events:none;transition:opacity .15s;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+.weight-tip-wrap:hover .weight-tip{opacity:1}
+
+/* ── BLIND RATING BANNER ── */
+.blind-banner{display:flex;align-items:center;gap:8px;background:var(--blue-bg);border:1px solid #c3d9f4;border-radius:var(--r8);padding:9px 12px;margin-bottom:14px;font-size:12px;color:var(--blue-t)}
+.blind-banner i{font-size:15px;flex-shrink:0}
+
+/* ── FOCUS AREA RATINGS ── */
+.rating-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--r12);margin-bottom:10px;transition:border-color .12s}
+.rating-row.rated{border-color:var(--navy-mid)}
+.ra-label{flex:1;min-width:0}
+.ra-name{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:2px}
+.ra-desc{font-size:11.5px;color:var(--t2)}
+.ra-stars{display:flex;gap:3px;flex-shrink:0}
+.star-btn{width:28px;height:28px;border:none;background:none;cursor:pointer;font-size:19px;color:#d1d5db;transition:color .08s;padding:0;display:flex;align-items:center;justify-content:center;line-height:1}
+.star-btn.lit{color:#f59e0b}
+.star-btn:hover{color:#fbbf24}
+.ra-score{font-size:14px;font-weight:700;color:var(--t1);width:22px;text-align:right}
+.ra-note{margin-top:6px}
+.ra-note textarea{width:100%;font-family:inherit;font-size:12px;color:var(--t1);border:1px solid var(--border);border-radius:var(--r6);padding:7px 9px;resize:none;height:48px;outline:none;line-height:1.5;transition:border-color .12s;background:#fafbfc}
+.ra-note textarea:focus{border-color:var(--navy-mid);background:var(--surface)}
+.ra-note textarea::placeholder{color:var(--t3)}
+
+/* ── GOAL REVIEW ── */
+.goal-review-item{border:1.5px solid var(--border);border-radius:var(--r12);padding:14px;margin-bottom:10px;transition:border-color .12s}
+.goal-review-item.rated{border-color:var(--navy-mid)}
+.gri-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
+.gri-title{font-size:13px;font-weight:600;color:var(--t1);flex:1}
+.gri-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+.fw-chip{font-size:9.5px;font-weight:600;padding:1px 6px;border-radius:3px}
+.fw-smart{background:#dbeafe;color:#1e40af}
+.fw-okr{background:var(--purple-bg);color:var(--purple-t)}
+.fw-woop{background:var(--teal-bg);color:var(--teal-t)}
+.gri-progress{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.gri-bar{flex:1;height:6px;background:#e8eaed;border-radius:3px;overflow:hidden}
+.gri-fill{height:100%;border-radius:3px}
+.gri-pct{font-size:12px;font-weight:600;width:42px;text-align:right}
+.gri-employee-note{background:#f7f8fa;border-radius:var(--r8);padding:9px 11px;font-size:12px;color:var(--t2);line-height:1.5;margin-bottom:12px;display:flex;gap:6px}
+.gri-employee-note i{font-size:13px;color:var(--t3);flex-shrink:0;margin-top:1px}
+.gri-rate-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.gri-rate-label{font-size:12px;font-weight:500;color:var(--t2);white-space:nowrap}
+.quality-btns{display:flex;gap:6px;flex-wrap:wrap}
+.qb{font-size:12px;font-weight:500;padding:5px 11px;border-radius:20px;border:1.5px solid var(--border-mid);background:var(--surface);cursor:pointer;color:var(--t2);font-family:inherit;transition:all .12s}
+.qb.sel-exceptional{background:#1a2332;border-color:#1a2332;color:#fff}
+.qb.sel-strong{background:var(--teal-bg);border-color:var(--teal);color:var(--teal-t)}
+.qb.sel-met{background:var(--blue-bg);border-color:#93c5fd;color:var(--blue-t)}
+.qb.sel-partial{background:var(--amber-bg);border-color:#fcd34d;color:var(--amber-t)}
+.qb.sel-missed{background:var(--red-bg);border-color:#fca5a5;color:var(--red-t)}
+.gri-mgr-note{margin-top:10px}
+.gri-mgr-note textarea{width:100%;font-family:inherit;font-size:12px;color:var(--t1);border:1px solid var(--border);border-radius:var(--r6);padding:7px 9px;resize:none;height:54px;outline:none;line-height:1.5;background:#fafbfc;transition:border-color .12s}
+.gri-mgr-note textarea:focus{border-color:var(--navy-mid);background:#fff}
+.gri-mgr-note textarea::placeholder{color:var(--t3)}
+
+/* ── EVIDENCE REVIEW ── */
+.ev-review-item{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--r12);margin-bottom:8px;transition:all .12s}
+.ev-review-item.ev-approved{border-color:var(--teal);background:var(--teal-bg)}
+.ev-review-item.ev-rejected{border-color:var(--red-t);opacity:.7}
+.ev-ri-icon{width:34px;height:34px;border-radius:var(--r6);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.ev-ri-body{flex:1;min-width:0}
+.ev-ri-title{font-size:12.5px;font-weight:600;color:var(--t1);margin-bottom:2px}
+.ev-ri-meta{font-size:11px;color:var(--t3);display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.ev-ri-actions{display:flex;gap:6px;align-items:center;flex-shrink:0;flex-direction:column;align-items:flex-end}
+.btn-approve{background:var(--teal);color:#fff;border:none;border-radius:var(--r6);padding:5px 11px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:3px}
+.btn-reject-sm{background:transparent;color:var(--red-t);border:1.5px solid #fca5a5;border-radius:var(--r6);padding:5px 9px;font-size:12px;cursor:pointer;font-family:inherit}
+.btn-view-sm{background:transparent;color:var(--t2);border:1.5px solid var(--border-mid);border-radius:var(--r6);padding:5px 9px;font-size:12px;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:3px}
+.ev-reject-reason{margin-top:6px;width:100%}
+.ev-reject-reason input{width:100%;font-family:inherit;font-size:12px;border:1px solid #fca5a5;border-radius:var(--r6);padding:6px 9px;outline:none;color:var(--t1);background:#fff9f9}
+.ev-reject-reason input::placeholder{color:#fca5a5}
+.st-chip{display:inline-flex;align-items:center;font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:20px}
+.st-approved{background:var(--teal-bg);color:var(--teal-t)}
+.st-pending{background:var(--amber-bg);color:var(--amber-t)}
+
+/* ── NARRATIVE ── */
+.narrative-prompts{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.np-btn{font-size:12px;color:var(--navy-mid);background:var(--blue-bg);border:1px solid #c3d9f4;border-radius:20px;padding:4px 10px;cursor:pointer;font-family:inherit;transition:background .12s}
+.np-btn:hover{background:#d4e8fb}
+.narrative-textarea{width:100%;font-family:inherit;font-size:13px;color:var(--t1);border:1.5px solid var(--border-mid);border-radius:var(--r12);padding:12px 14px;resize:vertical;min-height:130px;outline:none;line-height:1.6;transition:border-color .14s}
+.narrative-textarea:focus{border-color:var(--navy-mid)}
+.narrative-textarea::placeholder{color:var(--t3)}
+
+/* ── RECOMMENDATION ── */
+.rec-options{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.rec-opt{border:1.5px solid var(--border-mid);border-radius:var(--r12);padding:12px 14px;cursor:pointer;transition:all .12s;background:var(--surface);text-align:left;font-family:inherit;width:100%}
+.rec-opt:hover{border-color:var(--border-mid);background:#f7f8fa}
+.rec-opt.ro-sel-comp{border-color:var(--teal);background:var(--teal-bg)}
+.rec-opt.ro-sel-promo{border-color:var(--navy);background:var(--blue-bg)}
+.rec-opt.ro-sel-none{border-color:var(--border-mid);background:#f7f8fa}
+.rec-opt.ro-sel-imp{border-color:var(--amber);background:var(--amber-bg)}
+.ro-icon{font-size:18px;margin-bottom:5px}
+.ro-name{font-size:12.5px;font-weight:600;color:var(--t1);margin-bottom:2px}
+.ro-desc{font-size:11px;color:var(--t2)}
+.rec-detail{display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.rec-detail.vis{display:block}
+.rd-label{font-size:11.5px;font-weight:600;color:var(--t2);margin-bottom:6px}
+.rd-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.rd-input{font-family:inherit;font-size:13px;color:var(--t1);border:1.5px solid var(--border-mid);border-radius:var(--r8);padding:7px 10px;outline:none;width:160px;transition:border-color .12s}
+.rd-input:focus{border-color:var(--navy-mid)}
+.rd-note{font-size:12px;color:var(--t3)}
+.pip-toggle{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--red-bg);border:1px solid #fca5a5;border-radius:var(--r8)}
+.pt-label{font-size:12.5px;color:var(--red-t);flex:1}
+.toggle{position:relative;width:36px;height:20px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-track{position:absolute;inset:0;border-radius:20px;background:#d0d5dd;cursor:pointer;transition:background .15s}
+.toggle input:checked+.toggle-track{background:var(--red)}
+.toggle-dot{position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#fff;transition:transform .15s;pointer-events:none}
+.toggle input:checked~.toggle-dot{transform:translateX(16px)}
+
+/* ── 1:1 REFERENCE PANEL ── */
+.oneonone-list{display:flex;flex-direction:column;gap:8px}
+.oo-item{padding:10px 12px;border:1px solid var(--border);border-radius:var(--r8);cursor:pointer;transition:border-color .12s}
+.oo-item:hover{border-color:var(--border-mid)}
+.oo-date{font-size:11px;font-weight:600;color:var(--t2);margin-bottom:4px;display:flex;align-items:center;justify-content:space-between}
+.oo-excerpt{font-size:12px;color:var(--t1);line-height:1.5;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.oo-expand{font-size:11px;color:var(--navy-mid);margin-top:3px;cursor:pointer}
+
+/* ── SIDEBAR ── */
+.rev-sidebar{display:flex;flex-direction:column;gap:12px}
+.sb-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r16);padding:14px 16px}
+.sbc-title{font-size:10.5px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px}
+.emp-profile-mini{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.epm-av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0}
+.epm-name{font-size:13.5px;font-weight:700;color:var(--t1)}
+.epm-role{font-size:11.5px;color:var(--t2)}
+.emp-stats-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.es-stat{background:#f7f8fa;border-radius:var(--r8);padding:8px 10px;text-align:center}
+.es-val{font-size:17px;font-weight:700;color:var(--t1)}
+.es-lbl{font-size:10px;color:var(--t3)}
+.section-progress{display:flex;flex-direction:column;gap:5px;margin-top:2px}
+.sp-row{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--t2)}
+.sp-row i{font-size:13px;flex-shrink:0}
+.sp-row.done-sp{color:var(--teal-t)}
+.sp-row.done-sp i{color:var(--teal)}
+.sp-row.active-sp{color:var(--t1);font-weight:500}
+
+/* ── BOTTOM BAR ── */
+.form-bottom{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:10px 28px;display:flex;align-items:center;justify-content:space-between;z-index:100}
+.fb-left{font-size:12px;color:var(--t3)}
+.fb-right{display:flex;gap:9px;align-items:center}
+.btn-back{background:none;border:1.5px solid var(--border-mid);color:var(--t2);border-radius:var(--r8);padding:8px 14px;font-size:12.5px;font-weight:500;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:4px}
+.btn-next{background:var(--navy);color:#fff;border:none;border-radius:var(--r8);padding:8px 18px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:5px;transition:background .12s}
+.btn-next:hover{background:var(--navy-h)}
+.btn-submit{background:var(--teal);color:#fff;border:none;border-radius:var(--r8);padding:8px 20px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:5px}
+.sa-toggle-btn{font-size:12px;color:var(--t2);background:none;border:1.5px solid var(--border-mid);border-radius:20px;padding:5px 12px;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:5px;transition:all .12s}
+.sa-toggle-btn:hover{background:#f7f8fa}
+.sa-panel{background:var(--amber-bg);border:1px solid #fcd34d;border-radius:var(--r12);padding:14px;margin-bottom:12px;display:none}
+.sa-panel.open{display:block}
+.sa-panel-title{font-size:12px;font-weight:600;color:var(--amber-t);margin-bottom:8px;display:flex;align-items:center;gap:5px}
+.sa-self-rating{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--amber-t);margin-bottom:5px}
+
+/* ── PAGE PANELS ── */
+.page-panel{display:none}
+.page-panel.active{display:block}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:64px;left:50%;transform:translateX(-50%);background:var(--navy-h);color:#fff;font-size:12.5px;padding:8px 16px;border-radius:20px;display:flex;align-items:center;gap:6px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:300;white-space:nowrap}
+.toast.show{opacity:1}
+
+/* spin */
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.spinning{animation:spin .8s linear infinite}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="form-header">
+  <div class="fh-left">
+    <div class="fh-logo-mark">CW</div>
+    <span class="fh-product">Performance Center</span>
+    <div class="fh-divider"></div>
+    <span class="fh-title">Manager Review — Mid Year 2026</span>
+  </div>
+  <div class="fh-right">
+    <span class="fh-cycle"><i class="ti ti-calendar" style="font-size:10px"></i> Closes Jun 30 · 5 days</span>
+    <span class="fh-save" id="saveStatus"><i class="ti ti-check"></i> Saved</span>
+  </div>
+</header>
+
+<!-- EMPLOYEE SWITCHER -->
+<div class="emp-switcher">
+  <span class="es-label">Your team</span>
+  <div class="emp-pills">
+    <button class="ep-pill active" onclick="switchEmp(this,'cd')">
+      <div class="ep-av" style="background:#dbeafe;color:#1e40af">CD</div>
+      Cynthia Diaz
+      <span class="ep-status eps-inprog">In progress</span>
+    </button>
+    <button class="ep-pill done-pill" onclick="switchEmp(this,'as')">
+      <div class="ep-av" style="background:var(--teal-bg);color:var(--teal-t)">AS</div>
+      Aiden Somerhalder
+      <span class="ep-status eps-done">Done</span>
+    </button>
+    <button class="ep-pill" onclick="switchEmp(this,'an')">
+      <div class="ep-av" style="background:var(--purple-bg);color:var(--purple-t)">AN</div>
+      Amy Nguyen
+      <span class="ep-status eps-todo">Not started</span>
+    </button>
+    <button class="ep-pill" onclick="switchEmp(this,'ba')">
+      <div class="ep-av" style="background:var(--amber-bg);color:var(--amber-t)">BA</div>
+      Bon Ariola
+      <span class="ep-status eps-todo">Not started</span>
+    </button>
+  </div>
+</div>
+
+<!-- PROGRESS STRIP -->
+<nav class="progress-strip">
+  <button class="ps-btn active" onclick="goTo(0,this)"><span class="ps-dot ps-dot-active" id="dot0">1</span>Focus areas</button>
+  <i class="ti ti-chevron-right ps-chevron"></i>
+  <button class="ps-btn" onclick="goTo(1,this)"><span class="ps-dot ps-dot-todo" id="dot1">2</span>Goals</button>
+  <i class="ti ti-chevron-right ps-chevron"></i>
+  <button class="ps-btn" onclick="goTo(2,this)"><span class="ps-dot ps-dot-todo" id="dot2">3</span>Evidence</button>
+  <i class="ti ti-chevron-right ps-chevron"></i>
+  <button class="ps-btn" onclick="goTo(3,this)"><span class="ps-dot ps-dot-todo" id="dot3">4</span>Narrative</button>
+  <i class="ti ti-chevron-right ps-chevron"></i>
+  <button class="ps-btn" onclick="goTo(4,this)"><span class="ps-dot ps-dot-todo" id="dot4">5</span>Recommendation</button>
+</nav>
+
+<div class="rev-layout">
+<div class="rev-main">
+
+<!-- PAGE 0 — FOCUS AREAS -->
+<div class="page-panel active" id="page0">
+  <div class="blind-banner">
+    <i class="ti ti-eye-off"></i>
+    <div>You are rating independently. Cynthia's self-ratings are hidden until you submit. <button onclick="toggleSA()" class="sa-toggle-btn" id="saBtnTop" style="margin-left:4px"><i class="ti ti-eye" style="font-size:12px"></i> Show self-assessment</button></div>
+  </div>
+
+  <!-- Self-assessment panel (hidden by default) -->
+  <div class="sa-panel" id="saPanel">
+    <div class="sa-panel-title"><i class="ti ti-alert-triangle" style="font-size:13px"></i>Cynthia's self-ratings — viewing these may influence your assessment</div>
+    <div class="sa-self-rating"><span style="flex:1">Client delivery</span><span>★★★★☆ (4)</span></div>
+    <div class="sa-self-rating"><span style="flex:1">Collaboration</span><span>★★★☆☆ (3)</span></div>
+    <div class="sa-self-rating"><span style="flex:1">Growth and development</span><span>★★★★★ (5)</span></div>
+    <div class="sa-self-rating"><span style="flex:1">Communication</span><span>★★★★☆ (4)</span></div>
+    <div style="font-size:11px;color:var(--amber-t);margin-top:8px">Her overall comment: "Closed Essen ahead of schedule. Revenue goal at 75% — Pyramid deal in final stages. Certification complete."</div>
+  </div>
+
+  <div class="section-card">
+    <div class="sc-header">
+      <div class="sc-icon" style="background:var(--purple-bg)"><i class="ti ti-chart-radar" style="color:var(--purple-t)"></i></div>
+      <div class="sc-titles">
+        <div class="sc-title">Rate Cynthia on each focus area</div>
+        <div class="sc-sub">Your independent rating. Add a brief note if useful — it becomes part of the written record. You'll see her self-ratings side by side after submission.</div>
+      </div>
+      <div class="weight-tip-wrap">
+        <div class="sc-weight-badge">Questions <span style="opacity:.6;margin:0 3px">·</span> 50% <i class="ti ti-info-circle" style="font-size:11px;opacity:.7"></i></div>
+        <div class="weight-tip">Focus area ratings account for <strong>50%</strong> of the overall score. Your rating is the one that counts — the employee's self-rating is shown alongside for context but does not affect the final score.</div>
+      </div>
+    </div>
+    <div class="sc-body">
+      <div class="rating-row rated" id="rr0">
+        <div class="ra-label"><div class="ra-name">Client delivery</div><div class="ra-desc">Quality and outcome of client-facing work</div></div>
+        <div class="ra-stars" id="mstars-0">
+          <button class="star-btn lit" onclick="setMStar(0,1)">★</button>
+          <button class="star-btn lit" onclick="setMStar(0,2)">★</button>
+          <button class="star-btn lit" onclick="setMStar(0,3)">★</button>
+          <button class="star-btn lit" onclick="setMStar(0,4)">★</button>
+          <button class="star-btn lit" onclick="setMStar(0,5)">★</button>
+        </div>
+        <span class="ra-score" id="mscore-0">5</span>
+        <div class="ra-note" style="width:100%"><textarea placeholder="Optional note for this rating…">Essen and the Pyramid pipeline speak for themselves. Exceptional quarter.</textarea></div>
+      </div>
+      <div class="rating-row" id="rr1">
+        <div class="ra-label"><div class="ra-name">Collaboration</div><div class="ra-desc">Teamwork, knowledge sharing, supporting others</div></div>
+        <div class="ra-stars" id="mstars-1">
+          <button class="star-btn lit" onclick="setMStar(1,1)">★</button>
+          <button class="star-btn lit" onclick="setMStar(1,2)">★</button>
+          <button class="star-btn lit" onclick="setMStar(1,3)">★</button>
+          <button class="star-btn lit" onclick="setMStar(1,4)">★</button>
+          <button class="star-btn" onclick="setMStar(1,5)">★</button>
+        </div>
+        <span class="ra-score" id="mscore-1">4</span>
+        <div class="ra-note" style="width:100%"><textarea placeholder="Optional note for this rating…"></textarea></div>
+      </div>
+      <div class="rating-row" id="rr2">
+        <div class="ra-label"><div class="ra-name">Growth and development</div><div class="ra-desc">Learning new skills, certifications, growing expertise</div></div>
+        <div class="ra-stars" id="mstars-2">
+          <button class="star-btn lit" onclick="setMStar(2,1)">★</button>
+          <button class="star-btn lit" onclick="setMStar(2,2)">★</button>
+          <button class="star-btn lit" onclick="setMStar(2,3)">★</button>
+          <button class="star-btn lit" onclick="setMStar(2,4)">★</button>
+          <button class="star-btn lit" onclick="setMStar(2,5)">★</button>
+        </div>
+        <span class="ra-score" id="mscore-2">5</span>
+        <div class="ra-note" style="width:100%"><textarea placeholder="Optional note for this rating…">SuiteFoundation cert completed on her own initiative, ahead of the company push.</textarea></div>
+      </div>
+      <div class="rating-row" id="rr3">
+        <div class="ra-label"><div class="ra-name">Communication</div><div class="ra-desc">Clarity, responsiveness, written and spoken quality</div></div>
+        <div class="ra-stars" id="mstars-3">
+          <button class="star-btn lit" onclick="setMStar(3,1)">★</button>
+          <button class="star-btn lit" onclick="setMStar(3,2)">★</button>
+          <button class="star-btn lit" onclick="setMStar(3,3)">★</button>
+          <button class="star-btn lit" onclick="setMStar(3,4)">★</button>
+          <button class="star-btn" onclick="setMStar(3,5)">★</button>
+        </div>
+        <span class="ra-score" id="mscore-3">4</span>
+        <div class="ra-note" style="width:100%"><textarea placeholder="Optional note for this rating…"></textarea></div>
+      </div>
+      <div style="margin-top:8px;font-size:11.5px;color:var(--t3)">1 = needs significant work · 3 = meeting expectations · 5 = exceptional</div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 1 — GOALS -->
+<div class="page-panel" id="page1">
+  <div class="section-card">
+    <div class="sc-header">
+      <div class="sc-icon" style="background:var(--teal-bg)"><i class="ti ti-target" style="color:var(--teal-t)"></i></div>
+      <div class="sc-titles">
+        <div class="sc-title">Rate goal quality and execution</div>
+        <div class="sc-sub">Progress data is from the system. Your job is to assess the quality — how significant was this goal, how well did she execute, what was the real impact?</div>
+      </div>
+      <div class="weight-tip-wrap">
+        <div class="sc-weight-badge">Goals <span style="opacity:.6;margin:0 3px">·</span> 25% <i class="ti ti-info-circle" style="font-size:11px;opacity:.7"></i></div>
+        <div class="weight-tip">Goal scores count for <strong>25%</strong> of the overall score. The system tracks progress automatically. You're adding judgment — how significant was each goal, and how well was it executed?</div>
+      </div>
+    </div>
+    <div class="sc-body">
+
+      <div class="goal-review-item rated" id="gr0">
+        <div class="gri-top">
+          <div class="gri-title">Close Essen Healthcare deal</div>
+        </div>
+        <div class="gri-tags"><span class="fw-chip fw-smart">SMART</span><span class="fw-chip fw-okr">OKR</span></div>
+        <div class="gri-progress">
+          <div class="gri-bar"><div class="gri-fill" style="width:100%;background:var(--teal)"></div></div>
+          <span class="gri-pct" style="color:var(--teal)">100%</span>
+        </div>
+        <div class="gri-employee-note"><i class="ti ti-quote"></i>"Closed June 30 — ahead of Q3 timeline. Handled discovery, negotiation, and sign-off."</div>
+        <div class="gri-rate-row">
+          <span class="gri-rate-label">Quality of execution:</span>
+          <div class="quality-btns">
+            <button class="qb sel-exceptional" onclick="setQuality('gr0',this,'sel-exceptional')">Exceptional</button>
+            <button class="qb" onclick="setQuality('gr0',this,'sel-strong')">Strong</button>
+            <button class="qb" onclick="setQuality('gr0',this,'sel-met')">Met expectations</button>
+            <button class="qb" onclick="setQuality('gr0',this,'sel-partial')">Partial</button>
+            <button class="qb" onclick="setQuality('gr0',this,'sel-missed')">Missed</button>
+          </div>
+        </div>
+        <div class="gri-mgr-note"><textarea placeholder="Manager note on this goal… (optional)">Closing an enterprise deal of this complexity in one quarter, ahead of schedule, is a genuine high-water mark for the team.</textarea></div>
+      </div>
+
+      <div class="goal-review-item" id="gr1">
+        <div class="gri-top"><div class="gri-title">Reach $1M in new sales revenue</div></div>
+        <div class="gri-tags"><span class="fw-chip fw-smart">SMART</span><span class="fw-chip fw-okr">OKR</span></div>
+        <div class="gri-progress">
+          <div class="gri-bar"><div class="gri-fill" style="width:75%;background:var(--navy-mid)"></div></div>
+          <span class="gri-pct">75% — $750K</span>
+        </div>
+        <div class="gri-rate-row">
+          <span class="gri-rate-label">Quality of execution:</span>
+          <div class="quality-btns">
+            <button class="qb" onclick="setQuality('gr1',this,'sel-exceptional')">Exceptional</button>
+            <button class="qb sel-strong" onclick="setQuality('gr1',this,'sel-strong')">Strong</button>
+            <button class="qb" onclick="setQuality('gr1',this,'sel-met')">Met expectations</button>
+            <button class="qb" onclick="setQuality('gr1',this,'sel-partial')">Partial</button>
+            <button class="qb" onclick="setQuality('gr1',this,'sel-missed')">Missed</button>
+          </div>
+        </div>
+        <div class="gri-mgr-note"><textarea placeholder="Manager note on this goal… (optional)">Pyramid deal in final stages. On track to exceed by end of Q3 — context matters here.</textarea></div>
+      </div>
+
+      <div class="goal-review-item" id="gr2">
+        <div class="gri-top"><div class="gri-title">Mentor 2 junior consultants through their first enterprise deal</div></div>
+        <div class="gri-tags"><span class="fw-chip fw-woop">WOOP</span></div>
+        <div class="gri-progress">
+          <div class="gri-bar"><div class="gri-fill" style="width:60%;background:var(--amber)"></div></div>
+          <span class="gri-pct" style="color:var(--amber)">60%</span>
+        </div>
+        <div class="gri-rate-row">
+          <span class="gri-rate-label">Quality of execution:</span>
+          <div class="quality-btns">
+            <button class="qb" onclick="setQuality('gr2',this,'sel-exceptional')">Exceptional</button>
+            <button class="qb" onclick="setQuality('gr2',this,'sel-strong')">Strong</button>
+            <button class="qb sel-met" onclick="setQuality('gr2',this,'sel-met')">Met expectations</button>
+            <button class="qb" onclick="setQuality('gr2',this,'sel-partial')">Partial</button>
+            <button class="qb" onclick="setQuality('gr2',this,'sel-missed')">Missed</button>
+          </div>
+        </div>
+        <div class="gri-mgr-note"><textarea placeholder="Manager note on this goal… (optional)"></textarea></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 2 — EVIDENCE -->
+<div class="page-panel" id="page2">
+  <div class="section-card">
+    <div class="sc-header">
+      <div class="sc-icon" style="background:var(--blue-bg)"><i class="ti ti-folder" style="color:var(--blue-t)"></i></div>
+      <div class="sc-titles">
+        <div class="sc-title">Review evidence Cynthia included</div>
+        <div class="sc-sub">These are the items Cynthia selected from her locker for this review. Approve what you consider relevant and credible. Reject anything that doesn't belong — give a reason so HR has context.</div>
+      </div>
+      <div class="weight-tip-wrap">
+        <div class="sc-weight-badge">Evidence <span style="opacity:.6;margin:0 3px">·</span> 10% <i class="ti ti-info-circle" style="font-size:11px;opacity:.7"></i></div>
+        <div class="weight-tip">Evidence counts for <strong>10%</strong> of the overall score. Items you approve contribute — items you reject do not. Your approval here is final for this review cycle.</div>
+      </div>
+    </div>
+    <div class="sc-body">
+
+      <div class="ev-review-item ev-approved" id="ev0">
+        <div class="ev-ri-icon" style="background:var(--amber-bg)"><i class="ti ti-certificate" style="color:var(--amber)"></i></div>
+        <div class="ev-ri-body">
+          <div class="ev-ri-title">NetSuite ERP Consultant Certification — SuiteFoundation</div>
+          <div class="ev-ri-meta"><span class="st-chip st-approved">Approved by HR</span><span>· Certification · May 14</span></div>
+        </div>
+        <div class="ev-ri-actions">
+          <span style="font-size:12px;font-weight:600;color:var(--teal-t)"><i class="ti ti-circle-check" style="font-size:14px"></i> Approved</span>
+          <button class="btn-reject-sm" onclick="rejectEv('ev0')">Reject</button>
+        </div>
+      </div>
+
+      <div class="ev-review-item ev-approved" id="ev1">
+        <div class="ev-ri-icon" style="background:#fce7f3"><i class="ti ti-award" style="color:#9d174d"></i></div>
+        <div class="ev-ri-body">
+          <div class="ev-ri-title">Commendation — Essen Healthcare deal close</div>
+          <div class="ev-ri-meta"><span class="st-chip st-approved">Approved by HR</span><span>· From: Christopher Kim · Jul 2</span></div>
+        </div>
+        <div class="ev-ri-actions">
+          <span style="font-size:12px;font-weight:600;color:var(--teal-t)"><i class="ti ti-circle-check" style="font-size:14px"></i> Approved</span>
+          <button class="btn-reject-sm" onclick="rejectEv('ev1')">Reject</button>
+        </div>
+      </div>
+
+      <div class="ev-review-item" id="ev2">
+        <div class="ev-ri-icon" style="background:var(--teal-bg)"><i class="ti ti-link" style="color:var(--teal-t)"></i></div>
+        <div class="ev-ri-body">
+          <div class="ev-ri-title">Signed SOW — Essen Healthcare June 2026</div>
+          <div class="ev-ri-meta"><span class="st-chip st-approved">Approved by HR</span><span>· URL link · Jun 30</span></div>
+        </div>
+        <div class="ev-ri-actions">
+          <button class="btn-approve" onclick="approveEv('ev2')"><i class="ti ti-check" style="font-size:12px"></i>Approve</button>
+          <button class="btn-reject-sm" onclick="rejectEv('ev2')">Reject</button>
+          <button class="btn-view-sm"><i class="ti ti-external-link" style="font-size:11px"></i>Open</button>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;font-size:12px;color:var(--t3);display:flex;align-items:center;gap:5px"><i class="ti ti-info-circle" style="font-size:13px"></i>Only HR-approved items appear here. You're the final approval for what counts toward this cycle's score.</div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 3 — NARRATIVE -->
+<div class="page-panel" id="page3">
+  <div class="section-card">
+    <div class="sc-header">
+      <div class="sc-icon" style="background:var(--navy);opacity:.9"><i class="ti ti-writing" style="color:#fff"></i></div>
+      <div class="sc-titles">
+        <div class="sc-title">Written assessment</div>
+        <div class="sc-sub">This is what Cynthia will read. Be specific — concrete examples land better than general praise. This is also the record if anything is disputed later.</div>
+      </div>
+    </div>
+    <div class="sc-body">
+
+      <!-- 1:1 Reference panel -->
+      <div style="margin-bottom:14px">
+        <div style="font-size:11.5px;font-weight:600;color:var(--t2);margin-bottom:8px;display:flex;align-items:center;gap:5px"><i class="ti ti-messages" style="font-size:13px"></i>1:1 check-in notes — for your reference</div>
+        <div class="oneonone-list">
+          <div class="oo-item">
+            <div class="oo-date">Jun 10, 2026 — Monthly check-in <span style="font-size:10.5px;color:var(--t3)">Linked to this cycle</span></div>
+            <div class="oo-excerpt">Discussed Q2 pipeline, Essen negotiation status, and development goal around enterprise presentation skills. Employee is on track. Raised question about potential promotion eligibility.</div>
+            <div class="oo-expand">Show full note ↓</div>
+          </div>
+          <div class="oo-item">
+            <div class="oo-date">May 6, 2026 — Monthly check-in</div>
+            <div class="oo-excerpt">Reviewed Pyramid proposal draft. Good structure, needs stronger ROI framing. Agreed to schedule a presentation practice session before the client call.</div>
+            <div class="oo-expand">Show full note ↓</div>
+          </div>
+          <div class="oo-item">
+            <div class="oo-date">Apr 8, 2026 — Monthly check-in</div>
+            <div class="oo-excerpt">Essen discovery session went well — client responded very positively to the needs analysis approach. Set Q2 target of $750K with stretch goal of $1M.</div>
+            <div class="oo-expand">Show full note ↓</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="height:1px;background:var(--border);margin-bottom:14px"></div>
+
+      <div style="margin-bottom:10px">
+        <div style="font-size:12px;font-weight:500;color:var(--t2);margin-bottom:8px">Quick prompts</div>
+        <div class="narrative-prompts">
+          <button class="np-btn" onclick="insertPrompt('strongest')">Strongest contribution</button>
+          <button class="np-btn" onclick="insertPrompt('impact')">Business impact</button>
+          <button class="np-btn" onclick="insertPrompt('development')">Development areas</button>
+          <button class="np-btn" onclick="insertPrompt('next')">Focus for next period</button>
+        </div>
+      </div>
+
+      <textarea class="narrative-textarea" id="narrativeText" placeholder="Write Cynthia's performance narrative here…
+
+Be specific. Reference actual work, real outcomes, concrete behaviours. 'Good communicator' is vague — 'Ran the Essen discovery session with no preparation time and landed the relationship' is a record.">Cynthia had a standout half-year. The Essen Healthcare close — completed ahead of the Q3 timeline — was the most significant deal of the period for the team. What set it apart wasn't just the result but how she ran the process: a structured discovery session, disciplined follow-up through a complex procurement cycle, and a sign-off that came in under the initially projected discount.
+
+The revenue goal at 75% reflects the Essen close plus active pipeline, not stalled effort. The Pyramid deal is in final stages and I expect it to push her well past the annual target.
+
+Development area for the next period: taking more of a leadership role on team methodology. She demonstrated this in the mentorship goal but it's not yet consistent — she can bring the same discipline she brings to client work into how she develops the people around her.</textarea>
+      <div style="font-size:11px;color:var(--t3);margin-top:4px;text-align:right" id="narrativeCount">0 chars</div>
+
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 4 — RECOMMENDATION -->
+<div class="page-panel" id="page4">
+  <div class="section-card">
+    <div class="sc-header">
+      <div class="sc-icon" style="background:var(--blue-bg)"><i class="ti ti-coin" style="color:var(--blue-t)"></i></div>
+      <div class="sc-titles">
+        <div class="sc-title">Recommendation</div>
+        <div class="sc-sub">Your recommendation is sent to HR as a proposal — it does not directly change any compensation. HR reviews and approves before anything moves forward.</div>
+      </div>
+    </div>
+    <div class="sc-body">
+
+      <div class="rec-options">
+        <button class="rec-opt ro-sel-promo" id="ro-promo" onclick="selectRec('promo')">
+          <div class="ro-icon">🚀</div>
+          <div class="ro-name">Promotion consideration</div>
+          <div class="ro-desc">Recommend for role or level change</div>
+        </button>
+        <button class="rec-opt" id="ro-comp" onclick="selectRec('comp')">
+          <div class="ro-icon">💰</div>
+          <div class="ro-name">Compensation adjustment</div>
+          <div class="ro-desc">Propose a salary or bonus change</div>
+        </button>
+        <button class="rec-opt" id="ro-none" onclick="selectRec('none')">
+          <div class="ro-icon">✅</div>
+          <div class="ro-name">No change</div>
+          <div class="ro-desc">Performance meets expectations, no action needed</div>
+        </button>
+        <button class="rec-opt" id="ro-imp" onclick="selectRec('imp')">
+          <div class="ro-icon">📋</div>
+          <div class="ro-name">Improvement plan</div>
+          <div class="ro-desc">Performance requires structured improvement</div>
+        </button>
+      </div>
+
+      <!-- Promotion detail -->
+      <div class="rec-detail vis" id="rd-promo">
+        <div class="rd-label">Promotion details</div>
+        <div class="rd-row">
+          <input class="rd-input" type="text" placeholder="Proposed new title" value="Senior Solutions Consultant"/>
+          <span class="rd-note">HR will review before any change is made</span>
+        </div>
+        <div style="margin-bottom:8px">
+          <textarea class="narrative-textarea" style="min-height:70px" placeholder="Why is this person ready for this role?">Demonstrated consistent enterprise deal capability, mentorship of junior team, and independent skill development well beyond current role expectations.</textarea>
+        </div>
+        <div style="font-size:12px;color:var(--t3);padding:9px 12px;background:#f7f8fa;border-radius:var(--r8)"><i class="ti ti-info-circle" style="font-size:13px"></i> HR will check eligibility against the promotion ruleset configured for this cycle before approving.</div>
+      </div>
+
+      <!-- Comp detail (hidden) -->
+      <div class="rec-detail" id="rd-comp">
+        <div class="rd-label">Compensation proposal</div>
+        <div class="rd-row">
+          <input class="rd-input" type="text" placeholder="Proposed amount or %"/>
+          <input class="rd-input" type="text" placeholder="Type: salary / bonus / both"/>
+        </div>
+        <textarea class="narrative-textarea" style="min-height:60px" placeholder="Justification for this recommendation…"></textarea>
+      </div>
+
+      <!-- Improvement detail (hidden) -->
+      <div class="rec-detail" id="rd-imp">
+        <div class="rd-label">Improvement plan — flagging for HR</div>
+        <div class="pip-toggle">
+          <span class="pt-label">Initiate a formal PIP alongside this review</span>
+          <label class="toggle">
+            <input type="checkbox" onchange="togglePip(this)"/>
+            <div class="toggle-track"></div>
+            <div class="toggle-dot"></div>
+          </label>
+        </div>
+        <div style="margin-top:8px">
+          <textarea class="narrative-textarea" style="min-height:70px" placeholder="Describe what needs to improve and what support you will provide…"></textarea>
+        </div>
+      </div>
+
+      <!-- Pre-submit -->
+      <div style="margin-top:20px;padding:14px;background:#f7f8fa;border-radius:var(--r12);border:1px solid var(--border);display:flex;flex-direction:column;gap:9px">
+        <div style="font-size:12px;font-weight:600;color:var(--t1);margin-bottom:2px">Before you submit</div>
+        <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;font-size:12.5px;color:var(--t2)">
+          <input type="checkbox" id="chk1" style="margin-top:2px;accent-color:var(--navy)"/>
+          I rated all four focus areas independently before viewing the self-assessment
+        </label>
+        <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;font-size:12.5px;color:var(--t2)">
+          <input type="checkbox" id="chk2" style="margin-top:2px;accent-color:var(--navy)"/>
+          I reviewed and approved or rejected all evidence items Cynthia submitted
+        </label>
+        <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;font-size:12.5px;color:var(--t2)">
+          <input type="checkbox" id="chk3" style="margin-top:2px;accent-color:var(--navy)"/>
+          My written assessment reflects specific, factual observations — not general impressions
+        </label>
+        <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;font-size:12.5px;color:var(--t2)">
+          <input type="checkbox" id="chk4" style="margin-top:2px;accent-color:var(--navy)"/>
+          I understand this review is shared with Cynthia and HR when results are released
+        </label>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</div><!-- /.rev-main -->
+
+<!-- SIDEBAR -->
+<aside class="rev-sidebar">
+  <div class="sb-card">
+    <div class="sbc-title">Reviewing</div>
+    <div class="emp-profile-mini">
+      <div class="epm-av" style="background:var(--blue-bg);color:var(--blue-t)">CD</div>
+      <div>
+        <div class="epm-name">Cynthia Diaz</div>
+        <div class="epm-role">Sr. Solutions Consultant · 1yr 2mo</div>
+      </div>
+    </div>
+    <div class="emp-stats-row">
+      <div class="es-stat"><div class="es-val" style="color:var(--teal-t)">6/8</div><div class="es-lbl">Goals on track</div></div>
+      <div class="es-stat"><div class="es-val">14</div><div class="es-lbl">Recognitions</div></div>
+      <div class="es-stat"><div class="es-val">3</div><div class="es-lbl">Evidence items</div></div>
+      <div class="es-stat"><div class="es-val" style="color:var(--t3)">72%</div><div class="es-lbl">Last cycle</div></div>
+    </div>
+  </div>
+
+  <div class="sb-card">
+    <div class="sbc-title">This review</div>
+    <div class="section-progress">
+      <div class="sp-row active-sp" id="sp0"><i class="ti ti-circle-dot"></i>Focus areas</div>
+      <div class="sp-row" id="sp1"><i class="ti ti-circle"></i>Goals</div>
+      <div class="sp-row" id="sp2"><i class="ti ti-circle"></i>Evidence</div>
+      <div class="sp-row" id="sp3"><i class="ti ti-circle"></i>Narrative</div>
+      <div class="sp-row" id="sp4"><i class="ti ti-circle"></i>Recommendation</div>
+    </div>
+  </div>
+
+  <div class="sb-card">
+    <div class="sbc-title">Team progress</div>
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <div style="display:flex;align-items:center;justify-content:space-between;font-size:12px">
+        <span style="color:var(--t1);font-weight:500">Cynthia Diaz</span>
+        <span style="color:var(--amber-t);font-weight:600;font-size:11px">In progress</span>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;font-size:12px">
+        <span style="color:var(--t2)">Aiden Somerhalder</span>
+        <span style="color:var(--teal-t);font-weight:600;font-size:11px">Done</span>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;font-size:12px">
+        <span style="color:var(--t2)">Amy Nguyen</span>
+        <span style="color:var(--t3);font-weight:600;font-size:11px">Not started</span>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;font-size:12px">
+        <span style="color:var(--t2)">Bon Ariola</span>
+        <span style="color:var(--t3);font-weight:600;font-size:11px">Not started</span>
+      </div>
+    </div>
+    <div style="margin-top:10px;height:4px;background:#e8eaed;border-radius:2px;overflow:hidden"><div style="width:50%;height:100%;background:var(--teal);border-radius:2px"></div></div>
+    <div style="margin-top:4px;font-size:11px;color:var(--t3)">2 of 4 reviews complete</div>
+  </div>
+
+  <div class="sb-card" style="border-color:#fcd34d;background:var(--amber-bg)">
+    <div style="display:flex;gap:8px;align-items:flex-start">
+      <i class="ti ti-clock" style="font-size:16px;color:var(--amber-t);flex-shrink:0;margin-top:1px"></i>
+      <div>
+        <div style="font-size:12.5px;font-weight:600;color:var(--amber-t);margin-bottom:3px">5 days remaining</div>
+        <div style="font-size:11.5px;color:var(--amber-t);line-height:1.5">2 reviews still to complete. All must be submitted before Jun 30 or unsubmitted reviews auto-close with zeros.</div>
+      </div>
+    </div>
+  </div>
+</aside>
+</div>
+
+<!-- BOTTOM BAR -->
+<div class="form-bottom">
+  <div class="fb-left" id="fbLeft">Step 1 of 5 — Focus areas · Cynthia Diaz</div>
+  <div class="fb-right">
+    <button class="sa-toggle-btn" id="saBtnBot" onclick="toggleSA()"><i class="ti ti-eye" style="font-size:12px"></i> Self-assessment</button>
+    <button class="btn-back" id="btnBack" style="display:none" onclick="prevPage()"><i class="ti ti-arrow-left" style="font-size:12px"></i> Back</button>
+    <button class="btn-next" id="btnNext" onclick="nextPage()">Continue <i class="ti ti-arrow-right" style="font-size:12px"></i></button>
+    <button class="btn-submit" id="btnSubmit" style="display:none" onclick="submitReview()"><i class="ti ti-send" style="font-size:12px"></i> Submit review</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"><i class="ti ti-check" style="font-size:13px"></i><span id="toastMsg">Saved</span></div>
+
+<script>
+let currentPage=0;
+const totalPages=5;
+const stepNames=['Focus areas','Goals','Evidence','Narrative','Recommendation'];
+const stepLabels=['Step 1 of 5 — Focus areas · Cynthia Diaz','Step 2 of 5 — Goals · Cynthia Diaz','Step 3 of 5 — Evidence · Cynthia Diaz','Step 4 of 5 — Narrative · Cynthia Diaz','Step 5 of 5 — Recommendation · Cynthia Diaz'];
+const psBtns=document.querySelectorAll('.ps-btn');
+let saVisible=false;
+
+function goTo(idx,btn){
+  document.querySelectorAll('.page-panel').forEach((p,i)=>p.classList.toggle('active',i===idx));
+  currentPage=idx;updateUI();
+}
+function nextPage(){
+  if(currentPage<totalPages-1){markDone(currentPage);currentPage++;
+    document.querySelectorAll('.page-panel').forEach((p,i)=>p.classList.toggle('active',i===currentPage));
+    updateUI();window.scrollTo({top:0,behavior:'smooth'});}
+}
+function prevPage(){
+  if(currentPage>0){currentPage--;
+    document.querySelectorAll('.page-panel').forEach((p,i)=>p.classList.toggle('active',i===currentPage));
+    updateUI();window.scrollTo({top:0,behavior:'smooth'});}
+}
+function markDone(idx){
+  const dot=document.getElementById('dot'+idx);
+  dot.innerHTML='<i class="ti ti-check" style="font-size:10px"></i>';
+  dot.className='ps-dot ps-dot-done';
+  psBtns[idx].className='ps-btn done';
+  const sp=document.getElementById('sp'+idx);
+  sp.innerHTML='<i class="ti ti-circle-check"></i>'+stepNames[idx];
+  sp.className='sp-row done-sp';
+}
+function updateUI(){
+  psBtns.forEach((b,i)=>{if(i===currentPage)b.classList.add('active');else b.classList.remove('active');});
+  const ad=document.getElementById('dot'+currentPage);
+  if(!ad.classList.contains('ps-dot-done')){ad.className='ps-dot ps-dot-active';ad.textContent=currentPage+1;psBtns[currentPage].className='ps-btn active';}
+  for(let i=0;i<5;i++){const sp=document.getElementById('sp'+i);
+    if(!sp.classList.contains('done-sp')){sp.className=i===currentPage?'sp-row active-sp':'sp-row';
+      sp.innerHTML=(i===currentPage?'<i class="ti ti-circle-dot"></i>':'<i class="ti ti-circle"></i>')+stepNames[i];}}
+  document.getElementById('fbLeft').textContent=stepLabels[currentPage];
+  document.getElementById('btnBack').style.display=currentPage>0?'':'none';
+  document.getElementById('btnNext').style.display=currentPage<totalPages-1?'':'none';
+  document.getElementById('btnSubmit').style.display=currentPage===totalPages-1?'':'none';
+  triggerSave();
+}
+function triggerSave(){
+  const el=document.getElementById('saveStatus');
+  el.innerHTML='<i class="ti ti-loader-2 spinning"></i> Saving…';
+  setTimeout(()=>{el.innerHTML='<i class="ti ti-check"></i> Saved';},700);
+}
+function toggleSA(){
+  saVisible=!saVisible;
+  document.getElementById('saPanel').classList.toggle('open',saVisible);
+  const txt=saVisible?'<i class="ti ti-eye-off" style="font-size:12px"></i> Hide self-assessment':'<i class="ti ti-eye" style="font-size:12px"></i> Show self-assessment';
+  document.getElementById('saBtnTop').innerHTML=txt;
+  document.getElementById('saBtnBot').innerHTML=saVisible?'<i class="ti ti-eye-off" style="font-size:12px"></i> Self-assessment':txt;
+}
+const mStarScores=[5,4,5,4];
+function setMStar(area,rating){
+  mStarScores[area]=rating;
+  const container=document.getElementById('mstars-'+area);
+  container.querySelectorAll('.star-btn').forEach((b,i)=>b.classList.toggle('lit',i<rating));
+  document.getElementById('mscore-'+area).textContent=rating;
+  document.getElementById('rr'+area).classList.add('rated');
+  triggerSave();
+}
+function setQuality(goalId,btn,cls){
+  const btns=document.getElementById(goalId).querySelectorAll('.qb');
+  btns.forEach(b=>b.className='qb');
+  btn.className='qb '+cls;
+  document.getElementById(goalId).classList.add('rated');
+  triggerSave();
+}
+function approveEv(id){
+  const el=document.getElementById(id);
+  el.classList.add('ev-approved');
+  el.classList.remove('ev-rejected');
+  const act=el.querySelector('.ev-ri-actions');
+  act.innerHTML='<span style="font-size:12px;font-weight:600;color:var(--teal-t)"><i class="ti ti-circle-check" style="font-size:14px"></i> Approved</span><button class="btn-reject-sm" onclick="rejectEv(\''+id+'\')">Reject</button>';
+  triggerSave();
+}
+function rejectEv(id){
+  const el=document.getElementById(id);
+  el.classList.remove('ev-approved');el.classList.add('ev-rejected');
+  const act=el.querySelector('.ev-ri-actions');
+  act.innerHTML=`<span style="font-size:12px;font-weight:600;color:var(--red-t)"><i class="ti ti-x" style="font-size:14px"></i> Rejected</span>
+    <button class="btn-approve" onclick="approveEv('${id}')"><i class="ti ti-check" style="font-size:11px"></i>Approve</button>
+    <div class="ev-reject-reason" style="margin-top:5px"><input type="text" placeholder="Reason for rejection (required)…"/></div>`;
+  triggerSave();
+}
+const narrativeEl=document.getElementById('narrativeText');
+if(narrativeEl){narrativeEl.addEventListener('input',()=>{document.getElementById('narrativeCount').textContent=narrativeEl.value.length+' chars';triggerSave();});
+  document.getElementById('narrativeCount').textContent=narrativeEl.value.length+' chars';}
+const prompts={'strongest':'Cynthia\'s strongest contribution this period was ','impact':'The business impact of her work was most clearly visible in ','development':'An area to develop further is ','next':'For the next period, I\'d like to see her focus on '};
+function insertPrompt(key){
+  if(!narrativeEl.value)narrativeEl.value=prompts[key];
+  else narrativeEl.value+='\n\n'+prompts[key];
+  narrativeEl.focus();
+  document.getElementById('narrativeCount').textContent=narrativeEl.value.length+' chars';
+}
+const recTypes=['promo','comp','none','imp'];
+function selectRec(type){
+  recTypes.forEach(t=>{
+    document.getElementById('ro-'+t).className='rec-opt';
+    const rd=document.getElementById('rd-'+t);if(rd)rd.classList.remove('vis');
+  });
+  document.getElementById('ro-'+type).className='rec-opt ro-sel-'+type;
+  const rd=document.getElementById('rd-'+type);if(rd)rd.classList.add('vis');
+}
+function togglePip(cb){showToast(cb.checked?'PIP flag added — HR will be notified':'PIP flag removed');}
+function switchEmp(btn,empId){
+  document.querySelectorAll('.ep-pill').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  showToast('Loading review for '+btn.textContent.trim().split('\n')[0]+'…');
+}
+function showToast(msg){
+  document.getElementById('toastMsg').textContent=msg;
+  const t=document.getElementById('toast');t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2000);
+}
+function submitReview(){
+  const checks=['chk1','chk2','chk3','chk4'];
+  const unchecked=checks.filter(id=>!document.getElementById(id).checked);
+  if(unchecked.length){showToast('Check all boxes before submitting.');return;}
+  showToast('Submitting review…');
+  setTimeout(()=>{
+    document.querySelector('.rev-main').innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;padding:70px 20px;text-align:center;gap:16px">
+      <div style="width:64px;height:64px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;font-size:28px">✓</div>
+      <div style="font-size:20px;font-weight:700;color:var(--t1)">Review submitted</div>
+      <div style="font-size:14px;color:var(--t2);max-width:380px;line-height:1.6">Cynthia's review is complete. HR will release results when the cycle closes. You still have 2 reviews to complete — Amy Nguyen and Bon Ariola.</div>
+      <div style="display:flex;gap:10px;margin-top:8px">
+        <button onclick="switchEmp(null,'an')" style="font-size:13px;background:var(--navy);color:#fff;border:none;border-radius:var(--r8);padding:9px 18px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px"><i class="ti ti-arrow-right" style="font-size:13px"></i>Start Amy Nguyen's review</button>
+        <button style="font-size:13px;background:none;border:1.5px solid var(--border-mid);color:var(--t2);border-radius:var(--r8);padding:9px 16px;cursor:pointer;font-family:inherit">Back to dashboard</button>
+      </div></div>`;
+    document.querySelector('.form-bottom').style.display='none';
+  },1200);
+}
+</script>
+</body>
+</html>
