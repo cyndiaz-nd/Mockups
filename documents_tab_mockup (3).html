@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Documents — Performance Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1a2332;--navy-h:#223044;--navy-mid:#2d4a7a;
+  --page:#f0f2f5;--surface:#fff;--border:#e2e5ea;--border-mid:#c8cdd6;
+  --t1:#0f1923;--t2:#5a6473;--t3:#8e97a3;
+  --teal-bg:#e1f5ee;--teal-t:#0f6e56;
+  --blue-bg:#e6f1fb;--blue-t:#185fa5;
+  --purple-bg:#eeedfe;--purple-t:#3c3489;
+  --amber-bg:#faeeda;--amber-t:#633806;
+  --green-bg:#eaf3de;--green-t:#3b6d11;
+  --red:#e8002d;--red-bg:#fde8ec;--red-t:#a51633;
+  --rsm:6px;--rmd:8px;--rlg:12px;--rxl:16px;
+  font-family:'Inter',system-ui,sans-serif;font-size:14px;color:var(--t1);background:var(--page);
+}
+.shell{display:flex;min-height:100vh}
+
+/* Sidebar */
+.sidebar{width:200px;min-height:100vh;background:var(--navy);display:flex;flex-direction:column;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto}
+.logo-zone{display:flex;flex-direction:column;align-items:center;padding:22px 16px 16px;border-bottom:1px solid rgba(255,255,255,.09);flex-shrink:0}
+.client-logo{width:54px;height:54px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.app-title{font-size:12px;font-weight:600;color:#fff;text-align:center;letter-spacing:.02em}
+.nav-section{flex:1;padding:10px 0}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 16px;font-size:12.5px;color:rgba(255,255,255,.55);text-decoration:none;transition:background .12s,color .12s}
+.nav-item:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.88)}
+.nav-item.active{background:rgba(255,255,255,.11);color:#fff}
+.nav-item i{font-size:15px;flex-shrink:0}
+.nav-div{height:1px;background:rgba(255,255,255,.08);margin:5px 14px}
+.av-nav{width:26px;height:26px;border-radius:50%;background:var(--navy-mid);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#85b7eb;flex-shrink:0}
+.footer-zone{padding:12px 16px 18px;border-top:1px solid rgba(255,255,255,.09);display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0}
+.powered{font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.06em;text-transform:uppercase}
+.ats-badge{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.07);border-radius:var(--rsm);padding:5px 10px;text-decoration:none}
+.ats-wm{font-size:12px;font-weight:600;color:rgba(255,255,255,.72);line-height:1.2}
+.ats-sub{font-size:9px;color:rgba(255,255,255,.38);line-height:1.2}
+
+/* Main */
+.main{flex:1;padding:24px 28px 56px;overflow-y:auto;min-width:0}
+
+/* Role banner */
+.role-banner{background:var(--navy);border-radius:var(--rlg);padding:12px 18px;display:flex;align-items:center;gap:12px;margin-bottom:22px;flex-wrap:wrap}
+.role-banner-label{font-size:12px;color:rgba(255,255,255,.5);flex-shrink:0}
+.role-btns{display:flex;gap:6px}
+.role-btn{padding:6px 16px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid rgba(255,255,255,.2);background:transparent;color:rgba(255,255,255,.6);font-family:inherit;transition:all .12s}
+.role-btn:hover{background:rgba(255,255,255,.1);color:#fff}
+.role-btn.active{background:#fff;color:var(--navy);border-color:#fff}
+.role-badge{margin-left:auto;font-size:11px;color:rgba(255,255,255,.4);font-style:italic}
+
+/* Page */
+.page-heading{font-size:20px;font-weight:600;color:var(--t1);margin-bottom:2px}
+.page-sub{font-size:13px;color:var(--t2);margin-bottom:20px}
+
+/* Subtabs */
+.subtabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:24px}
+.subtab{padding:10px 20px;font-size:13px;font-weight:500;color:var(--t2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .12s,border-color .12s;white-space:nowrap;user-select:none}
+.subtab:hover{color:var(--t1)}
+.subtab.active{color:var(--navy);border-bottom-color:var(--navy)}
+.subtab .badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:var(--red);color:#fff;font-size:10px;font-weight:600;margin-left:6px}
+
+/* Panels */
+.sub-panel{display:none}
+.sub-panel.active{display:block}
+.view-panel{display:none}
+.view-panel.active{display:block}
+
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:20px 22px;margin-bottom:16px}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.card-title{font-size:14px;font-weight:600;color:var(--t1)}
+.card-sub{font-size:12px;color:var(--t3)}
+
+/* Buttons */
+.btn-p{background:var(--navy);color:#fff;border:none;border-radius:var(--rmd);padding:8px 16px;font-size:12.5px;font-weight:500;cursor:pointer;font-family:inherit;transition:background .12s;white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+.btn-p:hover{background:var(--navy-h)}
+.btn-g{background:transparent;color:var(--t2);border:1px solid var(--border-mid);border-radius:var(--rmd);padding:8px 14px;font-size:12.5px;font-weight:500;cursor:pointer;font-family:inherit;white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+.btn-g:hover{background:#f5f6f8}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-danger{background:transparent;color:var(--red-t);border:1px solid #f5c6cc;border-radius:var(--rmd);padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit}
+
+/* Chips */
+.chip{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:500;padding:3px 9px;border-radius:20px}
+.chip-signed{background:var(--teal-bg);color:var(--teal-t)}
+.chip-pending{background:var(--amber-bg);color:var(--amber-t)}
+.chip-sent{background:var(--blue-bg);color:var(--blue-t)}
+.chip-approved{background:var(--teal-bg);color:var(--teal-t)}
+.chip-rejected{background:var(--red-bg);color:var(--red-t)}
+.chip-draft{background:#f0f2f5;color:var(--t2)}
+.chip-auto{background:var(--green-bg);color:var(--green-t)}
+.chip-review{background:var(--purple-bg);color:var(--purple-t)}
+
+/* Record view — employee data */
+.record-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--border);border-radius:var(--rlg);overflow:hidden;margin-bottom:16px}
+.record-section{padding:0}
+.record-section-title{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;padding:12px 18px;background:#f7f8fa;border-bottom:1px solid var(--border)}
+.record-section:first-child .record-section-title{border-right:1px solid var(--border)}
+.record-fields{padding:14px 18px;display:flex;flex-direction:column;gap:10px}
+.record-section:first-child .record-fields{border-right:1px solid var(--border)}
+.field-row{display:flex;flex-direction:column;gap:2px}
+.field-label{font-size:10.5px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.04em}
+.field-value{font-size:13px;color:var(--t1)}
+.field-value.masked{font-family:monospace;letter-spacing:.1em;color:var(--t2)}
+.field-value.empty{color:var(--t3);font-style:italic;font-size:12px}
+.ats-sourced{display:inline-flex;align-items:center;gap:3px;font-size:10px;color:var(--blue-t);background:var(--blue-bg);padding:1px 6px;border-radius:4px;margin-left:6px;vertical-align:middle}
+
+/* Document list */
+.doc-list{display:flex;flex-direction:column;gap:10px}
+.doc-item{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg)}
+.doc-item.urgent{border-left:3px solid var(--red)}
+.doc-icon{width:40px;height:40px;border-radius:var(--rmd);background:#f4f5f7;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.doc-icon i{font-size:20px;color:var(--t2)}
+.doc-info{flex:1;min-width:0}
+.doc-name{font-size:13.5px;font-weight:500;color:var(--t1);margin-bottom:2px}
+.doc-meta{font-size:12px;color:var(--t2)}
+.doc-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+
+/* Request update flow */
+.request-card{background:var(--blue-bg);border:1px solid #b5d4f4;border-radius:var(--rlg);padding:18px 20px;margin-bottom:16px}
+.request-card-title{font-size:14px;font-weight:600;color:var(--blue-t);margin-bottom:4px}
+.request-card-sub{font-size:12px;color:var(--blue-t);opacity:.8;margin-bottom:14px}
+.checkbox-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.check-item{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--t1);cursor:pointer}
+.check-item input{width:15px;height:15px;accent-color:var(--navy);cursor:pointer;flex-shrink:0}
+.check-badge{font-size:10px;padding:1px 6px;border-radius:4px;margin-left:4px}
+.auto-badge{background:var(--green-bg);color:var(--green-t)}
+.review-badge{background:var(--amber-bg);color:var(--amber-t)}
+
+/* Certificate section */
+.cert-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px}
+.cert-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:16px 18px;display:flex;flex-direction:column;gap:8px}
+.cert-icon{width:36px;height:36px;border-radius:var(--rmd);background:#f4f5f7;display:flex;align-items:center;justify-content:center}
+.cert-icon i{font-size:18px;color:var(--t2)}
+.cert-name{font-size:13px;font-weight:600;color:var(--t1)}
+.cert-desc{font-size:11.5px;color:var(--t2);line-height:1.4;flex:1}
+.cert-footer{display:flex;align-items:center;justify-content:space-between;margin-top:4px}
+
+/* HR table */
+.hr-table{width:100%;border-collapse:collapse}
+.hr-table th{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;padding:11px 14px;text-align:left;background:#f7f8fa;border-bottom:1px solid var(--border)}
+.hr-table td{padding:12px 14px;border-bottom:1px solid var(--border);font-size:13px;color:var(--t1);vertical-align:middle}
+.hr-table tr:last-child td{border-bottom:none}
+.hr-table tr:hover td{background:#fafbfc}
+.emp-cell{display:flex;align-items:center;gap:9px}
+.emp-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0}
+.av-teal{background:var(--teal-bg);color:var(--teal-t)}
+.av-blue{background:var(--blue-bg);color:var(--blue-t)}
+.av-purple{background:var(--purple-bg);color:var(--purple-t)}
+.av-amber{background:var(--amber-bg);color:var(--amber-t)}
+.emp-name-link{font-size:13px;font-weight:500;color:var(--navy-mid);text-decoration:none}
+.emp-name-link:hover{text-decoration:underline}
+.emp-role-small{font-size:11px;color:var(--t3)}
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);overflow:hidden;margin-bottom:16px}
+
+/* HR toolbar */
+.hr-toolbar{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.filter-select{font-family:inherit;font-size:12.5px;color:var(--t1);background:var(--surface);border:1px solid var(--border-mid);border-radius:var(--rmd);padding:7px 10px;outline:none;cursor:pointer}
+.filter-search{font-family:inherit;font-size:12.5px;color:var(--t1);background:var(--surface);border:1px solid var(--border-mid);border-radius:var(--rmd);padding:7px 11px;outline:none;width:180px}
+.filter-search::placeholder{color:var(--t3)}
+
+/* Stat strip */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:14px 16px}
+.stat-label{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.stat-value{font-size:22px;font-weight:600;color:var(--t1);line-height:1.1;margin-bottom:2px}
+.stat-sub{font-size:11px;color:var(--t3)}
+
+/* Pagination */
+.pagination{display:flex;align-items:center;gap:10px;padding:12px 16px;border-top:1px solid var(--border);font-size:12.5px;color:var(--t2)}
+.page-info{flex:1;text-align:center}
+
+/* Change request diff */
+.diff-table{width:100%;border-collapse:collapse;margin-bottom:12px}
+.diff-table th{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;padding:8px 12px;text-align:left;background:#f7f8fa;border-bottom:1px solid var(--border)}
+.diff-table td{padding:10px 12px;border-bottom:1px solid var(--border);font-size:13px}
+.diff-table tr:last-child td{border-bottom:none}
+.old-val{color:var(--red-t);text-decoration:line-through}
+.new-val{color:var(--teal-t);font-weight:500}
+
+/* Modal overlay */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--surface);border-radius:var(--rxl);padding:28px;width:520px;max-width:90vw;box-shadow:0 8px 40px rgba(0,0,0,.15);transform:translateY(8px);transition:transform .2s}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
+.modal-title{font-size:16px;font-weight:600;color:var(--t1)}
+.modal-sub{font-size:12px;color:var(--t2);margin-top:3px}
+.modal-close{background:none;border:none;cursor:pointer;color:var(--t3);font-size:20px;line-height:1;padding:2px}
+.modal-close:hover{color:var(--t1)}
+.modal-body{margin-bottom:20px}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end}
+.field-wrap{margin-bottom:14px}
+.field-label-sm{font-size:11.5px;font-weight:600;color:var(--t3);letter-spacing:.04em;text-transform:uppercase;margin-bottom:5px}
+.field-input{width:100%;font-family:inherit;font-size:13px;color:var(--t1);background:var(--surface);border:1px solid var(--border-mid);border-radius:var(--rmd);padding:8px 11px;outline:none;transition:border-color .12s}
+.field-input:focus{border-color:var(--navy-mid)}
+.field-input[readonly]{background:#f7f8fa;color:var(--t2);cursor:not-allowed}
+.expiry-note{font-size:11px;color:var(--amber-t);background:var(--amber-bg);padding:8px 12px;border-radius:var(--rmd);margin-bottom:14px;display:flex;align-items:center;gap:6px}
+
+/* Config settings */
+.config-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);gap:12px}
+.config-row:last-child{border-bottom:none}
+.config-label{font-size:13px;color:var(--t1);font-weight:400}
+.config-sub{font-size:11px;color:var(--t3);margin-top:2px}
+.toggle{position:relative;width:38px;height:22px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-track{position:absolute;inset:0;border-radius:22px;background:#d0d5dd;cursor:pointer;transition:background .18s}
+.toggle input:checked+.toggle-track{background:var(--navy)}
+.toggle-dot{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .18s;pointer-events:none}
+.toggle input:checked~.toggle-dot{transform:translateX(16px)}
+.config-select{font-family:inherit;font-size:12.5px;color:var(--t1);background:var(--surface);border:1px solid var(--border-mid);border-radius:var(--rmd);padding:5px 9px;outline:none;width:160px;flex-shrink:0}
+
+/* Section label */
+.sec-lbl{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;margin-top:4px}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="logo-zone">
+    <div class="client-logo">
+      <svg viewBox="0 0 54 54" width="38" height="38"><circle cx="27" cy="27" r="27" fill="#e8002d"/><text x="27" y="32" text-anchor="middle" font-size="11" fill="white" font-weight="700" font-family="Inter,sans-serif">CLIENT</text></svg>
+    </div>
+    <div class="app-title">Performance Center</div>
+  </div>
+  <nav class="nav-section">
+    <a href="#" class="nav-item"><div class="av-nav">CD</div><span>My Profile</span></a>
+    <div class="nav-div"></div>
+    <a href="#" class="nav-item"><i class="ti ti-home"></i><span>Overview</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-file-text"></i><span>Reviews</span></a>
+    <div class="nav-div"></div>
+    <a href="#" class="nav-item"><i class="ti ti-target"></i><span>Goals</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-star"></i><span>Recognition</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-address-book"></i><span>Directory</span></a>
+    <div class="nav-div"></div>
+    <a href="#" class="nav-item"><i class="ti ti-speakerphone"></i><span>News</span></a>
+    <a href="#" class="nav-item active"><i class="ti ti-file"></i><span>Documents</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-coin"></i><span>Financial</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-video"></i><span>Meetings</span></a>
+    <div class="nav-div"></div>
+    <a href="#" class="nav-item"><i class="ti ti-layout-grid"></i><span>Templates</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-refresh"></i><span>Cycles</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-settings"></i><span>Configuration</span></a>
+  </nav>
+  <div class="footer-zone">
+    <span class="powered">Powered by</span>
+    <a href="#" class="ats-badge">
+      <div><div class="ats-wm">ATS360</div><div class="ats-sub">by NetDynamic</div></div>
+      <i class="ti ti-external-link" style="font-size:11px;color:rgba(255,255,255,.35)"></i>
+    </a>
+  </div>
+</aside>
+
+<!-- Main -->
+<main class="main">
+
+  <!-- Role switcher -->
+  <div class="role-banner">
+    <span class="role-banner-label"><i class="ti ti-eye" style="vertical-align:-2px;margin-right:4px"></i>Previewing as:</span>
+    <div class="role-btns">
+      <button class="role-btn active" onclick="switchRole('employee',this)">Employee</button>
+      <button class="role-btn" onclick="switchRole('hr',this)">HR Admin</button>
+    </div>
+    <span class="role-badge" id="roleBadge">Standard employee</span>
+  </div>
+
+  <div class="page-heading">Documents</div>
+  <div class="page-sub" id="pageSub">Your employee record, document signatures, and information requests.</div>
+
+  <!-- ══════════ EMPLOYEE VIEW ══════════ -->
+  <div class="view-panel active" id="view-employee">
+    <div class="subtabs" id="emp-tabs">
+      <div class="subtab active" data-target="emp-record" onclick="setSubtab(this,'emp-tabs')">My Information</div>
+      <div class="subtab" data-target="emp-docs" onclick="setSubtab(this,'emp-tabs')">Documents to Sign <span class="badge">2</span></div>
+      <div class="subtab" data-target="emp-requests" onclick="setSubtab(this,'emp-tabs')">Update Requests</div>
+      <div class="subtab" data-target="emp-certs" onclick="setSubtab(this,'emp-tabs')">Certificates</div>
+    </div>
+
+    <!-- My Information -->
+    <div class="sub-panel active" id="emp-record">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Your employee record</div>
+            <div class="card-sub">Read-only reflection of your data on file. To request changes, use the button on the right.</div>
+          </div>
+          <button class="btn-p" onclick="openModal('requestModal')"><i class="ti ti-edit"></i>Request an update</button>
+        </div>
+
+        <div class="record-grid">
+          <div class="record-section">
+            <div class="record-section-title">Personal information</div>
+            <div class="record-fields">
+              <div class="field-row"><div class="field-label">Legal name</div><div class="field-value">Cynthia Diaz</div></div>
+              <div class="field-row"><div class="field-label">Preferred name</div><div class="field-value">Cynthia</div></div>
+              <div class="field-row"><div class="field-label">Date of birth</div><div class="field-value masked">●●/●●/●●●●</div></div>
+              <div class="field-row"><div class="field-label">Personal email</div><div class="field-value">cynthia.diaz@gmail.com <span class="ats-sourced"><i class="ti ti-database" style="font-size:9px"></i>ATS</span></div></div>
+              <div class="field-row"><div class="field-label">Phone</div><div class="field-value">+1 (905) 555-0142</div></div>
+              <div class="field-row"><div class="field-label">Address</div><div class="field-value">90 Burnhamthorpe Rd W, Mississauga ON</div></div>
+            </div>
+          </div>
+          <div class="record-section">
+            <div class="record-section-title">Emergency contact</div>
+            <div class="record-fields">
+              <div class="field-row"><div class="field-label">Contact name</div><div class="field-value">Marco Diaz</div></div>
+              <div class="field-row"><div class="field-label">Relationship</div><div class="field-value">Spouse</div></div>
+              <div class="field-row"><div class="field-label">Phone</div><div class="field-value">+1 (905) 555-0198</div></div>
+              <div class="field-row"><div class="field-label">Email</div><div class="field-value">marco.diaz@gmail.com</div></div>
+              <div class="field-row"><div class="field-label">Secondary contact</div><div class="field-value empty">Not provided</div></div>
+            </div>
+          </div>
+          <div class="record-section">
+            <div class="record-section-title">Employment details</div>
+            <div class="record-fields">
+              <div class="field-row"><div class="field-label">Job title</div><div class="field-value">Senior Solutions Consultant</div></div>
+              <div class="field-row"><div class="field-label">Department</div><div class="field-value">Professional Services</div></div>
+              <div class="field-row"><div class="field-label">Start date</div><div class="field-value">March 15, 2021</div></div>
+              <div class="field-row"><div class="field-label">Employment type</div><div class="field-value">Full-time</div></div>
+              <div class="field-row"><div class="field-label">Work location</div><div class="field-value">Mississauga, ON (Hybrid)</div></div>
+            </div>
+          </div>
+          <div class="record-section">
+            <div class="record-section-title">Payroll &amp; banking</div>
+            <div class="record-fields">
+              <div class="field-row"><div class="field-label">Bank on file</div><div class="field-value">TD Bank</div></div>
+              <div class="field-row"><div class="field-label">Account number</div><div class="field-value masked">●●●●●●●● 4821</div></div>
+              <div class="field-row"><div class="field-label">Transit number</div><div class="field-value masked">●●●●●</div></div>
+              <div class="field-row"><div class="field-label">Tax form on file</div><div class="field-value">TD1 — 2024</div></div>
+              <div class="field-row"><div class="field-label">Direct deposit</div><div class="field-value" style="color:var(--teal-t);font-weight:500">Active</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Documents to Sign -->
+    <div class="sub-panel" id="emp-docs">
+      <div class="sec-lbl">Pending your signature</div>
+      <div class="doc-list" style="margin-bottom:20px">
+        <div class="doc-item urgent">
+          <div class="doc-icon"><i class="ti ti-file-certificate" style="color:var(--red-t)"></i></div>
+          <div class="doc-info">
+            <div class="doc-name">Employee Handbook Acknowledgement 2026</div>
+            <div class="doc-meta">Sent by HR Admin · Jun 10, 2026 · Due Jun 30, 2026</div>
+          </div>
+          <div class="doc-right">
+            <span class="chip chip-pending">Signature required</span>
+            <button class="btn-p btn-sm"><i class="ti ti-pen"></i>Sign now</button>
+          </div>
+        </div>
+        <div class="doc-item">
+          <div class="doc-icon"><i class="ti ti-file-certificate"></i></div>
+          <div class="doc-info">
+            <div class="doc-name">Remote Work Policy Agreement</div>
+            <div class="doc-meta">Sent by HR Admin · Jun 12, 2026 · Due Jul 15, 2026</div>
+          </div>
+          <div class="doc-right">
+            <span class="chip chip-pending">Signature required</span>
+            <button class="btn-p btn-sm"><i class="ti ti-pen"></i>Sign now</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-lbl">Previously signed</div>
+      <div class="doc-list">
+        <div class="doc-item">
+          <div class="doc-icon"><i class="ti ti-circle-check" style="color:var(--teal-t)"></i></div>
+          <div class="doc-info">
+            <div class="doc-name">Employment Agreement</div>
+            <div class="doc-meta">Signed March 15, 2021</div>
+          </div>
+          <div class="doc-right">
+            <span class="chip chip-signed">Signed</span>
+            <button class="btn-g btn-sm"><i class="ti ti-download"></i>Download</button>
+          </div>
+        </div>
+        <div class="doc-item">
+          <div class="doc-icon"><i class="ti ti-circle-check" style="color:var(--teal-t)"></i></div>
+          <div class="doc-info">
+            <div class="doc-name">Employee Handbook Acknowledgement 2025</div>
+            <div class="doc-meta">Signed Jan 8, 2025</div>
+          </div>
+          <div class="doc-right">
+            <span class="chip chip-signed">Signed</span>
+            <button class="btn-g btn-sm"><i class="ti ti-download"></i>Download</button>
+          </div>
+        </div>
+        <div class="doc-item">
+          <div class="doc-icon"><i class="ti ti-circle-check" style="color:var(--teal-t)"></i></div>
+          <div class="doc-info">
+            <div class="doc-name">NDA — Client Confidentiality</div>
+            <div class="doc-meta">Signed March 15, 2021 · Sourced from ATS360 onboarding <span class="ats-sourced"><i class="ti ti-database" style="font-size:9px"></i>ATS</span></div>
+          </div>
+          <div class="doc-right">
+            <span class="chip chip-signed">Signed</span>
+            <button class="btn-g btn-sm"><i class="ti ti-download"></i>Download</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Update Requests -->
+    <div class="sub-panel" id="emp-requests">
+      <div class="request-card">
+        <div class="request-card-title"><i class="ti ti-edit" style="vertical-align:-2px;margin-right:5px"></i>Request an information update</div>
+        <div class="request-card-sub">Select the categories you want to update. HR will review your request before you can enter new values.</div>
+        <div class="checkbox-grid">
+          <label class="check-item"><input type="checkbox" id="chk-personal"/>Personal information <span class="check-badge auto-badge">Auto-approved</span></label>
+          <label class="check-item"><input type="checkbox" id="chk-emergency"/>Emergency contact <span class="check-badge auto-badge">Auto-approved</span></label>
+          <label class="check-item"><input type="checkbox" id="chk-banking"/>Banking &amp; direct deposit <span class="check-badge review-badge">HR review</span></label>
+          <label class="check-item"><input type="checkbox" id="chk-tax"/>Tax forms <span class="check-badge review-badge">HR review</span></label>
+          <label class="check-item"><input type="checkbox" id="chk-address"/>Home address <span class="check-badge auto-badge">Auto-approved</span></label>
+          <label class="check-item"><input type="checkbox" id="chk-contact"/>Work contact details <span class="check-badge auto-badge">Auto-approved</span></label>
+        </div>
+        <button class="btn-p" onclick="openModal('submitRequestModal')"><i class="ti ti-send"></i>Submit request</button>
+      </div>
+
+      <div class="sec-lbl">Request history</div>
+      <div class="doc-list">
+        <div class="doc-item">
+          <div class="doc-icon"><i class="ti ti-clock" style="color:var(--amber-t)"></i></div>
+          <div class="doc-info">
+            <div class="doc-name">Emergency contact update</div>
+            <div class="doc-meta">Submitted Jun 5, 2026 · Approved Jun 5 (auto) · Changes submitted Jun 6 · Awaiting HR final review</div>
+          </div>
+          <div class="doc-right"><span class="chip chip-review">Under review</span></div>
+        </div>
+        <div class="doc-item">
+          <div class="doc-icon"><i class="ti ti-circle-check" style="color:var(--teal-t)"></i></div>
+          <div class="doc-info">
+            <div class="doc-name">Home address update</div>
+            <div class="doc-meta">Submitted Mar 12, 2026 · Completed Mar 12, 2026</div>
+          </div>
+          <div class="doc-right"><span class="chip chip-approved">Completed</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Certificates -->
+    <div class="sub-panel" id="emp-certs">
+      <div class="cert-grid">
+        <div class="cert-card">
+          <div class="cert-icon"><i class="ti ti-award"></i></div>
+          <div class="cert-name">Certificate of Employment</div>
+          <div class="cert-desc">Confirms your current employment status, job title, and start date. Common for visa, rental, or loan applications.</div>
+          <div class="cert-footer">
+            <span class="chip chip-auto"><i class="ti ti-bolt" style="font-size:10px"></i>Instant</span>
+            <button class="btn-p btn-sm" onclick="openModal('certModal')">Request</button>
+          </div>
+        </div>
+        <div class="cert-card">
+          <div class="cert-icon"><i class="ti ti-cash"></i></div>
+          <div class="cert-name">Proof of Income Letter</div>
+          <div class="cert-desc">Confirms your current salary and employment type. Commonly required by financial institutions.</div>
+          <div class="cert-footer">
+            <span class="chip chip-review"><i class="ti ti-clock" style="font-size:10px"></i>HR review</span>
+            <button class="btn-p btn-sm" onclick="openModal('certModal')">Request</button>
+          </div>
+        </div>
+        <div class="cert-card">
+          <div class="cert-icon"><i class="ti ti-calendar-stats"></i></div>
+          <div class="cert-name">Service Record</div>
+          <div class="cert-desc">Full employment history with the company including positions held and tenure per role.</div>
+          <div class="cert-footer">
+            <span class="chip chip-review"><i class="ti ti-clock" style="font-size:10px"></i>HR review</span>
+            <button class="btn-p btn-sm" onclick="openModal('certModal')">Request</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-lbl">Certificate history</div>
+      <div class="doc-list">
+        <div class="doc-item">
+          <div class="doc-icon"><i class="ti ti-circle-check" style="color:var(--teal-t)"></i></div>
+          <div class="doc-info">
+            <div class="doc-name">Certificate of Employment</div>
+            <div class="doc-meta">Requested May 14, 2026 · Auto-generated · Downloaded May 14</div>
+          </div>
+          <div class="doc-right">
+            <span class="chip chip-signed">Generated</span>
+            <button class="btn-g btn-sm"><i class="ti ti-download"></i>Re-download</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ HR ADMIN VIEW ══════════ -->
+  <div class="view-panel" id="view-hr">
+    <div class="subtabs" id="hr-tabs">
+      <div class="subtab active" data-target="hr-packages" onclick="setSubtab(this,'hr-tabs')">Document Packages</div>
+      <div class="subtab" data-target="hr-requests" onclick="setSubtab(this,'hr-tabs')">Update Requests <span class="badge">3</span></div>
+      <div class="subtab" data-target="hr-certs" onclick="setSubtab(this,'hr-tabs')">Certificates <span class="badge">1</span></div>
+      <div class="subtab" data-target="hr-compliance" onclick="setSubtab(this,'hr-tabs')">Compliance</div>
+      <div class="subtab" data-target="hr-config" onclick="setSubtab(this,'hr-tabs')">Settings</div>
+    </div>
+
+    <!-- Document Packages -->
+    <div class="sub-panel active" id="hr-packages">
+      <div class="stat-row">
+        <div class="stat-card"><div class="stat-label">Active packages</div><div class="stat-value">3</div><div class="stat-sub">Currently sent</div></div>
+        <div class="stat-card"><div class="stat-label">Pending signatures</div><div class="stat-value">24</div><div class="stat-sub">Across all packages</div></div>
+        <div class="stat-card"><div class="stat-label">Overdue</div><div class="stat-value" style="color:var(--red)">5</div><div class="stat-sub">Past due date</div></div>
+        <div class="stat-card"><div class="stat-label">Completed</div><div class="stat-value">87</div><div class="stat-sub">This cycle</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Send a document package</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px">
+          <div>
+            <div class="sec-lbl" style="margin-bottom:6px">Package template</div>
+            <select class="filter-select" style="width:100%">
+              <option>Employee Handbook 2026</option>
+              <option>Remote Work Policy</option>
+              <option>Annual NDA Renewal</option>
+              <option>Onboarding Package</option>
+            </select>
+          </div>
+          <div>
+            <div class="sec-lbl" style="margin-bottom:6px">Send to</div>
+            <select class="filter-select" style="width:100%" id="sendToSelect" onchange="updateRecipient(this)">
+              <option value="individual">Individual employee</option>
+              <option value="department">Department</option>
+              <option value="company">Entire company</option>
+            </select>
+          </div>
+          <div id="recipientField">
+            <div class="sec-lbl" style="margin-bottom:6px">Employee</div>
+            <input class="filter-search" style="width:100%" placeholder="Search by name…" type="text"/>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div style="flex:1">
+            <div class="sec-lbl" style="margin-bottom:6px">Due date (optional)</div>
+            <input type="date" class="filter-search" style="width:180px"/>
+          </div>
+          <button class="btn-p" style="margin-top:18px"><i class="ti ti-send"></i>Send package</button>
+        </div>
+      </div>
+
+      <div class="sec-lbl">Active packages</div>
+      <div class="table-wrap">
+        <table class="hr-table">
+          <thead>
+            <tr><th>Package</th><th>Sent to</th><th>Sent by</th><th>Due</th><th>Progress</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Employee Handbook 2026</strong></td>
+              <td>Entire company (98 employees)</td>
+              <td style="font-size:12px;color:var(--t2)">HR Admin · Jun 10</td>
+              <td><span style="color:var(--red-t);font-size:12px;font-weight:500">Jun 30 · 5 overdue</span></td>
+              <td>
+                <div style="display:flex;align-items:center;gap:7px">
+                  <div style="flex:1;height:5px;background:#e8eaed;border-radius:3px;overflow:hidden;min-width:60px"><div style="height:100%;width:76%;background:var(--navy);border-radius:3px"></div></div>
+                  <span style="font-size:11px;color:var(--t2)">74/98</span>
+                </div>
+              </td>
+              <td><div style="display:flex;gap:6px"><button class="btn-g btn-sm">View</button><button class="btn-g btn-sm"><i class="ti ti-bell"></i>Remind</button></div></td>
+            </tr>
+            <tr>
+              <td><strong>Remote Work Policy</strong></td>
+              <td>Professional Services dept</td>
+              <td style="font-size:12px;color:var(--t2)">HR Admin · Jun 12</td>
+              <td style="font-size:12px;color:var(--t2)">Jul 15</td>
+              <td>
+                <div style="display:flex;align-items:center;gap:7px">
+                  <div style="flex:1;height:5px;background:#e8eaed;border-radius:3px;overflow:hidden;min-width:60px"><div style="height:100%;width:40%;background:var(--navy);border-radius:3px"></div></div>
+                  <span style="font-size:11px;color:var(--t2)">12/30</span>
+                </div>
+              </td>
+              <td><div style="display:flex;gap:6px"><button class="btn-g btn-sm">View</button><button class="btn-g btn-sm"><i class="ti ti-bell"></i>Remind</button></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Update Requests -->
+    <div class="sub-panel" id="hr-requests">
+      <div class="hr-toolbar">
+        <select class="filter-select"><option>All statuses</option><option>Pending approval</option><option>Changes submitted</option><option>Completed</option></select>
+        <select class="filter-select"><option>All categories</option><option>Personal info</option><option>Banking</option><option>Emergency contact</option></select>
+        <input class="filter-search" type="text" placeholder="Search employee…"/>
+      </div>
+      <div class="table-wrap">
+        <table class="hr-table">
+          <thead>
+            <tr><th>Employee</th><th>Categories requested</th><th>Submitted</th><th>Status</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><div class="emp-cell"><div class="emp-av av-teal">CD</div><div><a class="emp-name-link" href="#">Cynthia Diaz</a><div class="emp-role-small">Prof. Services</div></div></div></td>
+              <td>Emergency contact</td>
+              <td style="font-size:12px;color:var(--t2)">Jun 6, 2026</td>
+              <td><span class="chip chip-review">Changes submitted</span></td>
+              <td><button class="btn-p btn-sm" onclick="openModal('diffModal')">Review changes</button></td>
+            </tr>
+            <tr>
+              <td><div class="emp-cell"><div class="emp-av av-blue">AW</div><div><a class="emp-name-link" href="#">Alex Wolfe</a><div class="emp-role-small">Prof. Services</div></div></div></td>
+              <td>Banking &amp; direct deposit</td>
+              <td style="font-size:12px;color:var(--t2)">Jun 14, 2026</td>
+              <td><span class="chip chip-pending">Pending HR approval</span></td>
+              <td><div style="display:flex;gap:6px"><button class="btn-p btn-sm">Approve</button><button class="btn-danger">Reject</button></div></td>
+            </tr>
+            <tr>
+              <td><div class="emp-cell"><div class="emp-av av-purple">BA</div><div><a class="emp-name-link" href="#">Bon Ariola</a><div class="emp-role-small">Development</div></div></div></td>
+              <td>Home address, Personal info</td>
+              <td style="font-size:12px;color:var(--t2)">Jun 14, 2026</td>
+              <td><span class="chip chip-auto">Auto-approved · Awaiting employee</span></td>
+              <td><button class="btn-g btn-sm">View</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Certificates HR view -->
+    <div class="sub-panel" id="hr-certs">
+      <div class="hr-toolbar">
+        <select class="filter-select"><option>All types</option><option>Certificate of Employment</option><option>Proof of Income</option><option>Service Record</option></select>
+        <select class="filter-select"><option>All statuses</option><option>Pending review</option><option>Generated</option></select>
+        <input class="filter-search" type="text" placeholder="Search employee…"/>
+      </div>
+      <div class="table-wrap">
+        <table class="hr-table">
+          <thead><tr><th>Employee</th><th>Certificate type</th><th>Requested</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><div class="emp-cell"><div class="emp-av av-amber">AN</div><div><a class="emp-name-link" href="#">Amy Nguyen</a><div class="emp-role-small">Prof. Services</div></div></div></td>
+              <td>Proof of Income Letter</td>
+              <td style="font-size:12px;color:var(--t2)">Jun 15, 2026</td>
+              <td><span class="chip chip-pending">Pending HR review</span></td>
+              <td><div style="display:flex;gap:6px"><button class="btn-p btn-sm"><i class="ti ti-file-check"></i>Generate &amp; send</button><button class="btn-danger">Reject</button></div></td>
+            </tr>
+            <tr>
+              <td><div class="emp-cell"><div class="emp-av av-teal">CD</div><div><a class="emp-name-link" href="#">Cynthia Diaz</a><div class="emp-role-small">Prof. Services</div></div></div></td>
+              <td>Certificate of Employment</td>
+              <td style="font-size:12px;color:var(--t2)">May 14, 2026</td>
+              <td><span class="chip chip-auto">Auto-generated</span></td>
+              <td><button class="btn-g btn-sm"><i class="ti ti-download"></i>Download copy</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Compliance -->
+    <div class="sub-panel" id="hr-compliance">
+      <div class="stat-row">
+        <div class="stat-card"><div class="stat-label">Fully compliant</div><div class="stat-value" style="color:var(--teal-t)">71</div><div class="stat-sub">All required docs signed</div></div>
+        <div class="stat-card"><div class="stat-label">Partially compliant</div><div class="stat-value" style="color:var(--amber-t)">22</div><div class="stat-sub">1+ docs outstanding</div></div>
+        <div class="stat-card"><div class="stat-label">Non-compliant</div><div class="stat-value" style="color:var(--red)">5</div><div class="stat-sub">Overdue mandatory docs</div></div>
+        <div class="stat-card"><div class="stat-label">ATS docs on file</div><div class="stat-value">94</div><div class="stat-sub">Sourced from onboarding</div></div>
+      </div>
+      <div class="table-wrap">
+        <table class="hr-table">
+          <thead><tr><th>Employee</th><th>Department</th><th>Handbook 2026</th><th>Remote Work Policy</th><th>NDA on file</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><div class="emp-cell"><div class="emp-av av-teal">AS</div><div><a class="emp-name-link" href="#">Aiden Somerhalder</a></div></div></td>
+              <td style="font-size:12px;color:var(--t2)">Prof. Services</td>
+              <td><span class="chip chip-pending">Pending</span></td>
+              <td><span class="chip chip-signed">Signed</span></td>
+              <td><span class="chip chip-signed">On file <span class="ats-sourced" style="margin-left:2px"><i class="ti ti-database" style="font-size:9px"></i>ATS</span></span></td>
+              <td><button class="btn-g btn-sm"><i class="ti ti-bell"></i>Remind</button></td>
+            </tr>
+            <tr>
+              <td><div class="emp-cell"><div class="emp-av av-blue">AW</div><div><a class="emp-name-link" href="#">Alex Wolfe</a></div></div></td>
+              <td style="font-size:12px;color:var(--t2)">Prof. Services</td>
+              <td><span class="chip chip-signed">Signed</span></td>
+              <td><span class="chip chip-signed">Signed</span></td>
+              <td><span class="chip chip-signed">On file <span class="ats-sourced" style="margin-left:2px"><i class="ti ti-database" style="font-size:9px"></i>ATS</span></span></td>
+              <td><button class="btn-g btn-sm">View</button></td>
+            </tr>
+            <tr>
+              <td><div class="emp-cell"><div class="emp-av av-purple">AN</div><div><a class="emp-name-link" href="#">Amy Nguyen</a></div></div></td>
+              <td style="font-size:12px;color:var(--t2)">Prof. Services</td>
+              <td><span class="chip chip-pending">Pending</span></td>
+              <td style="color:var(--t3);font-size:12px">Not sent</td>
+              <td style="color:var(--t3);font-size:12px">Not on file</td>
+              <td><div style="display:flex;gap:6px"><button class="btn-g btn-sm"><i class="ti ti-bell"></i>Remind</button><button class="btn-g btn-sm">Send NDA</button></div></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="pagination">
+          <button class="btn-g btn-sm">← Prev</button>
+          <span class="page-info">Page 1 of 10 · 98 employees</span>
+          <button class="btn-g btn-sm">Next →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings -->
+    <div class="sub-panel" id="hr-config">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Information update — approval rules</div></div>
+        <div class="config-row">
+          <div><div class="config-label">Personal information (name pronunciation, preferred name)</div><div class="config-sub">Address, phone, personal email</div></div>
+          <select class="config-select"><option>Auto-approve</option><option>HR review required</option></select>
+        </div>
+        <div class="config-row">
+          <div><div class="config-label">Emergency contact</div><div class="config-sub">Name, relationship, phone, email</div></div>
+          <select class="config-select"><option>Auto-approve</option><option>HR review required</option></select>
+        </div>
+        <div class="config-row">
+          <div><div class="config-label">Banking &amp; direct deposit</div><div class="config-sub">Account number, transit, institution</div></div>
+          <select class="config-select"><option>HR review required</option><option>Auto-approve</option></select>
+        </div>
+        <div class="config-row">
+          <div><div class="config-label">Tax forms</div><div class="config-sub">TD1, W-4, and equivalent</div></div>
+          <select class="config-select"><option>HR review required</option><option>Auto-approve</option></select>
+        </div>
+        <div class="config-row">
+          <div><div class="config-label">Home address</div><div class="config-sub">Street, city, province/state, postal code</div></div>
+          <select class="config-select"><option>Auto-approve</option><option>HR review required</option></select>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">Update request — popup expiry</div></div>
+        <div class="config-row">
+          <div><div class="config-label">Hours before update popup expires</div><div class="config-sub">After approval, employee has this many hours to submit new values</div></div>
+          <input type="number" class="filter-search" style="width:80px;text-align:center" value="48"/>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">Certificate of Employment settings</div></div>
+        <div class="config-row">
+          <div><div class="config-label">Certificate of Employment</div><div class="config-sub">Standard employment confirmation letter</div></div>
+          <select class="config-select"><option>Auto-generate &amp; send</option><option>HR review required</option></select>
+        </div>
+        <div class="config-row">
+          <div><div class="config-label">Proof of Income Letter</div><div class="config-sub">Includes salary information</div></div>
+          <select class="config-select"><option>HR review required</option><option>Auto-generate &amp; send</option></select>
+        </div>
+        <div class="config-row">
+          <div><div class="config-label">Service Record</div><div class="config-sub">Full employment history</div></div>
+          <select class="config-select"><option>HR review required</option><option>Auto-generate &amp; send</option></select>
+        </div>
+        <div class="config-row">
+          <div><div class="config-label">Allow employee to choose language</div><div class="config-sub">English / French / Spanish</div></div>
+          <label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div><div class="toggle-dot"></div></label>
+        </div>
+        <div class="config-row">
+          <div><div class="config-label">Include company letterhead on all certificates</div><div class="config-sub">Logo and address pulled from NS account settings</div></div>
+          <label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div><div class="toggle-dot"></div></label>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /hr -->
+
+</main>
+</div>
+
+<!-- Modal: Request update -->
+<div class="modal-overlay" id="requestModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div><div class="modal-title">Request an information update</div><div class="modal-sub">Select what you'd like to update. HR will be notified.</div></div>
+      <button class="modal-close" onclick="closeModal('requestModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="checkbox-grid">
+        <label class="check-item"><input type="checkbox"/>Personal information <span class="check-badge auto-badge">Auto</span></label>
+        <label class="check-item"><input type="checkbox"/>Emergency contact <span class="check-badge auto-badge">Auto</span></label>
+        <label class="check-item"><input type="checkbox"/>Banking &amp; direct deposit <span class="check-badge review-badge">HR review</span></label>
+        <label class="check-item"><input type="checkbox"/>Tax forms <span class="check-badge review-badge">HR review</span></label>
+        <label class="check-item"><input type="checkbox"/>Home address <span class="check-badge auto-badge">Auto</span></label>
+        <label class="check-item"><input type="checkbox"/>Work contact details <span class="check-badge auto-badge">Auto</span></label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-g" onclick="closeModal('requestModal')">Cancel</button>
+      <button class="btn-p" onclick="closeModal('requestModal')"><i class="ti ti-send"></i>Submit request</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Submit request confirmation -->
+<div class="modal-overlay" id="submitRequestModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div><div class="modal-title">Request submitted</div><div class="modal-sub">Your request is being processed.</div></div>
+      <button class="modal-close" onclick="closeModal('submitRequestModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--t2);line-height:1.6">Auto-approved categories will open an update form shortly. Categories requiring HR review will notify you once approved — you'll then have <strong>48 hours</strong> to enter your new values.</p>
+    </div>
+    <div class="modal-footer"><button class="btn-p" onclick="closeModal('submitRequestModal')">Got it</button></div>
+  </div>
+</div>
+
+<!-- Modal: Update popup (employee enters new values) -->
+<div class="modal-overlay" id="updatePopupModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div><div class="modal-title">Enter your updated information</div><div class="modal-sub">Emergency contact — approved by HR</div></div>
+      <button class="modal-close" onclick="closeModal('updatePopupModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="expiry-note"><i class="ti ti-clock" style="font-size:14px"></i>This form expires in <strong>47 hours 22 minutes</strong>. Submit before it closes.</div>
+      <div class="field-wrap">
+        <div class="field-label-sm">Contact name</div>
+        <input class="field-input" type="text" placeholder="Enter new value (current: Marco Diaz)"/>
+      </div>
+      <div class="field-wrap">
+        <div class="field-label-sm">Relationship</div>
+        <input class="field-input" type="text" placeholder="Enter new value (current: Spouse)"/>
+      </div>
+      <div class="field-wrap">
+        <div class="field-label-sm">Phone</div>
+        <input class="field-input" type="text" placeholder="Enter new value (current: +1 905 555 0198)"/>
+      </div>
+      <div class="field-wrap">
+        <div class="field-label-sm">Email</div>
+        <input class="field-input" type="text" placeholder="Enter new value (current: marco.diaz@gmail.com)"/>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-g" onclick="closeModal('updatePopupModal')">Cancel</button>
+      <button class="btn-p" onclick="closeModal('updatePopupModal')"><i class="ti ti-send"></i>Submit changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: HR diff review -->
+<div class="modal-overlay" id="diffModal">
+  <div class="modal" style="width:580px">
+    <div class="modal-header">
+      <div><div class="modal-title">Review changes — Cynthia Diaz</div><div class="modal-sub">Emergency contact · Submitted Jun 6, 2026</div></div>
+      <button class="modal-close" onclick="closeModal('diffModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <table class="diff-table">
+        <thead><tr><th>Field</th><th>Current value</th><th>Requested value</th></tr></thead>
+        <tbody>
+          <tr><td>Contact name</td><td class="old-val">Marco Diaz</td><td class="new-val">Marco A. Diaz</td></tr>
+          <tr><td>Phone</td><td class="old-val">+1 (905) 555-0198</td><td class="new-val">+1 (905) 555-0210</td></tr>
+          <tr><td>Email</td><td style="color:var(--t2)">marco.diaz@gmail.com</td><td style="color:var(--t2)">marco.diaz@gmail.com</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-danger" onclick="closeModal('diffModal')">Reject changes</button>
+      <button class="btn-g" onclick="closeModal('diffModal')">Send back to employee</button>
+      <button class="btn-p" onclick="closeModal('diffModal')"><i class="ti ti-check"></i>Approve &amp; update NS</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Certificate request -->
+<div class="modal-overlay" id="certModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div><div class="modal-title">Request a certificate</div><div class="modal-sub">Certificate of Employment</div></div>
+      <button class="modal-close" onclick="closeModal('certModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field-wrap">
+        <div class="field-label-sm">Purpose (optional)</div>
+        <input class="field-input" type="text" placeholder="e.g. Bank loan application, visa renewal…"/>
+      </div>
+      <div class="field-wrap">
+        <div class="field-label-sm">Addressed to (optional)</div>
+        <input class="field-input" type="text" placeholder="e.g. Royal Bank of Canada"/>
+      </div>
+      <div class="field-wrap">
+        <div class="field-label-sm">Language</div>
+        <select class="field-input"><option>English</option><option>French</option><option>Spanish</option></select>
+      </div>
+      <div style="background:var(--teal-bg);border-radius:var(--rmd);padding:10px 12px;font-size:12px;color:var(--teal-t);display:flex;align-items:center;gap:6px">
+        <i class="ti ti-bolt" style="font-size:14px"></i>
+        This certificate is auto-generated. You will receive a download link immediately.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-g" onclick="closeModal('certModal')">Cancel</button>
+      <button class="btn-p" onclick="closeModal('certModal')"><i class="ti ti-file-check"></i>Generate certificate</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchRole(role,btn){
+  document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.view-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('view-'+role).classList.add('active');
+  const badges={employee:'Standard employee',hr:'HR Admin — full org access'};
+  const subs={employee:'Your employee record, documents to sign, and information requests.',hr:'Manage document packages, update requests, certificates, and compliance.'};
+  document.getElementById('roleBadge').textContent=badges[role];
+  document.getElementById('pageSub').textContent=subs[role];
+}
+
+function setSubtab(el,groupId){
+  document.getElementById(groupId).querySelectorAll('.subtab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  const target=el.dataset.target;
+  el.closest('.view-panel').querySelectorAll('.sub-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById(target).classList.add('active');
+}
+
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+
+document.querySelectorAll('.modal-overlay').forEach(o=>{
+  o.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')});
+});
+
+function updateRecipient(sel){
+  const field=document.getElementById('recipientField');
+  const labels={individual:'Employee',department:'Department',company:''};
+  const placeholders={individual:'Search by name…',department:'Select department…',company:''};
+  if(sel.value==='company'){
+    field.style.opacity='.4';
+    field.querySelector('input').placeholder='All employees';
+    field.querySelector('.sec-lbl').textContent='Recipients';
+  } else {
+    field.style.opacity='1';
+    field.querySelector('input').placeholder=placeholders[sel.value];
+    field.querySelector('.sec-lbl').textContent=labels[sel.value];
+  }
+}
+</script>
+</body>
+</html>
