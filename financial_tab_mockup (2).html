@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Financial — Performance Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1a2332;--navy-h:#223044;--navy-mid:#2d4a7a;
+  --page:#f0f2f5;--surface:#fff;--border:#e2e5ea;--border-mid:#c8cdd6;
+  --t1:#0f1923;--t2:#5a6473;--t3:#8e97a3;
+  --teal-bg:#e1f5ee;--teal-t:#0f6e56;
+  --blue-bg:#e6f1fb;--blue-t:#185fa5;
+  --purple-bg:#eeedfe;--purple-t:#3c3489;
+  --amber-bg:#faeeda;--amber-t:#633806;
+  --green-bg:#eaf3de;--green-t:#3b6d11;
+  --red:#e8002d;--red-bg:#fde8ec;--red-t:#a51633;
+  font-family:'Inter',system-ui,sans-serif;font-size:14px;color:var(--t1);background:var(--page);
+  --rsm:6px;--rmd:8px;--rlg:12px;--rxl:16px;
+}
+.shell{display:flex;min-height:100vh}
+.sidebar{width:200px;min-height:100vh;background:var(--navy);display:flex;flex-direction:column;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto}
+.logo-zone{display:flex;flex-direction:column;align-items:center;padding:22px 16px 16px;border-bottom:1px solid rgba(255,255,255,.09);flex-shrink:0}
+.client-logo{width:54px;height:54px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.app-title{font-size:12px;font-weight:600;color:#fff;text-align:center}
+.nav-section{flex:1;padding:10px 0}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 16px;font-size:12.5px;color:rgba(255,255,255,.55);text-decoration:none;transition:background .12s,color .12s}
+.nav-item:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.88)}
+.nav-item.active{background:rgba(255,255,255,.11);color:#fff}
+.nav-item i{font-size:15px;flex-shrink:0}
+.nav-div{height:1px;background:rgba(255,255,255,.08);margin:5px 14px}
+.av-nav{width:26px;height:26px;border-radius:50%;background:var(--navy-mid);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#85b7eb;flex-shrink:0}
+.footer-zone{padding:12px 16px 18px;border-top:1px solid rgba(255,255,255,.09);display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0}
+.powered{font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.06em;text-transform:uppercase}
+.ats-badge{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.07);border-radius:var(--rsm);padding:5px 10px;text-decoration:none}
+.ats-wm{font-size:12px;font-weight:600;color:rgba(255,255,255,.72);line-height:1.2}
+.ats-sub{font-size:9px;color:rgba(255,255,255,.38);line-height:1.2}
+.main{flex:1;padding:24px 28px 56px;overflow-y:auto;min-width:0}
+.page-heading{font-size:20px;font-weight:600;color:var(--t1);margin-bottom:2px}
+.page-sub{font-size:13px;color:var(--t2);margin-bottom:20px}
+.role-banner{background:var(--navy);border-radius:var(--rlg);padding:12px 18px;display:flex;align-items:center;gap:12px;margin-bottom:22px;flex-wrap:wrap}
+.role-banner-label{font-size:12px;color:rgba(255,255,255,.5);flex-shrink:0}
+.role-btns{display:flex;gap:6px}
+.role-btn{padding:6px 16px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid rgba(255,255,255,.2);background:transparent;color:rgba(255,255,255,.6);font-family:inherit;transition:all .12s}
+.role-btn:hover{background:rgba(255,255,255,.1);color:#fff}
+.role-btn.active{background:#fff;color:var(--navy)}
+.role-badge{margin-left:auto;font-size:11px;color:rgba(255,255,255,.4);font-style:italic}
+.subtabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:24px}
+.subtab{padding:10px 20px;font-size:13px;font-weight:500;color:var(--t2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .12s,border-color .12s;white-space:nowrap;user-select:none}
+.subtab:hover{color:var(--t1)}
+.subtab.active{color:var(--navy);border-bottom-color:var(--navy)}
+.subtab .nbadge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:var(--red);color:#fff;font-size:10px;font-weight:600;margin-left:6px}
+.sub-panel{display:none}
+.sub-panel.active{display:block}
+.view-panel{display:none}
+.view-panel.active{display:block}
+.btn-p{background:var(--navy);color:#fff;border:none;border-radius:var(--rmd);padding:8px 16px;font-size:12.5px;font-weight:500;cursor:pointer;font-family:inherit;transition:background .12s;white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+.btn-p:hover{background:var(--navy-h)}
+.btn-g{background:transparent;color:var(--t2);border:1px solid var(--border-mid);border-radius:var(--rmd);padding:8px 14px;font-size:12.5px;font-weight:500;cursor:pointer;font-family:inherit;white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+.btn-g:hover{background:#f5f6f8}
+.btn-approve{background:#16a34a;color:#fff;border:none;border-radius:var(--rmd);padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:4px}
+.btn-approve:hover{background:#15803d}
+.btn-deny{background:var(--red);color:#fff;border:none;border-radius:var(--rmd);padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:4px}
+.btn-deny:hover{background:#c5001f}
+.btn-sm{padding:6px 12px;font-size:12px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:20px 22px;margin-bottom:16px}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.card-title{font-size:14px;font-weight:600;color:var(--t1)}
+.card-sub{font-size:12px;color:var(--t3)}
+.stat-row{display:grid;gap:14px;margin-bottom:20px}
+.s4{grid-template-columns:repeat(4,1fr)}
+.s3{grid-template-columns:repeat(3,1fr)}
+.s2{grid-template-columns:repeat(2,1fr)}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:14px 16px}
+.stat-label{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.stat-value{font-size:22px;font-weight:600;color:var(--t1);margin-bottom:2px}
+.stat-sub{font-size:11px;color:var(--t3)}
+.chip{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:500;padding:3px 9px;border-radius:20px}
+.c-pending{background:var(--amber-bg);color:var(--amber-t)}
+.c-approved{background:var(--teal-bg);color:var(--teal-t)}
+.c-rejected{background:var(--red-bg);color:var(--red-t)}
+.c-forwarded{background:var(--blue-bg);color:var(--blue-t)}
+.c-merit{background:var(--purple-bg);color:var(--purple-t)}
+.c-bonus{background:var(--green-bg);color:var(--green-t)}
+.c-promo{background:var(--purple-bg);color:var(--purple-t)}
+.c-green{background:var(--teal-bg);color:var(--teal-t)}
+.c-amber{background:var(--amber-bg);color:var(--amber-t)}
+.c-red{background:var(--red-bg);color:var(--red-t)}
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);overflow:hidden;margin-bottom:16px}
+.t{width:100%;border-collapse:collapse}
+.t th{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;padding:11px 16px;text-align:left;background:#f7f8fa;border-bottom:1px solid var(--border)}
+.t td{padding:12px 16px;border-bottom:1px solid var(--border);font-size:13px;color:var(--t1);vertical-align:middle}
+.t tr:last-child td{border-bottom:none}
+.t tr:hover td{background:#fafbfc}
+.t tr.pending-row td{background:#fffbf0}
+.t tr.pending-row:hover td{background:#fef6dc}
+.emp-cell{display:flex;align-items:center;gap:9px}
+.emp-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0}
+.av-t{background:var(--teal-bg);color:var(--teal-t)}
+.av-b{background:var(--blue-bg);color:var(--blue-t)}
+.av-p{background:var(--purple-bg);color:var(--purple-t)}
+.av-a{background:var(--amber-bg);color:var(--amber-t)}
+.av-g{background:var(--green-bg);color:var(--green-t)}
+.emp-link{font-size:13px;font-weight:500;color:var(--navy-mid);text-decoration:none}
+.emp-link:hover{text-decoration:underline}
+.emp-role{font-size:11px;color:var(--t3)}
+.toolbar{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.fselect{font-family:inherit;font-size:12.5px;color:var(--t1);background:var(--surface);border:1px solid var(--border-mid);border-radius:var(--rmd);padding:7px 10px;outline:none}
+.fsearch{font-family:inherit;font-size:12.5px;color:var(--t1);background:var(--surface);border:1px solid var(--border-mid);border-radius:var(--rmd);padding:7px 11px;outline:none;width:180px}
+.fsearch::placeholder{color:var(--t3)}
+.sec-lbl{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;margin-top:4px}
+.page-row{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;gap:12px}
+.page-row-title{font-size:14px;font-weight:600;color:var(--t1)}
+.page-row-sub{font-size:12px;color:var(--t3);margin-top:2px}
+.info-note{font-size:12px;color:var(--t3);background:#f7f8fa;border-radius:var(--rmd);padding:10px 14px;display:flex;align-items:center;gap:7px;margin-bottom:16px}
+.info-note i{font-size:14px;flex-shrink:0}
+.prog-wrap{display:flex;align-items:center;gap:8px}
+.prog-bar{flex:1;height:6px;background:#e8eaed;border-radius:3px;overflow:hidden;min-width:60px}
+.prog-fill{height:100%;border-radius:3px}
+.pagination{display:flex;align-items:center;gap:10px;padding:12px 16px;border-top:1px solid var(--border);font-size:12.5px;color:var(--t2)}
+.page-info{flex:1;text-align:center}
+/* Budget */
+.budget-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.budget-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:16px 18px}
+.budget-label{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.budget-value{font-size:24px;font-weight:600;color:var(--t1);margin-bottom:2px}
+.budget-sub{font-size:11px;color:var(--t3);margin-bottom:10px}
+.budget-prog-lbl{display:flex;justify-content:space-between;font-size:11px;color:var(--t2);margin-bottom:4px}
+.budget-prog-bar{height:6px;background:#e8eaed;border-radius:3px;overflow:hidden}
+.budget-prog-fill{height:100%;border-radius:3px}
+.ns-tag{display:inline-flex;align-items:center;gap:3px;font-size:10px;color:var(--blue-t);background:var(--blue-bg);padding:1px 6px;border-radius:4px;margin-left:4px;vertical-align:middle}
+/* Readiness */
+.readiness-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.readiness-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:16px 18px}
+.rc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+.rc-name{font-size:13.5px;font-weight:600;color:var(--t1)}
+.rc-role{font-size:11.5px;color:var(--t2);margin-top:1px}
+.rc-overall{font-size:11px;color:var(--t2);margin-bottom:10px}
+.rc-rules{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
+.rc-rule{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--t1)}
+.rc-rule i{font-size:14px;flex-shrink:0}
+.rc-actions{display:flex;gap:6px}
+/* Promotion rules */
+.pr-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:16px 18px;margin-bottom:10px}
+.pr-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px}
+.pr-name{font-size:13px;font-weight:600;color:var(--t1)}
+.pr-dept{font-size:11.5px;color:var(--t2)}
+.pr-rules{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
+.pr-rule{font-size:12px;color:var(--t2);display:flex;align-items:center;gap:6px}
+.pr-rule i{font-size:13px;color:var(--t3)}
+.pr-actions{display:flex;gap:6px}
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--surface);border-radius:var(--rxl);padding:28px;width:580px;max-width:92vw;max-height:88vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.15);transform:translateY(8px);transition:transform .2s}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px}
+.modal-title{font-size:16px;font-weight:600;color:var(--t1)}
+.modal-sub{font-size:12px;color:var(--t2);margin-top:3px}
+.modal-close{background:none;border:none;cursor:pointer;color:var(--t3);font-size:22px;line-height:1}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
+.bsec{margin-bottom:20px}
+.bsec-title{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid var(--border)}
+.fgrid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.flabel{font-size:11.5px;font-weight:600;color:var(--t3);letter-spacing:.04em;text-transform:uppercase;margin-bottom:5px}
+.freq{color:var(--red)}
+.finput,.fselect,.ftextarea{width:100%;font-family:inherit;font-size:13px;color:var(--t1);background:var(--surface);border:1px solid var(--border-mid);border-radius:var(--rmd);padding:8px 11px;outline:none}
+.ftextarea{resize:vertical;min-height:60px;line-height:1.5}
+/* Rule builder */
+.rule-builder{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.rule-row-b{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#f7f8fa;border:1px solid var(--border);border-radius:var(--rmd);flex-wrap:wrap}
+.rule-row-b select,.rule-row-b input[type=number]{font-family:inherit;font-size:12.5px;color:var(--t1);background:var(--surface);border:1px solid var(--border-mid);border-radius:var(--rsm);padding:5px 8px;outline:none}
+.rule-row-b input[type=number]{width:70px;text-align:center}
+.rule-row-b span{font-size:12.5px;color:var(--t2)}
+.rb-del{width:26px;height:26px;border-radius:var(--rsm);border:1px solid var(--border-mid);background:var(--surface);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t2);margin-left:auto}
+.rb-del:hover{background:var(--red-bg);color:var(--red-t)}
+.toggle{position:relative;width:38px;height:22px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-track{position:absolute;inset:0;border-radius:22px;background:#d0d5dd;cursor:pointer;transition:background .18s}
+.toggle input:checked+.toggle-track{background:var(--navy)}
+.toggle-dot{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .18s;pointer-events:none}
+.toggle input:checked~.toggle-dot{transform:translateX(16px)}
+</style>
+</head>
+<body>
+<div class="shell">
+<aside class="sidebar">
+  <div class="logo-zone">
+    <div class="client-logo"><svg viewBox="0 0 54 54" width="38" height="38"><circle cx="27" cy="27" r="27" fill="#e8002d"/><text x="27" y="32" text-anchor="middle" font-size="11" fill="white" font-weight="700" font-family="Inter,sans-serif">CLIENT</text></svg></div>
+    <div class="app-title">Performance Center</div>
+  </div>
+  <nav class="nav-section">
+    <a href="#" class="nav-item"><div class="av-nav">CD</div><span>My Profile</span></a>
+    <div class="nav-div"></div>
+    <a href="#" class="nav-item"><i class="ti ti-home"></i><span>Overview</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-file-text"></i><span>Reviews</span></a>
+    <div class="nav-div"></div>
+    <a href="#" class="nav-item"><i class="ti ti-target"></i><span>Goals</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-star"></i><span>Recognition</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-address-book"></i><span>Directory</span></a>
+    <div class="nav-div"></div>
+    <a href="#" class="nav-item"><i class="ti ti-speakerphone"></i><span>News</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-file"></i><span>Documents</span></a>
+    <a href="#" class="nav-item active"><i class="ti ti-coin"></i><span>Financial</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-video"></i><span>Meetings</span></a>
+    <div class="nav-div"></div>
+    <a href="#" class="nav-item"><i class="ti ti-refresh"></i><span>Review Cycles</span></a>
+    <a href="#" class="nav-item"><i class="ti ti-settings"></i><span>Configuration</span></a>
+  </nav>
+  <div class="footer-zone">
+    <span class="powered">Powered by</span>
+    <a href="#" class="ats-badge"><div><div class="ats-wm">ATS360</div><div class="ats-sub">by NetDynamic</div></div><i class="ti ti-external-link" style="font-size:11px;color:rgba(255,255,255,.35)"></i></a>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="role-banner">
+    <span class="role-banner-label"><i class="ti ti-eye" style="vertical-align:-2px;margin-right:4px"></i>Previewing as:</span>
+    <div class="role-btns">
+      <button class="role-btn active" onclick="switchRole('hr',this)">HR Admin</button>
+      <button class="role-btn" onclick="switchRole('manager',this)">Manager</button>
+    </div>
+    <span class="role-badge" id="roleBadge">HR Admin — full access</span>
+  </div>
+
+  <!-- HR VIEW -->
+  <div class="view-panel active" id="view-hr">
+    <div class="page-heading">Financial</div>
+    <div class="page-sub">Compensation recommendations, budget visibility, and promotion readiness.</div>
+
+    <div class="subtabs" id="hr-tabs">
+      <div class="subtab active" data-target="hr-ov" onclick="setSubtab(this,'hr-tabs')">Overview</div>
+      <div class="subtab" data-target="hr-rec" onclick="setSubtab(this,'hr-tabs')">Recommendations <span class="nbadge">5</span></div>
+      <div class="subtab" data-target="hr-budget" onclick="setSubtab(this,'hr-tabs')">Budget</div>
+      <div class="subtab" data-target="hr-promo" onclick="setSubtab(this,'hr-tabs')">Promotion Rules</div>
+    </div>
+
+    <!-- OVERVIEW -->
+    <div class="sub-panel active" id="hr-ov">
+      <div class="stat-row s4">
+        <div class="stat-card"><div class="stat-label">Pending recommendations</div><div class="stat-value" style="color:var(--amber-t)">5</div><div class="stat-sub">Awaiting HR review</div></div>
+        <div class="stat-card"><div class="stat-label">Forwarded to management</div><div class="stat-value" style="color:var(--blue-t)">3</div><div class="stat-sub">Awaiting approval</div></div>
+        <div class="stat-card"><div class="stat-label">Approved this cycle</div><div class="stat-value" style="color:var(--teal-t)">12</div><div class="stat-sub">Mid Year Peer Review</div></div>
+        <div class="stat-card"><div class="stat-label">Employees ready for promotion</div><div class="stat-value" style="color:var(--purple-t)">4</div><div class="stat-sub">Readiness checklist passed</div></div>
+      </div>
+
+      <div class="sec-lbl">Pending — requires HR review</div>
+      <div class="table-wrap">
+        <table class="t">
+          <thead><tr><th>Employee</th><th>Type</th><th>Cycle</th><th>Recommended by</th><th>Review score</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr class="pending-row">
+              <td><div class="emp-cell"><div class="emp-av av-t">AS</div><div><a class="emp-link" href="#">Aiden Somerhalder</a><div class="emp-role">Solutions Consultant</div></div></div></td>
+              <td><span class="chip c-merit">Merit increase</span></td>
+              <td style="font-size:12px;color:var(--t2)">Mid Year 2026</td>
+              <td style="font-size:12px"><a class="emp-link" href="#">C. Kim</a></td>
+              <td><strong>4.4</strong> / 5</td>
+              <td><span class="chip c-pending">Pending HR</span></td>
+              <td><div style="display:flex;gap:6px"><button class="btn-g btn-sm">View review</button><button class="btn-approve btn-sm"><i class="ti ti-send" style="font-size:11px"></i>Forward</button><button class="btn-deny btn-sm"><i class="ti ti-x" style="font-size:11px"></i>Reject</button></div></td>
+            </tr>
+            <tr class="pending-row">
+              <td><div class="emp-cell"><div class="emp-av av-b">AW</div><div><a class="emp-link" href="#">Alex Wolfe</a><div class="emp-role">Implementation Specialist</div></div></div></td>
+              <td><span class="chip c-bonus">Bonus</span></td>
+              <td style="font-size:12px;color:var(--t2)">Mid Year 2026</td>
+              <td style="font-size:12px"><a class="emp-link" href="#">C. Kim</a></td>
+              <td><strong>4.3</strong> / 5</td>
+              <td><span class="chip c-pending">Pending HR</span></td>
+              <td><div style="display:flex;gap:6px"><button class="btn-g btn-sm">View review</button><button class="btn-approve btn-sm"><i class="ti ti-send" style="font-size:11px"></i>Forward</button><button class="btn-deny btn-sm"><i class="ti ti-x" style="font-size:11px"></i>Reject</button></div></td>
+            </tr>
+            <tr class="pending-row">
+              <td><div class="emp-cell"><div class="emp-av av-p">BA</div><div><a class="emp-link" href="#">Bon Ariola</a><div class="emp-role">Developer</div></div></div></td>
+              <td><span class="chip c-promo">Promotion</span></td>
+              <td style="font-size:12px;color:var(--t2)">Mid Year 2026</td>
+              <td style="font-size:12px"><a class="emp-link" href="#">W. Guzman</a></td>
+              <td><strong>4.1</strong> / 5</td>
+              <td><span class="chip c-pending">Pending HR</span></td>
+              <td><div style="display:flex;gap:6px"><button class="btn-g btn-sm">View review</button><button class="btn-g btn-sm">Readiness check</button><button class="btn-approve btn-sm"><i class="ti ti-send" style="font-size:11px"></i>Forward</button><button class="btn-deny btn-sm"><i class="ti ti-x" style="font-size:11px"></i>Reject</button></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="sec-lbl">Forwarded to management — awaiting approval</div>
+      <div class="table-wrap">
+        <table class="t">
+          <thead><tr><th>Employee</th><th>Type</th><th>Cycle</th><th>Forwarded by</th><th>Review score</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><div class="emp-cell"><div class="emp-av av-a">AN</div><div><a class="emp-link" href="#">Amy Nguyen</a><div class="emp-role">PS Consultant</div></div></div></td>
+              <td><span class="chip c-merit">Merit increase</span></td>
+              <td style="font-size:12px;color:var(--t2)">Mid Year 2026</td>
+              <td style="font-size:12px">HR Admin</td>
+              <td><strong>4.0</strong> / 5</td>
+              <td><span class="chip c-forwarded">Forwarded</span></td>
+              <td><button class="btn-g btn-sm">View</button></td>
+            </tr>
+            <tr>
+              <td><div class="emp-cell"><div class="emp-av av-g">MH</div><div><a class="emp-link" href="#">Mary Higgins</a><div class="emp-role">Senior Consultant</div></div></div></td>
+              <td><span class="chip c-bonus">Bonus</span></td>
+              <td style="font-size:12px;color:var(--t2)">Mid Year 2026</td>
+              <td style="font-size:12px">HR Admin</td>
+              <td><strong>4.6</strong> / 5</td>
+              <td><span class="chip c-forwarded">Forwarded</span></td>
+              <td><button class="btn-g btn-sm">View</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- RECOMMENDATIONS -->
+    <div class="sub-panel" id="hr-rec">
+      <div class="info-note"><i class="ti ti-info-circle"></i>Recommendations are initiated by managers during the review writing process. HR reviews and forwards to management for final approval. Approved recommendations are actioned by the payroll team directly in NetSuite — this portal does not write to compensation records.</div>
+      <div class="toolbar">
+        <select class="fselect"><option>All types</option><option>Merit increase</option><option>Bonus</option><option>Promotion</option></select>
+        <select class="fselect"><option>All statuses</option><option>Pending HR review</option><option>Forwarded to management</option><option>Approved</option><option>Rejected</option></select>
+        <select class="fselect"><option>All cycles</option><option>Mid Year Peer Review</option><option>Annual Review 2025</option></select>
+        <select class="fselect"><option>All departments</option><option>Professional Services</option><option>Development</option><option>Sales</option></select>
+        <input class="fsearch" type="text" placeholder="Search employee…"/>
+        <button class="btn-g btn-sm"><i class="ti ti-download"></i>Export</button>
+      </div>
+      <div class="table-wrap">
+        <table class="t">
+          <thead><tr><th>Employee</th><th>Type</th><th>Cycle</th><th>Recommended by</th><th>Review score</th><th>Goals achieved</th><th>Notes</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr class="pending-row">
+              <td><div class="emp-cell"><div class="emp-av av-t">AS</div><div><a class="emp-link" href="#">Aiden Somerhalder</a><div class="emp-role">Solutions Consultant</div></div></div></td>
+              <td><span class="chip c-merit">Merit increase</span></td>
+              <td style="font-size:12px;color:var(--t2)">Mid Year 2026</td>
+              <td style="font-size:12px"><a class="emp-link" href="#">C. Kim</a></td>
+              <td><strong>4.4</strong> / 5</td>
+              <td style="font-size:12px;color:var(--teal-t)">4 / 4 goals met</td>
+              <td style="font-size:12px;color:var(--t2);max-width:160px">"Consistently exceeded expectations this period."</td>
+              <td><span class="chip c-pending">Pending HR</span></td>
+              <td><div style="display:flex;gap:5px"><button class="btn-g btn-sm">View review</button><button class="btn-approve btn-sm">Forward</button><button class="btn-deny btn-sm">Reject</button></div></td>
+            </tr>
+            <tr class="pending-row">
+              <td><div class="emp-cell"><div class="emp-av av-b">AW</div><div><a class="emp-link" href="#">Alex Wolfe</a><div class="emp-role">Implementation Specialist</div></div></div></td>
+              <td><span class="chip c-bonus">Bonus</span></td>
+              <td style="font-size:12px;color:var(--t2)">Mid Year 2026</td>
+              <td style="font-size:12px"><a class="emp-link" href="#">C. Kim</a></td>
+              <td><strong>4.3</strong> / 5</td>
+              <td style="font-size:12px;color:var(--teal-t)">3 / 4 goals met</td>
+              <td style="font-size:12px;color:var(--t2);max-width:160px">"Led the OCW onboarding ahead of schedule."</td>
+              <td><span class="chip c-pending">Pending HR</span></td>
+              <td><div style="display:flex;gap:5px"><button class="btn-g btn-sm">View review</button><button class="btn-approve btn-sm">Forward</button><button class="btn-deny btn-sm">Reject</button></div></td>
+            </tr>
+            <tr class="pending-row">
+              <td><div class="emp-cell"><div class="emp-av av-p">BA</div><div><a class="emp-link" href="#">Bon Ariola</a><div class="emp-role">Developer</div></div></div></td>
+              <td><span class="chip c-promo">Promotion</span></td>
+              <td style="font-size:12px;color:var(--t2)">Mid Year 2026</td>
+              <td style="font-size:12px"><a class="emp-link" href="#">W. Guzman</a></td>
+              <td><strong>4.1</strong> / 5</td>
+              <td style="font-size:12px;color:var(--amber-t)">2 / 4 goals met</td>
+              <td style="font-size:12px;color:var(--t2);max-width:160px">"Ready for senior developer responsibilities."</td>
+              <td><span class="chip c-pending">Pending HR</span></td>
+              <td><div style="display:flex;gap:5px"><button class="btn-g btn-sm">Readiness check</button><button class="btn-approve btn-sm">Forward</button><button class="btn-deny btn-sm">Reject</button></div></td>
+            </tr>
+            <tr>
+              <td><div class="emp-cell"><div class="emp-av av-a">AN</div><div><a class="emp-link" href="#">Amy Nguyen</a><div class="emp-role">PS Consultant</div></div></div></td>
+              <td><span class="chip c-merit">Merit increase</span></td>
+              <td style="font-size:12px;color:var(--t2)">Mid Year 2026</td>
+              <td style="font-size:12px"><a class="emp-link" href="#">C. Kim</a></td>
+              <td><strong>4.0</strong> / 5</td>
+              <td style="font-size:12px;color:var(--teal-t)">4 / 4 goals met</td>
+              <td style="font-size:12px;color:var(--t2)">—</td>
+              <td><span class="chip c-forwarded">Forwarded</span></td>
+              <td><button class="btn-g btn-sm">View</button></td>
+            </tr>
+            <tr>
+              <td><div class="emp-cell"><div class="emp-av av-g">MH</div><div><a class="emp-link" href="#">Mary Higgins</a><div class="emp-role">Senior Consultant</div></div></div></td>
+              <td><span class="chip c-bonus">Bonus</span></td>
+              <td style="font-size:12px;color:var(--t2)">Annual 2025</td>
+              <td style="font-size:12px"><a class="emp-link" href="#">C. Kim</a></td>
+              <td><strong>4.6</strong> / 5</td>
+              <td style="font-size:12px;color:var(--teal-t)">5 / 5 goals met</td>
+              <td style="font-size:12px;color:var(--t2)">—</td>
+              <td><span class="chip c-approved">Approved</span></td>
+              <td><button class="btn-g btn-sm">View history</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="pagination">
+          <button class="btn-g btn-sm">← Prev</button>
+          <span class="page-info">Showing 5 of 18 recommendations</span>
+          <button class="btn-g btn-sm">Next →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BUDGET -->
+    <div class="sub-panel" id="hr-budget">
+      <div class="info-note"><i class="ti ti-database"></i>Budget data is read-only, pulled from NetSuite financial records. Visibility is configured at implementation — contact your NetDynamic administrator to adjust which budget categories are shown.</div>
+
+      <div class="toolbar">
+        <select class="fselect"><option>All departments</option><option>Professional Services</option><option>Development</option><option>Sales</option></select>
+        <select class="fselect"><option>FY 2026</option><option>FY 2025</option></select>
+        <select class="fselect"><option>All categories</option><option>Salary</option><option>Bonuses</option><option>New hires</option><option>Training</option></select>
+      </div>
+
+      <div class="sec-lbl">Org-wide budget summary — FY 2026 <span class="ns-tag"><i class="ti ti-database" style="font-size:9px"></i>NetSuite</span></div>
+      <div class="budget-grid">
+        <div class="budget-card">
+          <div class="budget-label">Salary budget</div>
+          <div class="budget-value">$4,200,000</div>
+          <div class="budget-sub">Total approved FY 2026</div>
+          <div class="budget-prog-lbl"><span>Committed</span><span>78%</span></div>
+          <div class="budget-prog-bar"><div class="budget-prog-fill" style="width:78%;background:var(--navy)"></div></div>
+        </div>
+        <div class="budget-card">
+          <div class="budget-label">Bonus pool</div>
+          <div class="budget-value">$320,000</div>
+          <div class="budget-sub">Total approved FY 2026</div>
+          <div class="budget-prog-lbl"><span>Allocated</span><span>42%</span></div>
+          <div class="budget-prog-bar"><div class="budget-prog-fill" style="width:42%;background:var(--green-t)"></div></div>
+        </div>
+        <div class="budget-card">
+          <div class="budget-label">New hire budget</div>
+          <div class="budget-value">$580,000</div>
+          <div class="budget-sub">Headcount approved FY 2026</div>
+          <div class="budget-prog-lbl"><span>Used</span><span>61%</span></div>
+          <div class="budget-prog-bar"><div class="budget-prog-fill" style="width:61%;background:var(--amber-t)"></div></div>
+        </div>
+        <div class="budget-card">
+          <div class="budget-label">Training &amp; development</div>
+          <div class="budget-value">$85,000</div>
+          <div class="budget-sub">Total approved FY 2026</div>
+          <div class="budget-prog-lbl"><span>Used</span><span>29%</span></div>
+          <div class="budget-prog-bar"><div class="budget-prog-fill" style="width:29%;background:var(--blue-t)"></div></div>
+        </div>
+        <div class="budget-card">
+          <div class="budget-label">Merit increase reserve</div>
+          <div class="budget-value">$210,000</div>
+          <div class="budget-sub">Set aside for mid-year merit</div>
+          <div class="budget-prog-lbl"><span>Pending recommendations</span><span>18%</span></div>
+          <div class="budget-prog-bar"><div class="budget-prog-fill" style="width:18%;background:var(--purple-t)"></div></div>
+        </div>
+        <div class="budget-card" style="display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;color:var(--t3);border-style:dashed">
+          <i class="ti ti-lock" style="font-size:20px"></i>
+          <span style="font-size:12px;text-align:center">Additional categories can be enabled by your NetDynamic administrator</span>
+        </div>
+      </div>
+
+      <div class="sec-lbl">By department — Bonus pool utilisation</div>
+      <div class="table-wrap">
+        <table class="t">
+          <thead><tr><th>Department</th><th>Bonus budget</th><th>Allocated</th><th>Remaining</th><th>Pending recommendations</th><th>Utilisation</th></tr></thead>
+          <tbody>
+            <tr><td>Professional Services</td><td>$120,000</td><td style="color:var(--teal-t)">$48,000</td><td>$72,000</td><td>$18,000 pending</td><td><div class="prog-wrap"><div class="prog-bar"><div class="prog-fill" style="width:40%;background:var(--navy)"></div></div><span style="font-size:11px;color:var(--t2)">40%</span></div></td></tr>
+            <tr><td>Development</td><td>$90,000</td><td style="color:var(--teal-t)">$32,000</td><td>$58,000</td><td>$8,000 pending</td><td><div class="prog-wrap"><div class="prog-bar"><div class="prog-fill" style="width:36%;background:var(--navy)"></div></div><span style="font-size:11px;color:var(--t2)">36%</span></div></td></tr>
+            <tr><td>Sales &amp; Marketing</td><td>$110,000</td><td style="color:var(--amber-t)">$54,000</td><td>$56,000</td><td>$22,000 pending</td><td><div class="prog-wrap"><div class="prog-bar"><div class="prog-fill" style="width:49%;background:var(--navy)"></div></div><span style="font-size:11px;color:var(--t2)">49%</span></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PROMOTION RULES -->
+    <div class="sub-panel" id="hr-promo">
+      <div class="page-row">
+        <div><div class="page-row-title">Promotion readiness rules</div><div style="font-size:12px;color:var(--t3);margin-top:2px">Define the conditions employees must meet before a promotion recommendation is forwarded. HR can trigger a readiness check at any time. Checks also run automatically when a promotion-eligible cycle closes.</div></div>
+        <button class="btn-p" onclick="openModal('promoRuleModal')"><i class="ti ti-plus"></i>New ruleset</button>
+      </div>
+
+      <div class="sec-lbl">Readiness check — current results</div>
+      <div class="readiness-grid">
+        <div class="readiness-card">
+          <div class="rc-top">
+            <div><div class="rc-name"><a class="emp-link" href="#">Bon Ariola</a></div><div class="rc-role">Developer → Senior Developer</div></div>
+            <span class="chip c-amber">3 / 5 rules met</span>
+          </div>
+          <div class="rc-overall">Mid Year Peer Review · Score: 4.1 / 5</div>
+          <div class="rc-rules">
+            <div class="rc-rule"><i class="ti ti-circle-check" style="color:var(--teal-t)"></i>Review score ≥ 4.0 — met (4.1)</div>
+            <div class="rc-rule"><i class="ti ti-circle-check" style="color:var(--teal-t)"></i>Min. 10 kudos in Technical Delivery — met (14)</div>
+            <div class="rc-rule"><i class="ti ti-circle-check" style="color:var(--teal-t)"></i>Tenure ≥ 12 months — met (18 months)</div>
+            <div class="rc-rule"><i class="ti ti-circle-x" style="color:var(--red-t)"></i>Zero overdue goals — not met (2 overdue)</div>
+            <div class="rc-rule"><i class="ti ti-circle-x" style="color:var(--red-t)"></i>Min. 8 kudos in Leadership — not met (3)</div>
+          </div>
+          <div class="rc-actions">
+            <button class="btn-g btn-sm">View profile</button>
+            <button class="btn-g btn-sm">Re-run check</button>
+          </div>
+        </div>
+        <div class="readiness-card">
+          <div class="rc-top">
+            <div><div class="rc-name"><a class="emp-link" href="#">Aiden Somerhalder</a></div><div class="rc-role">Solutions Consultant → Senior Consultant</div></div>
+            <span class="chip c-green">5 / 5 rules met</span>
+          </div>
+          <div class="rc-overall">Mid Year Peer Review · Score: 4.4 / 5</div>
+          <div class="rc-rules">
+            <div class="rc-rule"><i class="ti ti-circle-check" style="color:var(--teal-t)"></i>Review score ≥ 4.0 — met (4.4)</div>
+            <div class="rc-rule"><i class="ti ti-circle-check" style="color:var(--teal-t)"></i>Min. 5 kudos in Client Focus — met (9)</div>
+            <div class="rc-rule"><i class="ti ti-circle-check" style="color:var(--teal-t)"></i>Tenure ≥ 18 months — met (22 months)</div>
+            <div class="rc-rule"><i class="ti ti-circle-check" style="color:var(--teal-t)"></i>Zero overdue goals — met</div>
+            <div class="rc-rule"><i class="ti ti-circle-check" style="color:var(--teal-t)"></i>Min. 3 kudos in Leadership — met (5)</div>
+          </div>
+          <div class="rc-actions">
+            <button class="btn-g btn-sm">View profile</button>
+            <button class="btn-approve btn-sm">Forward recommendation</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-lbl">Configured rulesets</div>
+      <div class="pr-card">
+        <div class="pr-top">
+          <div><div class="pr-name">Senior Developer — All departments</div><div class="pr-dept">Created by HR Admin · Applies org-wide</div></div>
+          <div style="display:flex;gap:6px"><button class="btn-g btn-sm">Edit</button><button class="btn-g btn-sm" style="color:var(--red-t)"><i class="ti ti-trash"></i></button></div>
+        </div>
+        <div class="pr-rules">
+          <div class="pr-rule"><i class="ti ti-point"></i>Review score ≥ 4.0 in a promotion-eligible cycle</div>
+          <div class="pr-rule"><i class="ti ti-point"></i>Minimum 10 kudos tagged Technical Delivery this cycle</div>
+          <div class="pr-rule"><i class="ti ti-point"></i>Tenure ≥ 12 months (timer pauses during approved leave)</div>
+          <div class="pr-rule"><i class="ti ti-point"></i>Zero overdue goals at cycle close</div>
+          <div class="pr-rule"><i class="ti ti-point"></i>Minimum 8 kudos tagged Leadership this cycle</div>
+        </div>
+        <div style="font-size:11px;color:var(--t2)">Eligibility basis: Employee tenure anniversary · Last run: Jun 15, 2026</div>
+      </div>
+      <div class="pr-card">
+        <div class="pr-top">
+          <div><div class="pr-name">Senior Consultant — Professional Services</div><div class="pr-dept">Proposed by Nergis Sefer · Approved by HR Admin</div></div>
+          <div style="display:flex;gap:6px"><button class="btn-g btn-sm">Edit</button><button class="btn-g btn-sm" style="color:var(--red-t)"><i class="ti ti-trash"></i></button></div>
+        </div>
+        <div class="pr-rules">
+          <div class="pr-rule"><i class="ti ti-point"></i>Review score ≥ 4.0 in a promotion-eligible cycle</div>
+          <div class="pr-rule"><i class="ti ti-point"></i>Minimum 5 kudos tagged Client Focus this cycle</div>
+          <div class="pr-rule"><i class="ti ti-point"></i>Minimum 3 kudos tagged Leadership this cycle</div>
+          <div class="pr-rule"><i class="ti ti-point"></i>Tenure ≥ 18 months</div>
+          <div class="pr-rule"><i class="ti ti-point"></i>Zero overdue goals at cycle close</div>
+        </div>
+        <div style="font-size:11px;color:var(--t2)">Eligibility basis: Company calendar year · Last run: Jun 15, 2026</div>
+      </div>
+      <div class="pr-card" style="background:#fffbf0;border-color:#fde68a">
+        <div class="pr-top">
+          <div><div class="pr-name">Senior Sales Executive — Sales &amp; Marketing</div><div class="pr-dept" style="color:var(--amber-t)">Proposed by Sales Manager · Pending HR approval</div></div>
+          <div style="display:flex;gap:6px"><button class="btn-approve btn-sm">Approve</button><button class="btn-deny btn-sm">Reject</button></div>
+        </div>
+        <div class="pr-rules">
+          <div class="pr-rule"><i class="ti ti-point"></i>Review score ≥ 4.2</div>
+          <div class="pr-rule"><i class="ti ti-point"></i>Minimum 8 kudos tagged Client Focus</div>
+          <div class="pr-rule"><i class="ti ti-point"></i>Tenure ≥ 12 months</div>
+        </div>
+      </div>
+      <div style="margin-top:10px"><button class="btn-g btn-sm"><i class="ti ti-player-play"></i>Run readiness check for all employees now</button></div>
+    </div>
+  </div>
+
+  <!-- MANAGER VIEW -->
+  <div class="view-panel" id="view-manager">
+    <div class="page-heading">Financial</div>
+    <div class="page-sub">Recommendations you have initiated for your team.</div>
+
+    <div class="subtabs" id="mgr-tabs">
+      <div class="subtab active" data-target="mgr-rec" onclick="setSubtab(this,'mgr-tabs')">My Recommendations <span class="nbadge">2</span></div>
+      <div class="subtab" data-target="mgr-budget" onclick="setSubtab(this,'mgr-tabs')">Team Budget</div>
+      <div class="subtab" data-target="mgr-readiness" onclick="setSubtab(this,'mgr-tabs')">Promotion Readiness</div>
+    </div>
+
+    <div class="sub-panel active" id="mgr-rec">
+      <div class="info-note"><i class="ti ti-info-circle"></i>Recommendations are initiated when writing a manager review. HR reviews and forwards to management for approval. Compensation changes are processed by payroll — not by this portal.</div>
+      <div class="table-wrap">
+        <table class="t">
+          <thead><tr><th>Employee</th><th>Type</th><th>Cycle</th><th>Review score</th><th>Goals</th><th>Your notes</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><div class="emp-cell"><div class="emp-av av-t">AS</div><div><a class="emp-link" href="#">Aiden Somerhalder</a></div></div></td>
+              <td><span class="chip c-merit">Merit increase</span></td>
+              <td style="font-size:12px;color:var(--t2)">Mid Year 2026</td>
+              <td><strong>4.4</strong> / 5</td>
+              <td style="font-size:12px;color:var(--teal-t)">4 / 4 met</td>
+              <td style="font-size:12px;color:var(--t2);max-width:180px">"Consistently exceeded expectations."</td>
+              <td><span class="chip c-pending">Pending HR</span></td>
+            </tr>
+            <tr>
+              <td><div class="emp-cell"><div class="emp-av av-b">AW</div><div><a class="emp-link" href="#">Alex Wolfe</a></div></div></td>
+              <td><span class="chip c-bonus">Bonus</span></td>
+              <td style="font-size:12px;color:var(--t2)">Mid Year 2026</td>
+              <td><strong>4.3</strong> / 5</td>
+              <td style="font-size:12px;color:var(--teal-t)">3 / 4 met</td>
+              <td style="font-size:12px;color:var(--t2);max-width:180px">"Led OCW onboarding ahead of schedule."</td>
+              <td><span class="chip c-pending">Pending HR</span></td>
+            </tr>
+            <tr>
+              <td><div class="emp-cell"><div class="emp-av av-a">AN</div><div><a class="emp-link" href="#">Amy Nguyen</a></div></div></td>
+              <td><span class="chip c-merit">Merit increase</span></td>
+              <td style="font-size:12px;color:var(--t2)">Annual 2025</td>
+              <td><strong>4.0</strong> / 5</td>
+              <td style="font-size:12px;color:var(--teal-t)">4 / 4 met</td>
+              <td style="font-size:12px;color:var(--t2)">—</td>
+              <td><span class="chip c-approved">Approved</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="sub-panel" id="mgr-budget">
+      <div class="info-note"><i class="ti ti-database"></i>Read-only view of your team's budget allocation from NetSuite. Contact HR or Finance to request changes.</div>
+      <div class="stat-row s3">
+        <div class="stat-card"><div class="stat-label">Team bonus pool</div><div class="stat-value">$120,000</div><div class="stat-sub">FY 2026 · Professional Services</div></div>
+        <div class="stat-card"><div class="stat-label">Allocated</div><div class="stat-value" style="color:var(--teal-t)">$48,000</div><div class="stat-sub">40% of pool used</div></div>
+        <div class="stat-card"><div class="stat-label">Remaining</div><div class="stat-value">$72,000</div><div class="stat-sub">Available for recommendations</div></div>
+      </div>
+    </div>
+
+    <div class="sub-panel" id="mgr-readiness">
+      <div class="info-note"><i class="ti ti-info-circle"></i>Promotion readiness based on HR-configured rulesets. Results are indicative only — HR makes the final decision.</div>
+      <div class="readiness-grid">
+        <div class="readiness-card">
+          <div class="rc-top">
+            <div><div class="rc-name"><a class="emp-link" href="#">Aiden Somerhalder</a></div><div class="rc-role">Solutions Consultant → Senior Consultant</div></div>
+            <span class="chip c-green">5 / 5 rules met</span>
+          </div>
+          <div class="rc-rules">
+            <div class="rc-rule"><i class="ti ti-circle-check" style="color:var(--teal-t)"></i>Review score ≥ 4.0 — met (4.4)</div>
+            <div class="rc-rule"><i class="ti ti-circle-check" style="color:var(--teal-t)"></i>Min. 5 kudos in Client Focus — met (9)</div>
+            <div class="rc-rule"><i class="ti ti-circle-check" style="color:var(--teal-t)"></i>Tenure ≥ 18 months — met (22)</div>
+            <div class="rc-rule"><i class="ti ti-circle-check" style="color:var(--teal-t)"></i>Zero overdue goals — met</div>
+            <div class="rc-rule"><i class="ti ti-circle-check" style="color:var(--teal-t)"></i>Min. 3 kudos in Leadership — met (5)</div>
+          </div>
+          <div class="rc-actions"><button class="btn-g btn-sm">View profile</button></div>
+        </div>
+        <div class="readiness-card">
+          <div class="rc-top">
+            <div><div class="rc-name"><a class="emp-link" href="#">Amy Nguyen</a></div><div class="rc-role">PS Consultant → Senior Consultant</div></div>
+            <span class="chip c-amber">3 / 5 rules met</span>
+          </div>
+          <div class="rc-rules">
+            <div class="rc-rule"><i class="ti ti-circle-check" style="color:var(--teal-t)"></i>Review score ≥ 4.0 — met (4.0)</div>
+            <div class="rc-rule"><i class="ti ti-circle-check" style="color:var(--teal-t)"></i>Min. 5 kudos in Client Focus — met (6)</div>
+            <div class="rc-rule"><i class="ti ti-circle-x" style="color:var(--red-t)"></i>Tenure ≥ 18 months — not met (11 months)</div>
+            <div class="rc-rule"><i class="ti ti-circle-check" style="color:var(--teal-t)"></i>Zero overdue goals — met</div>
+            <div class="rc-rule"><i class="ti ti-circle-x" style="color:var(--red-t)"></i>Min. 3 kudos in Leadership — not met (1)</div>
+          </div>
+          <div class="rc-actions"><button class="btn-g btn-sm">View profile</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+</div>
+
+<!-- Promotion Rule Modal -->
+<div class="modal-overlay" id="promoRuleModal">
+  <div class="modal">
+    <div class="modal-hd">
+      <div><div class="modal-title">New promotion ruleset</div><div class="modal-sub">Define the conditions required for a promotion recommendation to be forwarded. HR approves all rulesets — managers may propose.</div></div>
+      <button class="modal-close" onclick="closeModal('promoRuleModal')">×</button>
+    </div>
+    <div class="bsec">
+      <div class="bsec-title">Details</div>
+      <div class="fgrid2">
+        <div><div class="flabel">Ruleset name <span class="freq">*</span></div><input class="finput" type="text" placeholder="e.g. Senior Developer — Engineering"/></div>
+        <div><div class="flabel">Department scope</div><select class="fselect" style="width:100%"><option>All departments</option><option>Professional Services</option><option>Development</option><option>Sales &amp; Marketing</option></select></div>
+        <div><div class="flabel">Eligibility basis</div><select class="fselect" style="width:100%"><option>Employee tenure anniversary</option><option>Company calendar year</option></select></div>
+        <div><div class="flabel">Pause timer during approved leave</div>
+          <div style="margin-top:8px"><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div><div class="toggle-dot"></div></label></div>
+        </div>
+      </div>
+    </div>
+    <div class="bsec">
+      <div class="bsec-title">Rules — all must be met for readiness to pass</div>
+      <div class="rule-builder">
+        <div class="rule-row-b">
+          <select><option>Review score</option><option>Kudos count by focus area</option><option>Tenure (months)</option><option>Overdue goals</option><option>Goals achieved %</option></select>
+          <select><option>≥</option><option>≤</option><option>=</option><option>= 0</option></select>
+          <input type="number" value="4.0" step="0.1"/>
+          <span style="font-size:12px;color:var(--t3)">in a promotion-eligible cycle</span>
+          <div class="rb-del"><i class="ti ti-trash" style="font-size:13px"></i></div>
+        </div>
+        <div class="rule-row-b">
+          <select><option>Review score</option><option>Kudos count by focus area</option><option>Tenure (months)</option><option>Overdue goals</option><option>Goals achieved %</option></select>
+          <select><option>≥</option><option>≤</option><option>=</option><option>= 0</option></select>
+          <input type="number" value="10"/>
+          <select><option>Technical Delivery</option><option>Client Focus</option><option>Teamwork</option><option>Leadership</option><option>Communication</option></select>
+          <span style="font-size:12px;color:var(--t3)">kudos tagged</span>
+          <div class="rb-del"><i class="ti ti-trash" style="font-size:13px"></i></div>
+        </div>
+        <div class="rule-row-b">
+          <select><option>Review score</option><option>Kudos count by focus area</option><option>Tenure (months)</option><option>Overdue goals</option><option>Goals achieved %</option></select>
+          <select><option>≥</option><option>≤</option><option>=</option><option>= 0</option></select>
+          <input type="number" value="0"/>
+          <span style="font-size:12px;color:var(--t3)">overdue goals at cycle close</span>
+          <div class="rb-del"><i class="ti ti-trash" style="font-size:13px"></i></div>
+        </div>
+      </div>
+      <button class="btn-g btn-sm"><i class="ti ti-plus"></i>Add rule</button>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-g" onclick="closeModal('promoRuleModal')">Cancel</button>
+      <button class="btn-p">Save ruleset</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchRole(role,btn){
+  document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.view-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('view-'+role).classList.add('active');
+  document.getElementById('roleBadge').textContent=role==='hr'?'HR Admin — full access':'Manager — team view only';
+}
+function setSubtab(el,groupId){
+  document.getElementById(groupId).querySelectorAll('.subtab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  const target=el.dataset.target;
+  el.closest('.view-panel').querySelectorAll('.sub-panel').forEach(p=>p.classList.remove('active'));
+  const t=document.getElementById(target);
+  if(t)t.classList.add('active');
+}
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.modal-overlay').forEach(o=>{
+  o.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')});
+});
+</script>
+</body>
+</html>
