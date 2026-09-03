@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Profile Views — Performance Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1a2332;--navy-h:#223044;--navy-mid:#2d4a7a;
+  --page:#f0f2f5;--surface:#fff;--border:#e2e5ea;--border-mid:#c8cdd6;
+  --t1:#0f1923;--t2:#5a6473;--t3:#9ea8b3;
+  --teal:#0d9488;--teal-bg:#e6f7f5;--teal-t:#0f6e56;
+  --blue-bg:#e6f1fb;--blue-t:#185fa5;
+  --purple-bg:#eeedfe;--purple-t:#3c3489;
+  --amber:#d97706;--amber-bg:#fef3c7;--amber-t:#92400e;
+  --red:#e8002d;--red-bg:#fde8ec;--red-t:#a51633;
+  --green:#16a34a;--green-bg:#dcfce7;
+  font-family:'Inter',system-ui,sans-serif;font-size:14px;color:var(--t1);
+  --r6:6px;--r8:8px;--r12:12px;--r16:16px;
+}
+body{background:var(--page);min-height:100vh}
+
+/* ── CTRL BANNER ── */
+.ctrl-banner{background:var(--navy);padding:10px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;border-bottom:2px solid var(--red);position:sticky;top:0;z-index:100}
+.ctrl-group{display:flex;align-items:center;gap:8px}
+.ctrl-label{font-size:10.5px;font-weight:600;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.ctrl-btns{display:flex;gap:4px;flex-wrap:wrap}
+.ctrl-btn{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid rgba(255,255,255,.2);background:transparent;color:rgba(255,255,255,.55);font-family:inherit;transition:all .12s;white-space:nowrap}
+.ctrl-btn:hover{background:rgba(255,255,255,.1);color:#fff}
+.ctrl-btn.active{background:#fff;color:var(--navy)}
+.ctrl-sep{width:1px;height:22px;background:rgba(255,255,255,.14);flex-shrink:0}
+.ctrl-desc{margin-left:auto;font-size:11px;color:rgba(255,255,255,.3);font-style:italic}
+
+.content{padding:22px 28px 60px;max-width:900px;margin:0 auto}
+.view-panel{display:none}
+.view-panel.active{display:block}
+
+/* ── PROFILE HEADER ── */
+.profile-header{background:var(--surface);border:1px solid var(--border);border-radius:var(--r16);padding:20px 22px;margin-bottom:16px}
+.ph-row{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.ph-avatar{width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;border:3px solid var(--border);flex-shrink:0;position:relative}
+.ph-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.status-ring{position:absolute;bottom:2px;right:2px;width:14px;height:14px;border-radius:50%;border:2px solid var(--surface)}
+.sr-available{background:var(--green)}
+.sr-busy{background:var(--red)}
+.ph-info{flex:1;min-width:0}
+.ph-name{font-size:20px;font-weight:700;color:var(--t1);margin-bottom:3px}
+.ph-role{font-size:13px;color:var(--t2);margin-bottom:8px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.ph-role-sep{color:var(--border-mid)}
+.ph-status-msg{font-size:12.5px;color:var(--t2);font-style:italic;margin-bottom:10px;display:flex;align-items:center;gap:5px}
+.ph-ns-row{display:flex;gap:0;border-top:1px solid var(--border);padding-top:10px;flex-wrap:wrap}
+.ph-ns-field{padding:0 14px 0 0;min-width:120px}
+.ph-ns-label{font-size:9.5px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px;display:flex;align-items:center;gap:4px}
+.ns-badge{font-size:8.5px;font-weight:600;background:var(--blue-bg);color:var(--blue-t);padding:1px 4px;border-radius:2px}
+.ph-ns-value{font-size:12.5px;color:var(--t1);font-weight:500}
+.ph-ns-sub{font-size:10.5px;color:var(--t3)}
+
+/* ── ACTION BAR ── */
+.action-bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.ab-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--r8);font-size:12.5px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .12s;border:1.5px solid var(--border-mid);background:var(--surface);color:var(--t1);white-space:nowrap}
+.ab-btn:hover{background:#f5f6f8;border-color:var(--border-mid)}
+.ab-btn.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+.ab-btn.primary:hover{background:var(--navy-h)}
+.ab-btn.disabled{opacity:.4;cursor:not-allowed;pointer-events:none}
+.ab-btn i{font-size:14px}
+.p2-label{font-size:9.5px;font-weight:600;background:var(--purple-bg);color:var(--purple-t);padding:1px 5px;border-radius:3px;margin-left:2px}
+
+/* ── VISIBILITY BADGE ── */
+.vis-badge{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:4px;margin-bottom:12px}
+.vb-peer{background:#f0f2f5;color:var(--t2)}
+.vb-supervisor{background:var(--navy);color:#fff}
+.vb-colead{background:var(--purple-bg);color:var(--purple-t)}
+.vb-indirect{background:var(--blue-bg);color:var(--blue-t)}
+.vb-reviewer{background:var(--amber-bg);color:var(--amber-t)}
+
+/* ── SECTION CARDS ── */
+.section-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r16);margin-bottom:14px;overflow:hidden}
+.sc-header{padding:14px 18px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.sc-icon{width:30px;height:30px;border-radius:var(--r6);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.sc-title{font-size:13px;font-weight:600;color:var(--t1);flex:1}
+.sc-link{font-size:12px;color:var(--navy-mid);text-decoration:none;display:flex;align-items:center;gap:3px}
+.sc-body{padding:14px 18px}
+
+/* ── STAT STRIP ── */
+.stat-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.stat-tile{background:var(--surface);border:1px solid var(--border);border-radius:var(--r12);padding:13px 15px;cursor:pointer;transition:box-shadow .12s;text-decoration:none;display:block}
+.stat-tile:hover{box-shadow:0 3px 12px rgba(0,0,0,.07)}
+.st-top{display:flex;justify-content:space-between;margin-bottom:6px}
+.st-icon{width:30px;height:30px;border-radius:var(--r6);display:flex;align-items:center;justify-content:center;font-size:14px}
+.st-trend{font-size:10.5px;font-weight:600;display:flex;align-items:center;gap:2px}
+.trend-up{color:var(--teal-t)}
+.trend-dn{color:var(--red-t)}
+.st-val{font-size:24px;font-weight:700;line-height:1;margin-bottom:2px}
+.st-lbl{font-size:11.5px;font-weight:500;color:var(--t1);margin-bottom:1px}
+.st-sub{font-size:10.5px;color:var(--t3)}
+.st-bar{height:3px;background:#e8eaed;border-radius:2px;overflow:hidden;margin-top:7px}
+.st-fill{height:100%;border-radius:2px}
+
+/* ── TEAM TABLE ── */
+.team-section-label{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin:16px 0 8px;display:flex;align-items:center;gap:8px}
+.team-section-label:after{content:'';flex:1;height:1px;background:var(--border)}
+.team-table{width:100%;border-collapse:collapse}
+.team-table th{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);background:#f7f8fa;white-space:nowrap}
+.team-table td{padding:9px 10px;border-bottom:1px solid var(--border);font-size:12.5px;color:var(--t1);vertical-align:middle}
+.team-table tr:last-child td{border-bottom:none}
+.team-table tr:hover td{background:#fafbfc;cursor:pointer}
+.team-table tr.at-risk td{background:#fff8f8}
+.emp-link{color:var(--navy-mid);text-decoration:none;font-weight:600}
+.emp-link:hover{text-decoration:underline}
+.chip{display:inline-flex;align-items:center;font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:20px}
+.chip-pass{background:var(--teal-bg);color:var(--teal-t)}
+.chip-fail{background:var(--red-bg);color:var(--red-t)}
+.chip-warn{background:var(--amber-bg);color:var(--amber-t)}
+.arr-badge{font-size:9.5px;font-weight:600;padding:1px 6px;border-radius:3px;background:var(--purple-bg);color:var(--purple-t);margin-left:4px}
+
+/* ── CO-LEAD MANAGE ── */
+.co-lead-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.btn-sm-navy{background:var(--navy);color:#fff;border:none;border-radius:var(--r6);padding:6px 12px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:4px}
+.btn-sm-g{background:transparent;border:1.5px solid var(--border-mid);color:var(--t2);border-radius:var(--r6);padding:6px 10px;font-size:12px;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:4px}
+.co-lead-arrangement{display:flex;align-items:center;gap:10px;padding:9px 12px;background:#f7f8fa;border-radius:var(--r8);border:1px solid var(--border);margin-bottom:7px}
+.cla-info{flex:1}
+.cla-name{font-size:12.5px;font-weight:600;color:var(--t1)}
+.cla-scope{font-size:11.5px;color:var(--t2);margin-top:1px}
+.cla-status{font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:20px}
+.cls-approved{background:var(--teal-bg);color:var(--teal-t)}
+.cls-pending{background:var(--amber-bg);color:var(--amber-t)}
+
+/* ── RECOGNITION ITEMS ── */
+.rec-list{display:flex;flex-direction:column;gap:7px}
+.rec-item{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;background:#fafbfc;border-radius:var(--r8);border:1px solid var(--border)}
+.rec-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.rec-body{flex:1}
+.rec-from{font-size:11px;color:var(--t2);margin-bottom:2px}
+.rec-msg{font-size:12px;color:var(--t1);line-height:1.4}
+.rec-badge-chip{font-size:9.5px;font-weight:600;padding:1px 6px;border-radius:3px;background:var(--amber-bg);color:var(--amber-t);margin-top:3px;display:inline-block}
+
+/* ── COMMS TAB ── */
+.comms-filter{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.cf-btn{padding:5px 11px;border-radius:20px;font-size:12px;font-weight:500;border:1.5px solid var(--border-mid);background:var(--surface);color:var(--t2);cursor:pointer;font-family:inherit;transition:all .12s}
+.cf-btn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.comms-list{display:flex;flex-direction:column;gap:8px}
+.comm-item{border:1px solid var(--border);border-radius:var(--r12);overflow:hidden}
+.comm-header{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;transition:background .1s}
+.comm-header:hover{background:#f7f8fa}
+.comm-icon{width:32px;height:32px;border-radius:var(--r6);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.comm-body{flex:1;min-width:0}
+.comm-subject{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:2px}
+.comm-meta{font-size:11px;color:var(--t3);display:flex;gap:8px;flex-wrap:wrap}
+.comm-preview{font-size:12px;color:var(--t2);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.comm-badge{font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;flex-shrink:0}
+.cb-delivered{background:var(--teal-bg);color:var(--teal-t)}
+.cb-opened{background:var(--blue-bg);color:var(--blue-t)}
+.comm-full{display:none;padding:12px 14px;border-top:1px solid var(--border);background:#fafbfc;font-size:12.5px;color:var(--t1);line-height:1.6}
+.comm-item.expanded .comm-full{display:block}
+
+/* ── GOALS MINI ── */
+.goal-mini{padding:9px 11px;background:#f7f8fa;border-radius:var(--r8);border:1px solid var(--border);margin-bottom:7px}
+.gm-top{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.gm-title{font-size:12.5px;font-weight:600;color:var(--t1);flex:1}
+.gm-pct{font-size:11px;font-weight:700;color:var(--t2)}
+.gm-bar{height:4px;background:#e8eaed;border-radius:2px;overflow:hidden}
+.gm-fill{height:100%;border-radius:2px}
+
+/* ── INFO BANNERS ── */
+.info-note{font-size:12px;color:var(--t2);background:#f7f8fa;border-radius:var(--r8);padding:9px 12px;display:flex;align-items:flex-start;gap:6px;margin-bottom:12px}
+.info-note i{font-size:14px;flex-shrink:0;margin-top:1px}
+.restricted-block{background:var(--border);border-radius:var(--r8);padding:20px;text-align:center;color:var(--t3);font-size:12px;display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:14px}
+.restricted-block i{font-size:24px}
+
+/* Score history mini */
+.score-history-mini{display:flex;gap:6px;align-items:flex-end;height:50px;margin-bottom:6px}
+.shm-bar-wrap{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1}
+.shm-bar{width:100%;border-radius:2px 2px 0 0;background:var(--navy-mid)}
+.shm-lbl{font-size:8.5px;color:var(--t3);text-align:center;line-height:1.2}
+.shm-val{font-size:9px;font-weight:600;color:var(--t2)}
+</style>
+</head>
+<body>
+
+<div class="ctrl-banner">
+  <div class="ctrl-group">
+    <span class="ctrl-label">View</span>
+    <div class="ctrl-btns">
+      <button class="ctrl-btn active" onclick="setView('supervisor',this)">Supervisor profile</button>
+      <button class="ctrl-btn" onclick="setView('visitor-peer',this)">Visitor — peer</button>
+      <button class="ctrl-btn" onclick="setView('visitor-supervisor',this)">Visitor — direct supervisor</button>
+      <button class="ctrl-btn" onclick="setView('visitor-colead',this)">Visitor — co-team-lead</button>
+      <button class="ctrl-btn" onclick="setView('visitor-reviewer',this)">Visitor — peer reviewer</button>
+      <button class="ctrl-btn" onclick="setView('comms',this)">Communications tab</button>
+    </div>
+  </div>
+  <span class="ctrl-desc" id="ctrlDesc">Supervisor's own My Profile with My Team section and co-team-lead management</span>
+</div>
+
+<div class="content">
+
+<!-- ══ SUPERVISOR OWN PROFILE ══ -->
+<div class="view-panel active" id="view-supervisor">
+
+  <!-- Profile header -->
+  <div class="profile-header">
+    <div class="ph-row">
+      <div class="ph-avatar" style="background:var(--blue-bg);color:var(--blue-t)">
+        CK
+        <div class="status-ring sr-busy"></div>
+      </div>
+      <div class="ph-info">
+        <div class="ph-name">Christopher Kim</div>
+        <div class="ph-role">
+          Chief Executive Officer
+          <span class="ph-role-sep">·</span>
+          Executive
+        </div>
+        <div class="ph-status-msg"><i class="ti ti-circle-dot" style="font-size:11px;color:var(--red)"></i> In client calls until 3pm</div>
+        <div class="ph-ns-row">
+          <div class="ph-ns-field"><div class="ph-ns-label">Email <span class="ns-badge">NS</span></div><div class="ph-ns-value">chris@netdynamic.ca</div></div>
+          <div class="ph-ns-field"><div class="ph-ns-label">Location <span class="ns-badge">NS</span></div><div class="ph-ns-value">Mississauga, ON</div></div>
+          <div class="ph-ns-field"><div class="ph-ns-label">Join date <span class="ns-badge">NS</span></div><div class="ph-ns-value">Jan 15, 2019</div><div class="ph-ns-sub" style="color:var(--teal-t)">7 yr 6 mo tenure</div></div>
+          <div class="ph-ns-field"><div class="ph-ns-label">Direct reports</div><div class="ph-ns-value">5 employees</div></div>
+          <div class="ph-ns-field"><div class="ph-ns-label">Co-led employees</div><div class="ph-ns-value">2 employees</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Supervisor stat strip -->
+  <div class="stat-strip">
+    <a class="stat-tile" href="#">
+      <div class="st-top"><div class="st-icon" style="background:var(--teal-bg)"><i class="ti ti-users" style="color:var(--teal-t)"></i></div><span class="st-trend trend-up"><i class="ti ti-trending-up" style="font-size:11px"></i>+1</span></div>
+      <div class="st-val">6<span style="font-size:14px;font-weight:400;color:var(--t3)">/7</span></div>
+      <div class="st-lbl">Team on track</div><div class="st-sub">Including co-led</div>
+      <div class="st-bar"><div class="st-fill" style="width:85%;background:var(--teal)"></div></div>
+    </a>
+    <a class="stat-tile" href="#">
+      <div class="st-top"><div class="st-icon" style="background:var(--red-bg)"><i class="ti ti-file-alert" style="color:var(--red-t)"></i></div><span class="st-trend trend-dn">due soon</span></div>
+      <div class="st-val" style="color:var(--red-t)">3</div>
+      <div class="st-lbl">Reviews to submit</div><div class="st-sub">Closes in 5 days</div>
+      <div class="st-bar"><div class="st-fill" style="width:30%;background:var(--red-t)"></div></div>
+    </a>
+    <a class="stat-tile" href="#">
+      <div class="st-top"><div class="st-icon" style="background:var(--amber-bg)"><i class="ti ti-star" style="color:var(--amber)"></i></div><span class="st-trend trend-up">+2</span></div>
+      <div class="st-val">9</div>
+      <div class="st-lbl">Recognition given</div><div class="st-sub">This cycle</div>
+      <div class="st-bar"><div class="st-fill" style="width:70%;background:var(--amber)"></div></div>
+    </a>
+    <a class="stat-tile" href="#">
+      <div class="st-top"><div class="st-icon" style="background:var(--red-bg)"><i class="ti ti-alert-triangle" style="color:var(--red-t)"></i></div><span style="font-size:10.5px;color:var(--amber-t)">monitor</span></div>
+      <div class="st-val" style="color:var(--amber-t)">1</div>
+      <div class="st-lbl">Members at risk</div><div class="st-sub">Goals below 50%</div>
+      <div class="st-bar"><div class="st-fill" style="width:20%;background:var(--amber)"></div></div>
+    </a>
+  </div>
+
+  <!-- My Team section -->
+  <div class="section-card">
+    <div class="sc-header">
+      <div class="sc-icon" style="background:var(--navy)"><i class="ti ti-users" style="color:#fff"></i></div>
+      <span class="sc-title">My Team</span>
+      <button class="btn-sm-g" onclick="openCoLeadModal()"><i class="ti ti-git-branch" style="font-size:12px"></i> Manage co-team-leads</button>
+    </div>
+    <div class="sc-body">
+
+      <!-- Primary direct reports -->
+      <div class="team-section-label">NS direct reports</div>
+      <table class="team-table">
+        <thead><tr><th>Employee</th><th>Role</th><th>Goals</th><th>Last recognition</th><th>Review</th><th>Last score</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><a class="emp-link" href="#">Cynthia Diaz</a></td>
+            <td style="color:var(--t2);font-size:12px">Sr. Solutions Consultant</td>
+            <td><span style="color:var(--teal-t);font-weight:600">5/6</span></td>
+            <td style="font-size:12px;color:var(--t2)">Jul 2</td>
+            <td><span class="chip chip-warn">In progress</span></td>
+            <td><span style="font-weight:600;color:var(--teal-t)">76%</span></td>
+          </tr>
+          <tr>
+            <td><a class="emp-link" href="#">Aiden Somerhalder</a></td>
+            <td style="color:var(--t2);font-size:12px">Solutions Consultant</td>
+            <td><span style="color:var(--teal-t);font-weight:600">4/5</span></td>
+            <td style="font-size:12px;color:var(--t2)">Jun 28</td>
+            <td><span class="chip chip-pass">Submitted</span></td>
+            <td><span style="font-weight:600;color:var(--teal-t)">82%</span></td>
+          </tr>
+          <tr class="at-risk">
+            <td><a class="emp-link" href="#">Amy Nguyen</a></td>
+            <td style="color:var(--t2);font-size:12px">PS Consultant</td>
+            <td><span style="color:var(--amber-t);font-weight:600">1/4</span></td>
+            <td style="font-size:12px;color:var(--red-t)">45 days ago</td>
+            <td><span class="chip chip-fail">Not submitted</span></td>
+            <td><span style="font-weight:600;color:var(--amber-t)">72%</span></td>
+          </tr>
+          <tr>
+            <td><a class="emp-link" href="#">Wilver Guzman</a></td>
+            <td style="color:var(--t2);font-size:12px">Dev Lead</td>
+            <td><span style="color:var(--teal-t);font-weight:600">3/4</span></td>
+            <td style="font-size:12px;color:var(--t2)">Jul 1</td>
+            <td><span class="chip chip-pass">Submitted</span></td>
+            <td><span style="font-weight:600">78%</span></td>
+          </tr>
+          <tr>
+            <td><a class="emp-link" href="#">Suchita Mishra</a></td>
+            <td style="color:var(--t2);font-size:12px">Account Manager</td>
+            <td><span style="color:var(--teal-t);font-weight:600">4/4</span></td>
+            <td style="font-size:12px;color:var(--t2)">Jun 25</td>
+            <td><span class="chip chip-pass">Submitted</span></td>
+            <td><span style="font-weight:600;color:var(--teal-t)">80%</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Co-led employees subsection -->
+      <div class="team-section-label" style="margin-top:18px">Co-led employees</div>
+      <div class="info-note"><i class="ti ti-info-circle"></i>These employees are co-led by you under an HR-approved arrangement. You have supervisor-level access to their profiles and can add notes.</div>
+      <table class="team-table">
+        <thead><tr><th>Employee</th><th>Role</th><th>Arrangement</th><th>Goals</th><th>Last recognition</th><th>Last score</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><a class="emp-link" href="#">Gabriel Guzman</a><span class="arr-badge">Essen project</span></td>
+            <td style="color:var(--t2);font-size:12px">Developer</td>
+            <td style="font-size:11.5px;color:var(--t2)">Cynthia Diaz → you</td>
+            <td><span style="color:var(--teal-t);font-weight:600">3/3</span></td>
+            <td style="font-size:12px;color:var(--t2)">Jun 20</td>
+            <td><span style="font-weight:600">74%</span></td>
+          </tr>
+          <tr>
+            <td><a class="emp-link" href="#">Bon Ariola</a><span class="arr-badge">Essen project</span></td>
+            <td style="color:var(--t2);font-size:12px">Developer</td>
+            <td style="font-size:11.5px;color:var(--t2)">Wilver Guzman → you</td>
+            <td><span style="color:var(--amber-t);font-weight:600">2/4</span></td>
+            <td style="font-size:12px;color:var(--red-t)">38 days ago</td>
+            <td><span style="font-weight:600;color:var(--amber-t)">68%</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Co-lead arrangements management -->
+      <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border)">
+        <div class="co-lead-header">
+          <span style="font-size:12px;font-weight:600;color:var(--t2)">Active co-lead arrangements</span>
+          <button class="btn-sm-navy" onclick="showToast('Opening new arrangement form…')"><i class="ti ti-plus" style="font-size:12px"></i> New arrangement</button>
+        </div>
+        <div class="co-lead-arrangement">
+          <div class="cla-info">
+            <div class="cla-name">Essen project co-lead</div>
+            <div class="cla-scope">Gabriel Guzman, Bon Ariola · Primary supervisors: Cynthia Diaz, Wilver Guzman · Started Jun 1, 2026</div>
+          </div>
+          <span class="cla-status cls-approved">Approved by HR</span>
+          <button class="btn-sm-g" style="font-size:11px" onclick="showToast('Revocation request sent to HR…')">Request revocation</button>
+        </div>
+        <div class="co-lead-arrangement">
+          <div class="cla-info">
+            <div class="cla-name">Pyramid Network onboarding lead</div>
+            <div class="cla-scope">Amy Nguyen · Primary supervisor: Christopher Kim · Submitted Jul 3, 2026</div>
+          </div>
+          <span class="cla-status cls-pending">Pending HR review</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ VISITOR — PEER ══ -->
+<div class="view-panel" id="view-visitor-peer">
+  <div class="vis-badge vb-peer"><i class="ti ti-eye" style="font-size:11px"></i> Viewing as: peer employee</div>
+  <div class="profile-header">
+    <div class="ph-row">
+      <div class="ph-avatar" style="background:var(--teal-bg);color:var(--teal-t)">
+        <img src="https://i.pravatar.cc/150?img=47" alt="CD" onerror="this.style.display='none'"/>
+        CD
+        <div class="status-ring sr-available"></div>
+      </div>
+      <div class="ph-info">
+        <div class="ph-name">Cynthia Diaz</div>
+        <div class="ph-role">Sr. Solutions Consultant <span class="ph-role-sep">·</span> Professional Services</div>
+        <div class="ph-status-msg"><i class="ti ti-circle-dot" style="font-size:11px;color:var(--green)"></i> Hire Faster, Hire Smarter</div>
+        <div class="ph-ns-row">
+          <div class="ph-ns-field"><div class="ph-ns-label">Email <span class="ns-badge">NS</span></div><div class="ph-ns-value">cynthia@netdynamic.ca</div></div>
+          <div class="ph-ns-field"><div class="ph-ns-label">Department <span class="ns-badge">NS</span></div><div class="ph-ns-value">Professional Services</div></div>
+          <div class="ph-ns-field"><div class="ph-ns-label">Location <span class="ns-badge">NS</span></div><div class="ph-ns-value">Mississauga, ON</div></div>
+        </div>
+        <div class="action-bar">
+          <button class="ab-btn primary" onclick="showToast('Opening email compose…')"><i class="ti ti-mail"></i> Email</button>
+          <button class="ab-btn" onclick="showToast('Opening recognition compose…')"><i class="ti ti-star"></i> Send recognition</button>
+          <button class="ab-btn" onclick="showToast('Opening feedback compose…')"><i class="ti ti-message"></i> Request feedback</button>
+          <button class="ab-btn disabled"><i class="ti ti-message-2"></i> Message <span class="p2-label">P2</span></button>
+          <button class="ab-btn disabled"><i class="ti ti-calendar"></i> Book meeting <span class="p2-label">P2</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-note"><i class="ti ti-lock"></i> Join date, performance stats, score history, evidence, and goals are not shown to peer visitors.</div>
+
+  <div class="section-card">
+    <div class="sc-header"><div class="sc-icon" style="background:var(--amber-bg)"><i class="ti ti-star" style="color:var(--amber)"></i></div><span class="sc-title">Recent recognition</span></div>
+    <div class="sc-body">
+      <div class="rec-list">
+        <div class="rec-item"><div class="rec-av" style="background:var(--blue-bg);color:var(--blue-t)">CK</div><div class="rec-body"><div class="rec-from">Christopher Kim · Jul 2</div><div class="rec-msg">Ring ring — welcome Essen to the NetDynamic family.</div><span class="rec-badge-chip">Client Focus</span></div></div>
+        <div class="rec-item"><div class="rec-av" style="background:var(--teal-bg);color:var(--teal-t)">MH</div><div class="rec-body"><div class="rec-from">Mary Higgins · Jun 30</div><div class="rec-msg">Drove the Essen deal from first call to signed contract.</div><span class="rec-badge-chip">Going above and beyond</span></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ VISITOR — DIRECT SUPERVISOR ══ -->
+<div class="view-panel" id="view-visitor-supervisor">
+  <div class="vis-badge vb-supervisor"><i class="ti ti-shield-check" style="font-size:11px"></i> Viewing as: direct supervisor</div>
+  <div class="profile-header">
+    <div class="ph-row">
+      <div class="ph-avatar" style="background:var(--teal-bg);color:var(--teal-t)">CD<div class="status-ring sr-available"></div></div>
+      <div class="ph-info">
+        <div class="ph-name">Cynthia Diaz</div>
+        <div class="ph-role">Sr. Solutions Consultant <span class="ph-role-sep">·</span> Professional Services</div>
+        <div class="ph-status-msg"><i class="ti ti-circle-dot" style="font-size:11px;color:var(--green)"></i> Hire Faster, Hire Smarter</div>
+        <div class="ph-ns-row">
+          <div class="ph-ns-field"><div class="ph-ns-label">Email <span class="ns-badge">NS</span></div><div class="ph-ns-value">cynthia@netdynamic.ca</div></div>
+          <div class="ph-ns-field"><div class="ph-ns-label">Department <span class="ns-badge">NS</span></div><div class="ph-ns-value">Professional Services</div></div>
+          <div class="ph-ns-field"><div class="ph-ns-label">Join date <span class="ns-badge">NS</span></div><div class="ph-ns-value">May 27, 2026</div><div class="ph-ns-sub" style="color:var(--teal-t)">1 yr 2 mo</div></div>
+        </div>
+        <div class="action-bar">
+          <button class="ab-btn primary"><i class="ti ti-mail"></i> Email</button>
+          <button class="ab-btn"><i class="ti ti-star"></i> Send recognition</button>
+          <button class="ab-btn"><i class="ti ti-message"></i> Request feedback</button>
+          <button class="ab-btn"><i class="ti ti-notes"></i> Add note</button>
+          <button class="ab-btn disabled"><i class="ti ti-calendar"></i> Book meeting <span class="p2-label">P2</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stat strip visible to supervisor -->
+  <div class="stat-strip">
+    <div class="stat-tile"><div class="st-top"><div class="st-icon" style="background:var(--teal-bg)"><i class="ti ti-target" style="color:var(--teal-t)"></i></div><span class="st-trend trend-up">+2</span></div><div class="st-val">6</div><div class="st-lbl">Goals on track</div><div class="st-sub">of 8 active</div><div class="st-bar"><div class="st-fill" style="width:75%;background:var(--teal)"></div></div></div>
+    <div class="stat-tile"><div class="st-top"><div class="st-icon" style="background:var(--amber-bg)"><i class="ti ti-star" style="color:var(--amber)"></i></div><span class="st-trend trend-up">+4</span></div><div class="st-val">14</div><div class="st-lbl">Recognitions</div><div class="st-sub">This cycle</div><div class="st-bar"><div class="st-fill" style="width:70%;background:var(--amber)"></div></div></div>
+    <div class="stat-tile"><div class="st-top"><div class="st-icon" style="background:var(--blue-bg)"><i class="ti ti-folder" style="color:var(--blue-t)"></i></div></div><div class="st-val">5</div><div class="st-lbl">Evidence items</div><div class="st-sub">Approved</div><div class="st-bar"><div class="st-fill" style="width:50%;background:var(--blue-t)"></div></div></div>
+    <div class="stat-tile"><div class="st-top"><div class="st-icon" style="background:var(--purple-bg)"><i class="ti ti-chart-bar" style="color:var(--purple-t)"></i></div></div><div class="st-val">76<span style="font-size:14px;color:var(--t3)">%</span></div><div class="st-lbl">Last score</div><div class="st-sub">Mid Year 2026</div><div class="st-bar"><div class="st-fill" style="width:76%;background:var(--purple-t)"></div></div></div>
+  </div>
+
+  <!-- Score history -->
+  <div class="section-card">
+    <div class="sc-header"><div class="sc-icon" style="background:var(--navy)"><i class="ti ti-chart-line" style="color:#fff"></i></div><span class="sc-title">Score history</span></div>
+    <div class="sc-body">
+      <div class="score-history-mini">
+        <div class="shm-bar-wrap"><div class="shm-val">3.2</div><div class="shm-bar" style="height:45%;background:var(--border-mid);opacity:.7"></div><div class="shm-lbl">2023<br>Legacy</div></div>
+        <div class="shm-bar-wrap"><div class="shm-val">3.5</div><div class="shm-bar" style="height:55%;background:var(--border-mid);opacity:.7"></div><div class="shm-lbl">2024<br>Legacy</div></div>
+        <div class="shm-bar-wrap"><div class="shm-val">3.6</div><div class="shm-bar" style="height:58%"></div><div class="shm-lbl">Feb<br>Monthly</div></div>
+        <div class="shm-bar-wrap"><div class="shm-val">3.7</div><div class="shm-bar" style="height:62%"></div><div class="shm-lbl">Mar</div></div>
+        <div class="shm-bar-wrap"><div class="shm-val">3.8</div><div class="shm-bar" style="height:68%;background:var(--teal)"></div><div class="shm-lbl">Mid Year</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Goals visible to supervisor -->
+  <div class="section-card">
+    <div class="sc-header"><div class="sc-icon" style="background:var(--teal-bg)"><i class="ti ti-target" style="color:var(--teal-t)"></i></div><span class="sc-title">Active goals</span></div>
+    <div class="sc-body">
+      <div class="goal-mini"><div class="gm-top"><span class="gm-title">Close Essen Healthcare deal</span><span class="gm-pct" style="color:var(--teal-t)">100%</span></div><div class="gm-bar"><div class="gm-fill" style="width:100%;background:var(--teal)"></div></div></div>
+      <div class="goal-mini"><div class="gm-top"><span class="gm-title">Reach $1M in new sales revenue</span><span class="gm-pct">75%</span></div><div class="gm-bar"><div class="gm-fill" style="width:75%;background:var(--navy-mid)"></div></div></div>
+      <div class="goal-mini"><div class="gm-top"><span class="gm-title">Mentor 2 junior consultants</span><span class="gm-pct" style="color:var(--amber-t)">60%</span></div><div class="gm-bar"><div class="gm-fill" style="width:60%;background:var(--amber)"></div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ VISITOR — CO-TEAM-LEAD ══ -->
+<div class="view-panel" id="view-visitor-colead">
+  <div class="vis-badge vb-colead"><i class="ti ti-git-branch" style="font-size:11px"></i> Viewing as: co-team-lead (Essen project scope)</div>
+  <div class="info-note"><i class="ti ti-info-circle"></i>You are a co-team-lead for Gabriel Guzman and Bon Ariola under the Essen project arrangement approved Jun 1, 2026. You have supervisor-level access for these employees only.</div>
+  <div class="profile-header">
+    <div class="ph-row">
+      <div class="ph-avatar" style="background:var(--purple-bg);color:var(--purple-t)">GA<div class="status-ring sr-available"></div></div>
+      <div class="ph-info">
+        <div class="ph-name">Gabriel Guzman</div>
+        <div class="ph-role">Developer <span class="ph-role-sep">·</span> Development</div>
+        <div class="ph-status-msg"><i class="ti ti-circle-dot" style="font-size:11px;color:var(--green)"></i> Available</div>
+        <div class="ph-ns-row">
+          <div class="ph-ns-field"><div class="ph-ns-label">Email <span class="ns-badge">NS</span></div><div class="ph-ns-value">gabriel@netdynamic.ca</div></div>
+          <div class="ph-ns-field"><div class="ph-ns-label">NS Supervisor <span class="ns-badge">NS</span></div><div class="ph-ns-value">Wilver Guzman</div></div>
+          <div class="ph-ns-field"><div class="ph-ns-label">Co-lead</div><div class="ph-ns-value">Christopher Kim</div><div class="ph-ns-sub">Essen project</div></div>
+          <div class="ph-ns-field"><div class="ph-ns-label">Join date <span class="ns-badge">NS</span></div><div class="ph-ns-value">Mar 10, 2025</div><div class="ph-ns-sub" style="color:var(--teal-t)">1 yr 3 mo</div></div>
+        </div>
+        <div class="action-bar">
+          <button class="ab-btn primary"><i class="ti ti-mail"></i> Email</button>
+          <button class="ab-btn"><i class="ti ti-star"></i> Send recognition</button>
+          <button class="ab-btn"><i class="ti ti-notes"></i> Add note</button>
+          <button class="ab-btn disabled"><i class="ti ti-calendar"></i> Book meeting <span class="p2-label">P2</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Same stat strip and goals as supervisor view — same access level -->
+  <div class="stat-strip">
+    <div class="stat-tile"><div class="st-top"><div class="st-icon" style="background:var(--teal-bg)"><i class="ti ti-target" style="color:var(--teal-t)"></i></div></div><div class="st-val">3<span style="font-size:14px;color:var(--t3)">/3</span></div><div class="st-lbl">Goals on track</div><div class="st-sub">All on track</div><div class="st-bar"><div class="st-fill" style="width:100%;background:var(--teal)"></div></div></div>
+    <div class="stat-tile"><div class="st-top"><div class="st-icon" style="background:var(--amber-bg)"><i class="ti ti-star" style="color:var(--amber)"></i></div></div><div class="st-val">6</div><div class="st-lbl">Recognitions</div><div class="st-sub">This cycle</div><div class="st-bar"><div class="st-fill" style="width:60%;background:var(--amber)"></div></div></div>
+    <div class="stat-tile"><div class="st-top"><div class="st-icon" style="background:var(--blue-bg)"><i class="ti ti-folder" style="color:var(--blue-t)"></i></div></div><div class="st-val">3</div><div class="st-lbl">Evidence items</div><div class="st-bar"><div class="st-fill" style="width:60%;background:var(--blue-t)"></div></div></div>
+    <div class="stat-tile"><div class="st-top"><div class="st-icon" style="background:var(--purple-bg)"><i class="ti ti-chart-bar" style="color:var(--purple-t)"></i></div></div><div class="st-val">74<span style="font-size:14px;color:var(--t3)">%</span></div><div class="st-lbl">Last score</div><div class="st-bar"><div class="st-fill" style="width:74%;background:var(--purple-t)"></div></div></div>
+  </div>
+</div>
+
+<!-- ══ VISITOR — PEER REVIEWER ══ -->
+<div class="view-panel" id="view-visitor-reviewer">
+  <div class="vis-badge vb-reviewer"><i class="ti ti-file-text" style="font-size:11px"></i> Viewing as: cycle peer reviewer — Mid Year Review 2026</div>
+  <div class="info-note"><i class="ti ti-info-circle"></i>You are assigned as a peer reviewer for Cynthia Diaz in this cycle. You can see her active goals for context. Performance stats and score history are not shown.</div>
+  <div class="profile-header">
+    <div class="ph-row">
+      <div class="ph-avatar" style="background:var(--teal-bg);color:var(--teal-t)">CD<div class="status-ring sr-available"></div></div>
+      <div class="ph-info">
+        <div class="ph-name">Cynthia Diaz</div>
+        <div class="ph-role">Sr. Solutions Consultant <span class="ph-role-sep">·</span> Professional Services</div>
+        <div class="ph-status-msg"><i class="ti ti-circle-dot" style="font-size:11px;color:var(--green)"></i> Hire Faster, Hire Smarter</div>
+        <div class="ph-ns-row">
+          <div class="ph-ns-field"><div class="ph-ns-label">Email <span class="ns-badge">NS</span></div><div class="ph-ns-value">cynthia@netdynamic.ca</div></div>
+          <div class="ph-ns-field"><div class="ph-ns-label">Department <span class="ns-badge">NS</span></div><div class="ph-ns-value">Professional Services</div></div>
+        </div>
+        <div class="action-bar">
+          <button class="ab-btn primary"><i class="ti ti-mail"></i> Email</button>
+          <button class="ab-btn"><i class="ti ti-star"></i> Send recognition</button>
+          <button class="ab-btn"><i class="ti ti-external-link"></i> Open peer review form</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="section-card">
+    <div class="sc-header"><div class="sc-icon" style="background:var(--teal-bg)"><i class="ti ti-target" style="color:var(--teal-t)"></i></div><span class="sc-title">Active goals — this cycle only</span><span style="font-size:11px;color:var(--t3)">For context when writing your review</span></div>
+    <div class="sc-body">
+      <div class="goal-mini"><div class="gm-top"><span class="gm-title">Close Essen Healthcare deal</span><span class="gm-pct" style="color:var(--teal-t)">100%</span></div><div class="gm-bar"><div class="gm-fill" style="width:100%;background:var(--teal)"></div></div></div>
+      <div class="goal-mini"><div class="gm-top"><span class="gm-title">Reach $1M in new sales revenue</span><span class="gm-pct">75%</span></div><div class="gm-bar"><div class="gm-fill" style="width:75%;background:var(--navy-mid)"></div></div></div>
+    </div>
+  </div>
+  <div class="restricted-block"><i class="ti ti-lock"></i>Score history, performance stats, evidence, and notes are not available to peer reviewers</div>
+</div>
+
+<!-- ══ COMMUNICATIONS TAB ══ -->
+<div class="view-panel" id="view-comms">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+    <div>
+      <div style="font-size:18px;font-weight:700;color:var(--t1);margin-bottom:2px">Communications</div>
+      <div style="font-size:13px;color:var(--t2)">Every email the system sent you — in one place.</div>
+    </div>
+  </div>
+
+  <div class="comms-filter">
+    <button class="cf-btn active">All</button>
+    <button class="cf-btn">Review cycle</button>
+    <button class="cf-btn">Goals</button>
+    <button class="cf-btn">Recognition</button>
+    <button class="cf-btn">Documents</button>
+    <button class="cf-btn">Meetings</button>
+    <button class="cf-btn">From HR</button>
+  </div>
+
+  <div class="comms-list">
+
+    <div class="comm-item" onclick="toggleComm(this)">
+      <div class="comm-header">
+        <div class="comm-icon" style="background:var(--purple-bg)"><i class="ti ti-refresh" style="color:var(--purple-t)"></i></div>
+        <div class="comm-body">
+          <div class="comm-subject">Mid Year Peer Review 2026 — results are ready</div>
+          <div class="comm-meta"><span>From: Performance Center</span><span>Jun 30, 2026 · 8:02am</span><span>Review cycle</span></div>
+          <div class="comm-preview">Your Mid Year Peer Review results have been released. Log in to view your score, read your manager's assessment…</div>
+        </div>
+        <span class="comm-badge cb-opened">Opened</span>
+      </div>
+      <div class="comm-full">Your Mid Year Peer Review 2026 results have been released by HR. Log in to your Performance Center to view your overall score, your manager's written assessment, and the evidence items your reviewer approved.<br><br>If you have questions about your results, reach out to HR or book a follow-up meeting with your manager.<br><br>— Performance Center, NetDynamic Consulting</div>
+    </div>
+
+    <div class="comm-item" onclick="toggleComm(this)">
+      <div class="comm-header">
+        <div class="comm-icon" style="background:var(--teal-bg)"><i class="ti ti-folder" style="color:var(--teal-t)"></i></div>
+        <div class="comm-body">
+          <div class="comm-subject">Evidence item approved — NetSuite ERP Certification</div>
+          <div class="comm-meta"><span>From: Performance Center</span><span>May 15, 2026 · 9:14am</span><span>Evidence</span></div>
+          <div class="comm-preview">Your evidence item "NetSuite ERP Consultant Certification — SuiteFoundation" has been approved by HR and is now in your evidence locker…</div>
+        </div>
+        <span class="comm-badge cb-opened">Opened</span>
+      </div>
+      <div class="comm-full">Your evidence item "NetSuite ERP Consultant Certification — SuiteFoundation" has been reviewed and approved by HR. It is now available in your evidence locker and can be attached to your current review cycle.<br><br>— Performance Center, NetDynamic Consulting</div>
+    </div>
+
+    <div class="comm-item" onclick="toggleComm(this)">
+      <div class="comm-header">
+        <div class="comm-icon" style="background:var(--amber-bg)"><i class="ti ti-target" style="color:var(--amber)"></i></div>
+        <div class="comm-body">
+          <div class="comm-subject">New goal assigned — Close Essen Healthcare deal</div>
+          <div class="comm-meta"><span>From: Christopher Kim</span><span>Apr 1, 2026 · 10:30am</span><span>Goals</span></div>
+          <div class="comm-preview">Christopher Kim has assigned you a new goal: "Close Essen Healthcare deal". Accept, request changes, or decline…</div>
+        </div>
+        <span class="comm-badge cb-delivered">Delivered</span>
+      </div>
+      <div class="comm-full">Christopher Kim has assigned you a new goal for the Mid Year 2026 cycle: "Close Essen Healthcare deal". Log in to your Performance Center to review the goal details, accept it, request changes, or decline with a reason.<br><br>— Performance Center, NetDynamic Consulting</div>
+    </div>
+
+    <div class="comm-item" onclick="toggleComm(this)">
+      <div class="comm-header">
+        <div class="comm-icon" style="background:var(--navy)"><i class="ti ti-mail" style="color:#fff"></i></div>
+        <div class="comm-body">
+          <div class="comm-subject">Your Q2 performance check-in — note from HR</div>
+          <div class="comm-meta"><span>From: Anne Sullivan (HR)</span><span>Mar 28, 2026 · 2:15pm</span><span>From HR</span></div>
+          <div class="comm-preview">Hi Cynthia, just a note to say we've reviewed your Q1 check-in feedback and wanted to share some context on the promotion eligibility timeline…</div>
+        </div>
+        <span class="comm-badge cb-opened">Opened</span>
+      </div>
+      <div class="comm-full">Hi Cynthia,<br><br>Just a note to say we've reviewed your Q1 check-in feedback from Christopher and wanted to share some context on the promotion eligibility timeline. You're on track — the Mid Year review will be the key data point. Keep doing what you're doing.<br><br>Feel free to book time with me if you'd like to discuss further.<br><br>Anne Sullivan, HR</div>
+    </div>
+
+    <div class="comm-item" onclick="toggleComm(this)">
+      <div class="comm-header">
+        <div class="comm-icon" style="background:var(--purple-bg)"><i class="ti ti-refresh" style="color:var(--purple-t)"></i></div>
+        <div class="comm-body">
+          <div class="comm-subject">Mid Year Peer Review 2026 has launched — complete your self-assessment</div>
+          <div class="comm-meta"><span>From: Performance Center</span><span>Jan 3, 2026 · 8:00am</span><span>Review cycle</span></div>
+          <div class="comm-preview">The Mid Year Peer Review 2026 cycle is now active. Due date: June 30, 2026. Complete your self-assessment, nominate peer reviewers…</div>
+        </div>
+        <span class="comm-badge cb-opened">Opened</span>
+      </div>
+      <div class="comm-full">The Mid Year Peer Review 2026 cycle is now active. Your self-assessment, peer reviewer nominations, and any evidence submissions are due by June 30, 2026.<br><br>Log in to your Performance Center to get started.<br><br>— Performance Center, NetDynamic Consulting</div>
+    </div>
+
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<div class="toast" id="toast" style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--navy-h);color:#fff;font-size:12.5px;padding:8px 16px;border-radius:20px;display:flex;align-items:center;gap:6px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:300;white-space:nowrap"><i class="ti ti-check" style="font-size:13px"></i><span id="toastMsg"></span></div>
+
+<script>
+const descs={
+  'supervisor':'Supervisor own My Profile — My Team section, co-led employees, co-lead management',
+  'visitor-peer':'Peer employee visiting a colleague — contact actions only, no performance data',
+  'visitor-supervisor':'Direct supervisor visiting a direct report — full performance access',
+  'visitor-colead':'Co-team-lead visiting a scoped employee — same access as direct supervisor',
+  'visitor-reviewer':'Cycle peer reviewer — goals for context only, no stats or history',
+  'comms':'Communications tab — employee view of email history from the system'
+};
+function setView(view,btn){
+  document.querySelectorAll('.ctrl-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.view-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('view-'+view).classList.add('active');
+  document.getElementById('ctrlDesc').textContent=descs[view]||'';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function toggleComm(el){el.classList.toggle('expanded')}
+function showToast(msg){
+  document.getElementById('toastMsg').textContent=msg;
+  const t=document.getElementById('toast');t.style.opacity=1;
+  setTimeout(()=>t.style.opacity=0,2000);
+}
+function openCoLeadModal(){showToast('Opening co-team-lead management…');}
+</script>
+</body>
+</html>
