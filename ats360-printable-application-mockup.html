@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATS360 — Printable Application Mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy: #14213d;
+    --navy-deep: #0d1730;
+    --teal-nav: #21414f;
+    --orange: #f5811f;
+    --orange-dark: #d96d10;
+    --bg: #eef0f3;
+    --panel: #ffffff;
+    --border: #dde1e7;
+    --border-soft: #e8eaee;
+    --text: #1f2933;
+    --text-muted: #6b7684;
+    --text-faint: #9aa3ad;
+    --info-bg: #eaf2fc;
+    --info-border: #bcd8f6;
+    --info-icon: #2f6fce;
+    --success: #1f8a4c;
+    --locked-bg: #f4f2ee;
+    --locked-border: #e0dace;
+    --locked-text: #96876c;
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin:0;
+    font-family:'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  code, .mono{ font-family:'IBM Plex Mono', monospace; }
+
+  /* ---------- Top chrome: Oracle NetSuite / ATS360 shell ---------- */
+  .os-topbar{
+    background:#fff;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:10px 22px;
+  }
+  .os-brand{ display:flex; align-items:center; gap:10px; }
+  .os-brand .oracle{ font-size:10px; letter-spacing:.08em; color:#5b6472; line-height:1.1; font-weight:600;}
+  .os-brand .netsuite{ font-size:15px; font-weight:600; color:#2b3543; line-height:1.1;}
+  .os-brand .divider{ width:1px; height:26px; background:var(--border); margin:0 6px;}
+  .os-brand .ats-logo{ font-size:19px; font-weight:800; color:#3a4452; letter-spacing:-.01em;}
+  .os-brand .ats-logo span{ color: var(--orange); }
+  .os-search{ flex:1; max-width:520px; margin:0 32px; }
+  .os-search input{
+    width:100%; padding:8px 14px 8px 34px; border-radius:6px; border:1px solid var(--border);
+    background:#f6f7f9 url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" stroke="%236b7684" stroke-width="2"><circle cx="6" cy="6" r="5"/><line x1="10" y1="10" x2="13" y2="13"/></svg>') 12px center no-repeat;
+    font-size:13px; color:var(--text);
+  }
+  .os-actions{ display:flex; align-items:center; gap:20px; font-size:12.5px; color:#4b5563; }
+  .os-actions .item{ display:flex; align-items:center; gap:6px; white-space:nowrap; }
+  .os-actions .user-block{ text-align:right; line-height:1.25; }
+  .os-actions .user-block b{ display:block; font-size:13px; color:var(--text); }
+
+  .os-nav{
+    background: var(--teal-nav);
+    display:flex; align-items:center; gap:26px;
+    padding:0 22px;
+    color:#e7edf0;
+    font-size:13.5px;
+    font-weight:500;
+  }
+  .os-nav .icon-btn{ padding:11px 4px; opacity:.85; cursor:default; }
+  .os-nav a{ padding:11px 2px; color:#e7edf0; text-decoration:none; opacity:.9; }
+  .os-nav a.active{ opacity:1; background:rgba(255,255,255,.08); padding:11px 10px; }
+
+  .os-subbar{
+    background:#f4f5f7; border-bottom:1px solid var(--border);
+    display:flex; justify-content:flex-end; padding:8px 22px; font-size:12.5px; color:#5b6472;
+  }
+
+  /* ---------- ATS360 Preferences Manager banner ---------- */
+  .pm-banner{
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-deep) 100%);
+    color:#fff;
+    padding:26px 34px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .pm-banner h1{ margin:0; font-size:23px; font-weight:700; letter-spacing:-.01em; }
+  .pm-pill{
+    background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.28);
+    padding:8px 16px; border-radius:20px; font-size:12.5px; display:flex; align-items:center; gap:8px;
+  }
+
+  .pm-tabs{
+    background:#fff; border-bottom:1px solid var(--border);
+    display:flex; padding:0 24px; overflow-x:auto;
+  }
+  .pm-tabs .tab{
+    padding:15px 18px; font-size:12.5px; font-weight:600; letter-spacing:.02em;
+    color:#8a93a0; white-space:nowrap; border-bottom:3px solid transparent; cursor:default;
+    display:flex; align-items:center; gap:7px;
+  }
+  .pm-tabs .tab.active{ color: var(--orange); border-bottom-color: var(--orange); }
+
+  /* ---------- Layout ---------- */
+  .workspace{
+    display:grid;
+    grid-template-columns: minmax(0,1.28fr) minmax(360px, 0.9fr);
+    gap:22px;
+    padding:26px 30px 60px;
+    align-items:start;
+  }
+  @media (max-width: 1080px){
+    .workspace{ grid-template-columns: 1fr; }
+  }
+
+  .card{
+    background: var(--panel);
+    border:1px solid var(--border);
+    border-radius:8px;
+    overflow:hidden;
+  }
+
+  .info-banner{
+    background: var(--info-bg); border:1px solid var(--info-border);
+    border-radius:6px; margin:22px 22px 0; padding:13px 16px;
+    display:flex; gap:11px; font-size:13px; color:#274669; align-items:flex-start;
+  }
+  .info-banner .dot{
+    width:19px; height:19px; border-radius:50%; background:var(--info-icon); color:#fff;
+    display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex:none;
+  }
+
+  .field-grid{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:22px;
+    padding:22px;
+  }
+  @media (max-width:900px){ .field-grid{ grid-template-columns:repeat(2,1fr); } }
+
+  .field label.field-label{
+    display:block; font-size:11px; font-weight:700; letter-spacing:.04em; color:#4b5563; margin-bottom:8px;
+  }
+  .field select, .field input[type=text]{
+    width:100%; padding:9px 11px; border:1px solid var(--border); border-radius:6px; font-size:13.5px;
+    color:var(--text); background:#fff; font-family:inherit;
+  }
+  .field .hint{ font-size:11.5px; color:var(--text-faint); margin-top:6px; }
+  .checkline{ display:flex; gap:9px; align-items:flex-start; }
+  .checkline input{ margin-top:3px; }
+  .checkline .txt{ font-size:12.5px; color:#4b5563; line-height:1.45; }
+
+  .section-divider{
+    border-top:1px solid var(--border-soft); margin:0 22px;
+  }
+
+  /* ---------- New: Printable Application section ---------- */
+  .pa-section{ padding:22px; }
+  .pa-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:4px;}
+  .pa-head h3{ margin:0 0 4px; font-size:15px; font-weight:700; }
+  .pa-head p{ margin:0; font-size:12.5px; color:var(--text-muted); max-width:56ch; }
+  .new-flag{
+    background:#fdece0; color:var(--orange-dark); font-size:10.5px; font-weight:800; letter-spacing:.06em;
+    padding:3px 8px; border-radius:4px; text-transform:uppercase;
+  }
+
+  .switch-row{
+    display:flex; align-items:center; gap:12px; margin-top:16px; padding:14px 16px;
+    background:#f8f9fb; border:1px solid var(--border-soft); border-radius:6px;
+  }
+  .switch{ position:relative; width:38px; height:21px; flex:none; }
+  .switch input{ opacity:0; width:0; height:0; }
+  .switch .track{
+    position:absolute; inset:0; background:#c7cdd6; border-radius:20px; cursor:pointer; transition:.15s;
+  }
+  .switch .track::before{
+    content:""; position:absolute; width:15px; height:15px; left:3px; top:3px; background:#fff; border-radius:50%;
+    transition:.15s; box-shadow:0 1px 2px rgba(0,0,0,.25);
+  }
+  .switch input:checked + .track{ background: var(--orange); }
+  .switch input:checked + .track::before{ transform:translateX(17px); }
+  .switch-row .label-strong{ font-size:13px; font-weight:600; }
+  .switch-row .label-sub{ font-size:11.5px; color:var(--text-muted); }
+
+  .pa-config-grid{
+    display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-top:16px;
+  }
+  @media (max-width:640px){ .pa-config-grid{ grid-template-columns:1fr; } }
+
+  .logo-upload{
+    border:1.5px dashed var(--border); border-radius:6px; padding:14px; display:flex; align-items:center; gap:12px;
+    background:#fbfbfc; cursor:pointer;
+  }
+  .logo-upload:hover{ border-color:var(--orange); background:#fff9f4; }
+  .logo-preview{
+    width:44px; height:44px; border-radius:6px; background:#fff; border:1px solid var(--border-soft);
+    display:flex; align-items:center; justify-content:center; overflow:hidden; flex:none;
+  }
+  .logo-preview img{ max-width:100%; max-height:100%; }
+  .logo-preview svg{ opacity:.35; }
+  .logo-upload .txt b{ display:block; font-size:12.5px; }
+  .logo-upload .txt span{ font-size:11px; color:var(--text-faint); }
+
+  .btn{
+    font-family:inherit; font-size:13px; font-weight:600; border-radius:6px; padding:10px 18px;
+    cursor:pointer; border:1px solid transparent; display:inline-flex; align-items:center; gap:8px;
+  }
+  .btn-primary{ background: var(--orange); color:#fff; }
+  .btn-primary:hover{ background: var(--orange-dark); }
+  .btn-outline{ background:#fff; border-color:var(--border); color:var(--text); }
+  .btn-outline:hover{ border-color:#b7bec9; }
+  .btn-ghost{ background:transparent; color:var(--text-muted); border-color:transparent; padding:10px 6px; }
+  .btn-sm{ padding:7px 12px; font-size:12px; }
+  .btn:disabled{ opacity:.45; cursor:not-allowed; }
+
+  .configure-row{ display:flex; align-items:center; gap:12px; margin-top:18px; flex-wrap:wrap; }
+  .field-count-chip{
+    font-size:12px; color:var(--text-muted); background:#f0f2f5; padding:8px 12px; border-radius:20px;
+    display:flex; align-items:center; gap:6px;
+  }
+  .field-count-chip b{ color:var(--text); }
+
+  .footer-actions{
+    display:flex; justify-content:flex-end; gap:12px; padding:18px 22px; background:#fafbfc;
+    border-top:1px solid var(--border);
+  }
+
+  /* ---------- Modal ---------- */
+  .overlay{
+    position:fixed; inset:0; background:rgba(20,28,45,.5); display:none;
+    align-items:center; justify-content:center; z-index:100; padding:24px;
+  }
+  .overlay.open{ display:flex; }
+  .modal{
+    background:#fff; width:100%; max-width:760px; max-height:88vh; border-radius:10px;
+    display:flex; flex-direction:column; overflow:hidden; box-shadow:0 24px 60px rgba(10,15,30,.35);
+  }
+  .modal-head{
+    padding:20px 24px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:flex-start;
+  }
+  .modal-head h2{ margin:0 0 4px; font-size:17px; }
+  .modal-head p{ margin:0; font-size:12.5px; color:var(--text-muted); }
+  .modal-close{ background:none; border:none; font-size:20px; color:var(--text-faint); cursor:pointer; line-height:1; padding:2px;}
+
+  .modal-toolbar{
+    padding:12px 24px; border-bottom:1px solid var(--border-soft); display:flex; align-items:center;
+    justify-content:space-between; gap:12px; background:#fafbfc;
+  }
+  .modal-body{ overflow-y:auto; padding:6px 24px 20px; flex:1; }
+
+  .field-section{ padding:14px 0; border-bottom:1px solid var(--border-soft); }
+  .field-section:last-child{ border-bottom:none; }
+  .field-section-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+  .field-section-head h4{ margin:0; font-size:12.5px; font-weight:700; letter-spacing:.03em; color:#33404f; text-transform:uppercase; }
+  .field-section-head .sec-toggle{ font-size:11.5px; color:var(--orange-dark); cursor:pointer; font-weight:600; }
+
+  .field-option-list{ display:grid; grid-template-columns:1fr 1fr; gap:2px 18px; }
+  @media (max-width:560px){ .field-option-list{ grid-template-columns:1fr; } }
+  .field-option{
+    display:flex; align-items:flex-start; gap:9px; padding:7px 8px; border-radius:6px;
+  }
+  .field-option:hover{ background:#f6f7f9; }
+  .field-option input{ margin-top:3px; }
+  .field-option .fo-label{ font-size:13px; color:var(--text); }
+  .field-option .fo-value{ font-size:11px; color:var(--text-faint); }
+  .field-option.locked{ opacity:.75; }
+  .field-option.locked .fo-label{ color:var(--locked-text); }
+  .lock-badge{
+    display:inline-flex; align-items:center; gap:4px; font-size:10px; font-weight:700; color:var(--locked-text);
+    background:var(--locked-bg); border:1px solid var(--locked-border); padding:1px 7px; border-radius:10px; margin-left:6px;
+  }
+
+  .modal-foot{
+    padding:16px 24px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;
+    background:#fafbfc;
+  }
+
+  /* ---------- Preview panel ---------- */
+  .preview-shell{ position:sticky; top:20px; }
+  .preview-toolbar{
+    display:flex; align-items:center; justify-content:space-between; padding:16px 18px; border-bottom:1px solid var(--border);
+  }
+  .preview-toolbar h3{ margin:0; font-size:14px; }
+  .preview-toolbar .sub{ font-size:11.5px; color:var(--text-muted); margin-top:2px; }
+
+  .preview-scroll{
+    max-height:calc(100vh - 210px); overflow-y:auto; background:#e9ebef; padding:22px;
+  }
+
+  #print-area{
+    background:#fff; width:100%; max-width:520px; margin:0 auto; padding:26px 28px 34px;
+    box-shadow:0 2px 10px rgba(20,28,45,.12); font-size:12px; color:#1c2530;
+  }
+  .doc-head{ display:flex; gap:14px; align-items:flex-start; border:1px solid #222; padding:12px; margin-bottom:14px; }
+  .doc-head .doc-logo{
+    width:52px; height:52px; border:1px solid #b8bcc2; border-radius:4px; flex:none;
+    display:flex; align-items:center; justify-content:center; overflow:hidden; background:#fafafa;
+  }
+  .doc-head .doc-logo img{ max-width:100%; max-height:100%; }
+  .doc-head .doc-org b{ font-size:13.5px; display:block; letter-spacing:.02em; }
+  .doc-head .doc-org span{ display:block; font-size:11px; color:#4b5563; line-height:1.5; }
+  .doc-head .doc-title{ margin-left:auto; text-align:right; font-size:11px; color:#4b5563; }
+  .doc-title b{ display:block; font-size:12px; color:#1c2530; }
+
+  .doc-section{ margin-bottom:12px; }
+  .doc-section-head{
+    background:#1c2530; color:#fff; font-size:10.5px; font-weight:700; letter-spacing:.05em;
+    padding:5px 9px; text-transform:uppercase;
+  }
+  .doc-rows{ display:grid; grid-template-columns:1fr 1fr; gap:0 16px; padding:8px 2px 2px; }
+  .doc-rows.single{ grid-template-columns:1fr; }
+  .doc-row{ padding:4px 0; border-bottom:1px dotted #dcdfe4; }
+  .doc-row .k{ font-size:9.5px; text-transform:uppercase; letter-spacing:.04em; color:#6b7684; display:block; }
+  .doc-row .v{ font-size:12px; color:#1c2530; }
+
+  .doc-empty{
+    text-align:center; padding:40px 12px; color:#98a1ab; font-size:12.5px;
+  }
+
+  .doc-sig{ margin-top:16px; border-top:1px solid #222; padding-top:10px; }
+  .doc-sig .conf{ font-size:10.5px; color:#4b5563; margin-bottom:10px; line-height:1.5; }
+  .doc-sig .doc-rows{ padding-top:0; }
+
+  .doc-footer{ margin-top:18px; display:flex; justify-content:space-between; font-size:9.5px; color:#9aa3ad; border-top:1px solid #e5e7eb; padding-top:8px; }
+
+  .toast{
+    position:fixed; bottom:26px; left:50%; transform:translate(-50%,20px); background:#1c2530; color:#fff;
+    padding:12px 20px; border-radius:8px; font-size:13px; display:flex; align-items:center; gap:10px;
+    opacity:0; pointer-events:none; transition:.25s; z-index:200; box-shadow:0 12px 30px rgba(0,0,0,.25);
+  }
+  .toast.show{ opacity:1; transform:translate(-50%,0); }
+  .toast .dot{ width:8px; height:8px; border-radius:50%; background:#4ade80; flex:none; }
+
+  @media print{
+    body *{ visibility:hidden; }
+    #print-area, #print-area *{ visibility:visible; }
+    #print-area{ position:absolute; top:0; left:0; box-shadow:none; max-width:none; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- Oracle NetSuite chrome -->
+  <div class="os-topbar">
+    <div class="os-brand">
+      <div>
+        <div class="oracle">ORACLE</div>
+        <div class="netsuite">NetSuite</div>
+      </div>
+      <div class="divider"></div>
+      <div class="ats-logo">ATS<span>360</span></div>
+    </div>
+    <div class="os-search"><input type="text" placeholder="Search"></div>
+    <div class="os-actions">
+      <div class="item">Help</div>
+      <div class="item">Feedback</div>
+      <div class="user-block"><b>ATS 360</b>ATS360 Demo 2025 · ATS User</div>
+    </div>
+  </div>
+  <div class="os-nav">
+    <span class="icon-btn">⟲</span><span class="icon-btn">☆</span><span class="icon-btn">⌂</span>
+    <a href="#">Activities</a><a href="#" class="active">ATS</a><a href="#">Reports</a><a href="#">SuiteApps</a><a href="#">Support</a>
+  </div>
+  <div class="os-subbar">More</div>
+
+  <!-- ATS360 Preferences Manager -->
+  <div class="pm-banner">
+    <h1>ATS360 Preferences Manager</h1>
+    <div class="pm-pill">👤 Logged in as: ATS 360</div>
+  </div>
+  <div class="pm-tabs">
+    <div class="tab">⚙ General</div>
+    <div class="tab">🌐 Career Portal</div>
+    <div class="tab active">📝 Applications</div>
+    <div class="tab">💼 Job Openings</div>
+    <div class="tab">🗓 Interviews</div>
+    <div class="tab">🏢 Hiring Portal</div>
+    <div class="tab">🔗 Social Media</div>
+    <div class="tab">🛠 Advanced</div>
+    <div class="tab">🔑 License Usage</div>
+    <div class="tab">📋 Audit Trail</div>
+  </div>
+
+  <div class="workspace">
+
+    <!-- LEFT: preferences panel -->
+    <div>
+      <div class="card">
+        <div class="info-banner">
+          <div class="dot">i</div>
+          <div><b>Applications Settings:</b> Configure the fields below to customize your ATS360 applications experience.</div>
+        </div>
+
+        <div class="field-grid">
+          <div class="field">
+            <label class="field-label">REFERENCE REQUEST STAGE</label>
+            <select><option>Offer</option></select>
+            <div class="hint">Application stage at which reference requests are sent</div>
+          </div>
+          <div class="field">
+            <label class="field-label">REFERENCES NUMBER</label>
+            <input type="text" value="2">
+            <div class="hint">Number of references required from applicants</div>
+          </div>
+          <div class="field">
+            <label class="field-label">DEFAULT DELAY HOURS FOR REJECT</label>
+            <input type="text" placeholder="Number of hours to delay before sending rejection emails">
+            <div class="hint">Number of hours to delay before sending rejection emails</div>
+          </div>
+          <div class="field">
+            <label class="field-label">DO NOT NOTIFY HR MANAGER ON NEW APPLICANT</label>
+            <div class="checkline">
+              <input type="checkbox">
+              <div class="txt">When enabled, the hiring manager will not receive email notifications for new applications</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-grid" style="grid-template-columns:1fr; padding-top:0;">
+          <div class="field">
+            <label class="field-label">NOTIFY HIRING MANAGER GROUP FOR NEW APPLICANTS</label>
+            <div class="checkline">
+              <input type="checkbox">
+              <div class="txt">When enabled, all hiring managers in the job opening's manager group (Hiring Manager Group field) will also be notified of new applications</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- NEW: Printable Application -->
+        <div class="pa-section">
+          <div class="pa-head">
+            <div>
+              <h3>Printable Application <span class="new-flag">New</span></h3>
+              <p>Generate a condensed, print-ready version of the application for physical hiring files — choose exactly which fields appear on it.</p>
+            </div>
+          </div>
+
+          <div class="switch-row">
+            <label class="switch">
+              <input type="checkbox" id="enableToggle" checked>
+              <span class="track"></span>
+            </label>
+            <div>
+              <div class="label-strong">Enable printable application</div>
+              <div class="label-sub">Adds a "Print Application" action to the candidate detail page and hiring portal</div>
+            </div>
+          </div>
+
+          <div class="pa-config-grid">
+            <div class="field">
+              <label class="field-label">ORGANIZATION NAME</label>
+              <input type="text" id="orgNameInput" value="Johnson County, TX">
+            </div>
+            <div class="field">
+              <label class="field-label">ADDRESS ON DOCUMENT</label>
+              <input type="text" id="orgAddressInput" value="2 North Main Street, Cleburne, TX 76033">
+            </div>
+          </div>
+
+          <div class="pa-config-grid" style="margin-top:12px;">
+            <label class="logo-upload" for="logoInput">
+              <div class="logo-preview" id="logoPreview">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6b7684" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              </div>
+              <div class="txt">
+                <b>Upload organization logo</b>
+                <span>PNG or SVG · appears on the printable document</span>
+              </div>
+              <input type="file" id="logoInput" accept="image/*" style="display:none;">
+            </label>
+          </div>
+
+          <div class="configure-row">
+            <button class="btn btn-primary" id="openModalBtn">🗂 Configure fields</button>
+            <div class="field-count-chip" id="fieldCountChip"><b id="fieldCountNum">0</b>&nbsp;of <span id="fieldCountTotal">0</span>&nbsp;fields selected</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <div class="footer-actions">
+          <button class="btn btn-outline">↻ Reset</button>
+          <button class="btn btn-primary" id="savePrefsBtn">💾 Save Preferences</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: live preview -->
+    <div class="preview-shell card">
+      <div class="preview-toolbar">
+        <div>
+          <h3>Live preview</h3>
+          <div class="sub">Updates as fields are selected</div>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="window.print()">🖨 Print preview</button>
+      </div>
+      <div class="preview-scroll">
+        <div id="print-area"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Modal: field configuration -->
+  <div class="overlay" id="overlay">
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <h2>Configure printable application fields</h2>
+          <p>Select which application fields appear on the printed document. Changes apply to the preview immediately.</p>
+        </div>
+        <button class="modal-close" id="closeModalBtn">✕</button>
+      </div>
+      <div class="modal-toolbar">
+        <span id="modalCountLabel" style="font-size:12.5px;color:#6b7684;"></span>
+        <div style="display:flex;gap:14px;">
+          <span class="field-section-head sec-toggle" id="selectAllBtn" style="text-transform:none;">Select all</span>
+          <span class="field-section-head sec-toggle" id="clearAllBtn" style="text-transform:none;color:#6b7684;">Clear all</span>
+        </div>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-foot">
+        <button class="btn btn-ghost" id="restoreDefaultsBtn">Restore recommended defaults</button>
+        <div style="display:flex; gap:10px;">
+          <button class="btn btn-outline" id="cancelModalBtn">Cancel</button>
+          <button class="btn btn-primary" id="applyModalBtn">Apply selection</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"><span class="dot"></span><span id="toastMsg">Preferences saved</span></div>
+
+<script>
+// ---------------------------------------------------------------
+// Field data — organized by section. Mirrors the out-of-box ATS360
+// application record plus Johnson County's custom applicant fields.
+// Social Security is present but locked per client request: it is
+// collected after offer acceptance instead of on the application.
+// ---------------------------------------------------------------
+const SECTIONS = [
+  { id:'system', title:'ATS system fields', fields:[
+    { id:'jobPosting', label:'Job Posting', value:'Clerk I — JO-0014410', def:true },
+    { id:'applicant', label:'Applicant', value:'Jordan Ramirez', def:true },
+    { id:'recruiter', label:'Recruiter', value:'Kathryn Glass', def:false },
+    { id:'hiringDept', label:'Hiring Department', value:'County Clerk\u2019s Office', def:false },
+    { id:'applicationStage', label:'Application Stage', value:'In-Progress', def:false },
+    { id:'availableStartSys', label:'Available Start Date', value:'10/06/2026', def:false },
+  ]},
+  { id:'applicant-info', title:'Applicant information', fields:[
+    { id:'name', label:'Name', value:'Jordan Ramirez', def:true },
+    { id:'ssn', label:'Social Security Number', value:'Collected after offer acceptance', def:false, locked:true },
+    { id:'employeeId', label:'Employee ID', value:'\u2014', def:false },
+    { id:'personalEmail', label:'Personal Email', value:'jordan.ramirez@example.com', def:true },
+    { id:'cellPhone', label:'Cell Phone', value:'(555) 019-2231', def:true },
+    { id:'address', label:'Address', value:'118 Comanche Trail, Cleburne, TX 76033', def:true },
+  ]},
+  { id:'demographics', title:'Applicant demographics', fields:[
+    { id:'gender', label:'Gender', value:'F', def:false },
+    { id:'ethnicity', label:'Ethnicity', value:'White (not Hispanic or Latino)', def:false },
+    { id:'citizenship', label:'Citizenship', value:'U.S. Citizen', def:false },
+    { id:'primaryLanguage', label:'Primary Language', value:'English', def:false },
+    { id:'protectedVeteran', label:'Protected Veteran', value:'No, I Am Not a Protected Veteran', def:false },
+  ]},
+  { id:'job-info', title:'Applicant job information', fields:[
+    { id:'eligibleWork', label:'Eligible for Work In', value:'United States', def:true },
+    { id:'willRelocate', label:'Will Relocate', value:'Yes', def:false },
+    { id:'willingTravel', label:'Willing to Travel', value:'Yes', def:false },
+    { id:'reliableTransport', label:'Reliable Transportation', value:'Yes', def:false },
+    { id:'requiredSalary', label:'Required Salary', value:'$41,500', def:false },
+  ]},
+  { id:'position-screening', title:'Position & screening', fields:[
+    { id:'positionApplying', label:'What position are you applying for?', value:'Clerk I', def:true },
+    { id:'areYouSeeking', label:'Are you seeking', value:'All', def:false },
+    { id:'workedForCounty', label:'Previously worked for Johnson County', value:'No', def:false },
+    { id:'relativesWorking', label:'Relatives working for Johnson County', value:'No', def:false },
+  ]},
+  { id:'background', title:'Background questions', fields:[
+    { id:'felony', label:'Felony / misdemeanor conviction', value:'No', def:false },
+    { id:'deferredAdjudication', label:'Deferred adjudication', value:'No', def:false },
+    { id:'probation', label:'Placed on probation', value:'No', def:false },
+  ]},
+  { id:'summary', title:'Objective / summary', fields:[
+    { id:'objective', label:'Objective / Summary', value:'Motivated recent graduate with a background in Human Resources and Business Administration, eager to contribute organizational and communication skills to Johnson County.', def:true, wide:true },
+  ]},
+  { id:'skills', title:'Skills & qualifications', fields:[
+    { id:'jobCategories', label:'Job Categories', value:'Administrative, Clerical', def:false },
+    { id:'skills', label:'Skills', value:'Office Suite software, data entry, customer service', def:true },
+    { id:'otherSkills', label:'Other Skills', value:'Time management, problem solving, attention to detail', def:false },
+    { id:'characterTraits', label:'Character Traits', value:'Honesty, empathy, optimism, respect, loyalty', def:false },
+  ]},
+  { id:'experience', title:'Work experience', fields:[
+    { id:'workExperience', label:'Work Experience', value:'Office Coordinator, Borcelle \u2014 Jan 2022\u2013Sept 2023; Intern, Salford & Co \u2014 Apr\u2013Dec 2021', def:true, wide:true },
+  ]},
+  { id:'education', title:'Education', fields:[
+    { id:'highestEducation', label:'Highest Education', value:'Bachelor\u2019s Degree', def:true },
+    { id:'majorMinor', label:'Major / Minor', value:'Human Resources, Business', def:true },
+    { id:'schoolName', label:'School Name', value:'Texas Tech University', def:true },
+    { id:'duration', label:'Duration', value:'2023 \u2013 2025', def:false },
+    { id:'gpa', label:'GPA', value:'3.70', def:false },
+  ]},
+  { id:'references', title:'Professional references', fields:[
+    { id:'references', label:'Professional References', value:'Available upon request', def:false },
+  ]},
+  { id:'compliance', title:'EEO & screening responses', fields:[
+    { id:'eeoResponses', label:'EEO Responses', value:'Excluded \u2014 kept separate from the application per EEOC guidance', def:false },
+    { id:'screeningScore', label:'Screening Score', value:'25 / 40 (63%)', def:false },
+  ]},
+  { id:'signature', title:'Signature', fields:[
+    { id:'confirmationText', label:'Confirmation Text', value:'By signing, I acknowledge that I have read, understand, and agree to the terms and conditions of this application.', def:true, wide:true },
+    { id:'signedName', label:'Signed Name', value:'Jordan Ramirez', def:true },
+    { id:'signedDate', label:'Signed Date', value:'09/10/2026', def:true },
+  ]},
+];
+
+const ALL_FIELDS = SECTIONS.flatMap(s => s.fields.map(f => ({...f, section:s.id})));
+let selected = new Set(ALL_FIELDS.filter(f => f.def && !f.locked).map(f => f.id));
+
+// ---------------- Modal rendering ----------------
+const modalBody = document.getElementById('modalBody');
+
+function renderModal(){
+  modalBody.innerHTML = SECTIONS.map(sec => `
+    <div class="field-section" data-section="${sec.id}">
+      <div class="field-section-head">
+        <h4>${sec.title}</h4>
+        <span class="sec-toggle" data-sec-select="${sec.id}">select section</span>
+      </div>
+      <div class="field-option-list">
+        ${sec.fields.map(f => `
+          <label class="field-option ${f.locked ? 'locked' : ''}">
+            <input type="checkbox" data-field="${f.id}" ${f.locked ? 'disabled' : ''} ${selected.has(f.id) ? 'checked' : ''}>
+            <span>
+              <span class="fo-label">${f.label}${f.locked ? '<span class="lock-badge">🔒 Post-offer</span>' : ''}</span><br>
+              <span class="fo-value">${f.value}</span>
+            </span>
+          </label>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+
+  modalBody.querySelectorAll('input[type=checkbox][data-field]').forEach(cb => {
+    cb.addEventListener('change', e => {
+      const id = e.target.getAttribute('data-field');
+      if (e.target.checked) selected.add(id); else selected.delete(id);
+      updateModalCount();
+    });
+  });
+
+  modalBody.querySelectorAll('[data-sec-select]').forEach(el => {
+    el.addEventListener('click', () => {
+      const secId = el.getAttribute('data-sec-select');
+      const sec = SECTIONS.find(s => s.id === secId);
+      const allSelected = sec.fields.filter(f=>!f.locked).every(f => selected.has(f.id));
+      sec.fields.forEach(f => { if (!f.locked){ if (allSelected) selected.delete(f.id); else selected.add(f.id); } });
+      renderModal();
+      updateModalCount();
+    });
+  });
+
+  updateModalCount();
+}
+
+function updateModalCount(){
+  const selectable = ALL_FIELDS.filter(f => !f.locked).length;
+  document.getElementById('modalCountLabel').textContent = `${selected.size} of ${selectable} available fields selected`;
+}
+
+document.getElementById('selectAllBtn').addEventListener('click', () => {
+  ALL_FIELDS.forEach(f => { if(!f.locked) selected.add(f.id); });
+  renderModal();
+});
+document.getElementById('clearAllBtn').addEventListener('click', () => {
+  selected.clear();
+  renderModal();
+});
+document.getElementById('restoreDefaultsBtn').addEventListener('click', () => {
+  selected = new Set(ALL_FIELDS.filter(f => f.def && !f.locked).map(f => f.id));
+  renderModal();
+});
+
+// ---------------- Modal open/close ----------------
+const overlay = document.getElementById('overlay');
+document.getElementById('openModalBtn').addEventListener('click', () => { renderModal(); overlay.classList.add('open'); });
+document.getElementById('closeModalBtn').addEventListener('click', () => overlay.classList.remove('open'));
+document.getElementById('cancelModalBtn').addEventListener('click', () => overlay.classList.remove('open'));
+overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
+document.getElementById('applyModalBtn').addEventListener('click', () => {
+  overlay.classList.remove('open');
+  renderPreview();
+  updateFieldChip();
+  showToast('Field selection applied to preview');
+});
+
+// ---------------- Preview rendering ----------------
+let logoDataUrl = null;
+
+function renderPreview(){
+  const orgName = document.getElementById('orgNameInput').value || 'Organization Name';
+  const orgAddress = document.getElementById('orgAddressInput').value || '';
+  const enabled = document.getElementById('enableToggle').checked;
+  const printArea = document.getElementById('print-area');
+
+  if (!enabled){
+    printArea.innerHTML = `<div class="doc-empty">Printable application is turned off.<br>Enable it above to preview the document.</div>`;
+    return;
+  }
+
+  const logoHtml = logoDataUrl
+    ? `<img src="${logoDataUrl}" alt="logo">`
+    : `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#b8bcc2" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>`;
+
+  let html = `
+    <div class="doc-head">
+      <div class="doc-logo">${logoHtml}</div>
+      <div class="doc-org">
+        <b>${escapeHtml(orgName)}</b>
+        <span>${escapeHtml(orgAddress)}</span>
+      </div>
+      <div class="doc-title">
+        <b>Applicant Information</b>
+        Generated ${new Date().toLocaleDateString()}
+      </div>
+    </div>
+  `;
+
+  let anySelected = false;
+
+  SECTIONS.forEach(sec => {
+    const chosen = sec.fields.filter(f => selected.has(f.id));
+    if (chosen.length === 0) return;
+    if (sec.id === 'signature') return; // rendered separately at the end
+    anySelected = true;
+    const wide = chosen.some(f => f.wide);
+    html += `
+      <div class="doc-section">
+        <div class="doc-section-head">${sec.title}</div>
+        <div class="doc-rows ${wide ? 'single' : ''}">
+          ${chosen.map(f => `
+            <div class="doc-row" style="${f.wide ? 'grid-column:1/-1;' : ''}">
+              <span class="k">${f.label}</span>
+              <span class="v">${escapeHtml(f.value)}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  });
+
+  const sigSection = SECTIONS.find(s => s.id === 'signature');
+  const sigChosen = sigSection.fields.filter(f => selected.has(f.id));
+  if (sigChosen.length){
+    anySelected = true;
+    const conf = sigChosen.find(f => f.id === 'confirmationText');
+    const rest = sigChosen.filter(f => f.id !== 'confirmationText');
+    html += `
+      <div class="doc-sig">
+        ${conf ? `<div class="conf">${escapeHtml(conf.value)}</div>` : ''}
+        <div class="doc-rows">
+          ${rest.map(f => `
+            <div class="doc-row"><span class="k">${f.label}</span><span class="v">${escapeHtml(f.value)}</span></div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  if (!anySelected){
+    html += `<div class="doc-empty">No fields selected yet.<br>Choose fields to include in "Configure fields".</div>`;
+  } else {
+    html += `
+      <div class="doc-footer">
+        <span>ATS360 · Printable Application</span>
+        <span>Generated by ATS 360</span>
+      </div>
+    `;
+  }
+
+  printArea.innerHTML = html;
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function updateFieldChip(){
+  document.getElementById('fieldCountNum').textContent = selected.size;
+  document.getElementById('fieldCountTotal').textContent = ALL_FIELDS.filter(f=>!f.locked).length;
+}
+
+// ---------------- Logo upload ----------------
+document.getElementById('logoInput').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    logoDataUrl = ev.target.result;
+    document.getElementById('logoPreview').innerHTML = `<img src="${logoDataUrl}" alt="logo">`;
+    renderPreview();
+  };
+  reader.readAsDataURL(file);
+});
+
+// ---------------- Live-updating inputs ----------------
+['orgNameInput','orgAddressInput'].forEach(id => {
+  document.getElementById(id).addEventListener('input', renderPreview);
+});
+document.getElementById('enableToggle').addEventListener('change', renderPreview);
+
+// ---------------- Save + toast ----------------
+document.getElementById('savePrefsBtn').addEventListener('click', () => showToast('Preferences saved'));
+
+function showToast(msg){
+  const toast = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => toast.classList.remove('show'), 2400);
+}
+
+// ---------------- Init ----------------
+updateFieldChip();
+renderPreview();
+</script>
+</body>
+</html>
