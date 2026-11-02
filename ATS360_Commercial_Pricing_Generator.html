@@ -122,8 +122,8 @@ input:disabled,select:disabled{background:#f1f4f8;color:#8793a3}
 .status.g{background:#d6f0e1;color:#0f6a3f}
 .status.a{background:#ffe9b3;color:#7a4a00}
 .status.r{background:#ffd3cd;color:#8f2116}
-.tabs{display:flex;gap:2px}
-.tabs button{background:transparent;border:0;color:#a9c4de;padding:8px 12px;font-size:13px;font-weight:600;border-radius:7px 7px 0 0}
+.tabs{display:flex;gap:2px;overflow-x:auto}
+.tabs button{background:transparent;border:0;color:#a9c4de;padding:8px 10px;font-size:12.5px;font-weight:600;border-radius:7px 7px 0 0;white-space:nowrap}
 .tabs button.on{background:#fff;color:var(--navy)}
 .out-body{overflow:auto;padding:16px;flex:1}
 .tab-pane{display:none}
@@ -230,6 +230,7 @@ input:disabled,select:disabled{background:#f1f4f8;color:#8793a3}
         <button data-tab="proposal">Client Proposal</button>
         <button data-tab="handoff">Implementation Handoff</button>
         <button data-tab="contract">Contract Scope</button>
+        <button data-tab="pricelist">Partner Price List</button>
       </div>
     </div>
     <div class="out-body">
@@ -237,6 +238,7 @@ input:disabled,select:disabled{background:#f1f4f8;color:#8793a3}
       <div class="tab-pane" id="pane-proposal"></div>
       <div class="tab-pane" id="pane-handoff"></div>
       <div class="tab-pane" id="pane-contract"></div>
+      <div class="tab-pane" id="pane-pricelist"></div>
     </div>
   </aside>
 </main>
@@ -371,7 +373,8 @@ function baseState(){
     cost:{ aws:0, sdn:0, third:0, support:0, other:0, margin:70 },
     exec:{},
     logo:"",
-    showFixed:true
+    showFixed:true,
+    priceList:{ partner:"DLT", valid:"", approved:false, showModules:true, showSupport:true }
   };
 }
 function demoState(){
@@ -825,6 +828,7 @@ function renderOutputs(c){
   $("pane-proposal").innerHTML = proposalHtml(c);
   $("pane-handoff").innerHTML = handoffHtml(c);
   $("pane-contract").innerHTML = contractHtml(c);
+  $("pane-pricelist").innerHTML = priceListHtml();
 }
 
 function summaryHtml(c){
@@ -1030,6 +1034,77 @@ function contractHtml(c){
 /* =====================================================================
    OVERRIDE MODAL, VALIDATE MODAL, TOAST
    ===================================================================== */
+
+/* =====================================================================
+   PARTNER PRICE LIST — generic List-price menu, generated from pricingPolicy
+   (no hours, no target/strategic/floor, no commission, no deal data)
+   ===================================================================== */
+function priceListHtml(){
+  const pl=S.priceList;
+  return `<div class="no-print">
+    <div class="note ${pl.approved?"g":"a"}" style="margin-top:0"><b>${pl.approved?"Marked approved for release.":"Not approved."}</b> All policy values are currently <b>${esc(P.version)}</b>. Tick “approved” only after management signs off; until then the printout carries a DRAFT banner.</div>
+    <div class="grid g2" style="margin:12px 0">
+      <label class="f"><span class="l">Prepared for (partner)</span><input type="text" data-k="priceList.partner" value="${esc(pl.partner)}"></label>
+      <label class="f"><span class="l">Price valid until (optional)</span><input type="text" data-k="priceList.valid" value="${esc(pl.valid)}" placeholder="e.g. March 31, 2027"></label>
+    </div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
+      <label class="chk"><input type="checkbox" data-k="priceList.approved" ${pl.approved?"checked":""}> Pricing approved for release</label>
+      <label class="chk"><input type="checkbox" data-k="priceList.showModules" ${pl.showModules?"checked":""}> Show optional modules</label>
+      <label class="chk"><input type="checkbox" data-k="priceList.showSupport" ${pl.showSupport?"checked":""}> Show support</label>
+      <button class="btn sm" data-act="pickLogo">${S.logo?"Replace logo":"Upload partner logo"}</button>
+      <button class="btn sm teal" data-act="print" data-v="pricelist">Print / Save PDF</button>
+    </div>
+    <div class="hint" style="margin-bottom:12px">Uses the logo from Deal Information. Content is List price only — hours, target, strategic, floor and commission never appear here.</div></div>
+    <div id="plDoc">${priceListDoc()}</div>`;
+}
+function priceListDoc(){
+  const pl=S.priceList, pp=P.products, esc_=P.escalation;
+  const subRows = [
+    ["ATS360 Platform","Includes "+pp["ATS-PLATFORM"].includedUsers.ats+" ATS360 Recruiter Users and "+pp["ATS-PLATFORM"].includedUsers.hiringManagers+" Hiring Manager Users",fmt(pp["ATS-PLATFORM"].list)+" / month <div class='small'>"+fmt(pp["ATS-PLATFORM"].list*12)+" / year</div>"],
+    ["Additional ATS360 Recruiter User","Users above "+pp["ATS-PLATFORM"].includedUsers.ats,fmt(pp["ATS-USER"].list)+" / user / month"],
+    ["Additional Hiring Manager User","Users above "+pp["ATS-PLATFORM"].includedUsers.hiringManagers,fmt(pp["ATS-HM"].list)+" / user / month"]
+  ].map(r=>`<tr><td>${r[0]}</td><td class="small">${r[1]}</td><td class="n">${r[2]}</td></tr>`).join("");
+  const impl = (obj)=>Object.entries(obj).map(([k,d])=>{
+    const price=d.commercialHours*IMPL_RATES.list;
+    return `<tr><td>${esc(d.name)}</td><td class="small">${esc(implDesc(k))}</td><td class="n">${fmt(price)}</td></tr>`;
+  }).join("");
+  const implRows = impl(P.implementationProfiles)+impl(P.hcmConnections);
+  const mods = ["ATS-SMS","ATS-VIDEO","ATS-DOCUSIGN","ATS-CHECKR"].map(k=>{
+    const p=pp[k];
+    return `<tr><td>${esc(p.name)}</td><td class="small">${esc(p.note||"")}</td><td class="n">${p.list==null?"<span class='pendtxt'>Pricing available on request</span>":fmt(p.list)+" / month"}</td></tr>`;
+  }).join("");
+  const sup = P.support;
+  const supRows = Object.entries(sup).map(([k,d])=>`<tr><td>${d.name}</td><td class="small">${d.price===0?d.items.join(" · "):"Scope and pricing not yet approved"}</td><td class="n">${d.price===0?"Included in subscription":(d.price==null?"<span class='pendtxt'>Not yet available</span>":fmt(d.price)+" / year")}</td></tr>`).join("");
+  const date = new Date().toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"});
+  return `<div class="doc">
+    ${pl.approved?"":`<div class="draftbar">DRAFT — pricing is proposed and has not been approved for release.</div>`}
+    <div class="dh"><div class="lg">
+      <div><img class="nd" src="https://netdynamicconsulting.com/images/common/logobanner.png" alt="NetDynamic" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex'"><span class="logo-ph">NetDynamic</span></div>
+      <span class="ats-badge">ATS360</span></div>
+      <div>${S.logo?`<img class="client" src="${S.logo}" alt="${esc(pl.partner)} logo">`:`<span class="print-hide" style="border:1px dashed #b3c2d3;color:#8a98aa;padding:12px 18px;font-size:11px;border-radius:5px">Partner logo</span>`}</div></div>
+    <h2>ATS360 List Price Sheet</h2>
+    <div class="meta"><b>Prepared for ${esc(pl.partner||"Partner")}</b> &middot; ${date}${pl.valid?` &middot; Valid until ${esc(pl.valid)}`:""}</div>
+    <p class="small" style="margin-top:8px">ATS360 is NetDynamic’s NetSuite-native applicant tracking solution. All prices are in USD, exclusive of taxes.</p>
+    <h3>Subscription</h3>
+    <table><thead><tr><th>Component</th><th>Details</th><th class="n">List Price</th></tr></thead><tbody>${subRows}</tbody></table>
+    <div class="small">${P.terms.licensing}</div>
+    <h3>Implementation — fixed fee, fixed scope</h3>
+    <table><thead><tr><th>Package</th><th>Description</th><th class="n">List Price</th></tr></thead><tbody>${implRows}</tbody></table>
+    <div class="small">Choose ATS360 Core <u>or</u> Hire-to-Onboard, not both. Connect packages apply only where the customer uses SuitePeople or Government HCM. ${P.terms.oneTime}.</div>
+    ${pl.showModules?`<h3>Optional Modules &amp; Integrations</h3>
+    <table><thead><tr><th>Module</th><th>Notes</th><th class="n">List Price</th></tr></thead><tbody>${mods}</tbody></table>`:""}
+    ${pl.showSupport?`<h3>Post-Go-Live Support</h3>
+    <table><thead><tr><th>Plan</th><th>Includes</th><th class="n">Price</th></tr></thead><tbody>${supRows}</tbody></table>`:""}
+    <h4>Terms</h4><ul class="small">
+      <li>Subscriptions auto-renew annually with a ${esc_}% increase beginning in Year 2 unless otherwise stated in the agreement.</li>
+      <li>Implementation packages are fixed fee / fixed scope. Work outside the agreed scope requires a Change Order at the rate stated in the applicable agreement.</li>
+      <li>Standard Connect packages cover one approved standard workflow. Custom integrations, data migration and additional scope are quoted separately.</li>
+      <li>E-Verify is available to eligible U.S. employers; employer enrollment/account requirements apply.</li>
+      <li>DocuSign and Checkr integrations require the customer’s own DocuSign or Checkr account; Checkr is U.S. only. SMS third-party usage charges may apply.</li>
+      <li>NetDynamic will commence project scheduling upon receipt of the first invoice payment.</li>
+    </ul></div>`;
+}
+
 function toast(t){ const e=$("toast"); e.textContent=t; e.classList.add("on"); clearTimeout(toast.t); toast.t=setTimeout(()=>e.classList.remove("on"),2200); }
 function openModal(html){ $("modal").innerHTML=html; $("modalBg").classList.add("on"); const f=$("modal").querySelector("input,select,button"); if(f) f.focus(); }
 function closeModal(){ $("modalBg").classList.remove("on"); $("modal").innerHTML=""; }
@@ -1089,6 +1164,7 @@ function onField(e){
     let v = t.type==="checkbox"?t.checked : t.dataset.t==="num" ? (t.value===""?null:parseFloat(t.value)) : t.value;
     if(t.tagName==="SELECT" && ["term"].includes(t.dataset.k)) v=parseInt(v,10);
     const k=t.dataset.k;
+    if(k.indexOf("priceList.")===0){ setPath(S,k,v); const d=$("plDoc"); if(d) d.innerHTML=priceListDoc(); return; }
     const guard=t.dataset.guard;
     if(guard && e.type==="change" && v!=null){ if(guardedChange(guard,k,v,t)) return; }
     setPath(S,k,v);
@@ -1188,6 +1264,7 @@ function setTab(t){
 }
 function printTab(name){
   const c=calc(S);
+  if(name==="pricelist" && !S.priceList.approved && !confirm("This price list is not marked as approved, so it will print with a DRAFT banner. Print anyway?")) return;
   if(name==="proposal" && c.status!=="g"){
     const msg = c.status==="r" ? "This deal is BLOCKED by policy. The printout will be watermarked as a DRAFT. Print anyway?" : "This deal still has items requiring review. Print the client proposal anyway?";
     if(!confirm(msg)) return;
@@ -1220,7 +1297,7 @@ function saveDraft(){
   catch(e){ toast("Could not save draft (browser storage unavailable or full)"); }
 }
 function loadDraft(){
-  try{ const d=JSON.parse(localStorage.getItem(LS_KEY)||"null"); if(d&&d.S){ S=Object.assign(baseState(),d.S); S.ov=Object.assign(baseState().ov,d.S.ov||{}); S.partner=Object.assign(baseState().partner,d.S.partner||{}); S.cost=Object.assign(baseState().cost,d.S.cost||{}); uid=Math.max(uid,d.uid||1); return true; } }catch(e){}
+  try{ const d=JSON.parse(localStorage.getItem(LS_KEY)||"null"); if(d&&d.S){ S=Object.assign(baseState(),d.S); S.ov=Object.assign(baseState().ov,d.S.ov||{}); S.partner=Object.assign(baseState().partner,d.S.partner||{}); S.cost=Object.assign(baseState().cost,d.S.cost||{}); S.priceList=Object.assign(baseState().priceList,d.S.priceList||{}); uid=Math.max(uid,d.uid||1); return true; } }catch(e){}
   return false;
 }
 
