@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATS360 Performance Center — Business Process Mapping</title>
+<style>
+:root{
+  --navy:#1a2332;--navy2:#2d4a7a;--brand:#185fa5;--brand-d:#0c447c;
+  --teal:#0d9488;--teal-lt:#e6f7f5;--teal-dk:#0f6e56;
+  --red:#e8002d;--amber:#d97706;--amber-lt:#fef3c7;--amber-dk:#92400e;
+  --purple:#3c3489;--purple-lt:#eeedfe;
+  --bg:#f0f2f5;--card:#fff;--muted:#5a6473;--line:#e2e5ea;--note:#6b7c93;
+  --green:#16a34a;--green-lt:#dcfce7;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--navy);font:15px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;padding:24px}
+.container{max-width:1000px;margin:auto}
+
+/* Header */
+.form-header{background:var(--navy);border-radius:16px 16px 0 0;padding:28px 36px;margin-bottom:0}
+.fh-top{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.fh-logo{background:var(--red);color:white;font-weight:700;font-size:12px;padding:7px 14px;border-radius:6px;letter-spacing:.03em}
+.fh-product{font-size:13px;font-weight:500;color:rgba(255,255,255,.55)}
+.fh-h1{font-size:26px;font-weight:700;color:white;margin-bottom:6px}
+.fh-sub{font-size:13px;color:rgba(255,255,255,.6);max-width:680px;line-height:1.5}
+.fh-note{margin-top:16px;background:rgba(255,255,255,.08);border-radius:8px;padding:12px 16px;font-size:12.5px;color:rgba(255,255,255,.65);border-left:3px solid var(--red)}
+
+/* Progress bar */
+.progress-bar{background:var(--navy2);height:5px;border-radius:0}
+.progress-fill{height:5px;background:var(--teal);width:0;transition:width .3s}
+
+/* Card */
+.form-card{background:var(--card);padding:28px 36px;border-bottom:1px solid var(--line)}
+.form-card:last-of-type{border-radius:0 0 16px 16px;border-bottom:none}
+
+/* Section headers */
+.section-hd{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.section-num{width:32px;height:32px;border-radius:50%;background:var(--navy);color:white;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.section-title{font-size:18px;font-weight:700;color:var(--navy)}
+.section-desc{font-size:13px;color:var(--muted);margin-top:2px}
+
+fieldset{border:1.5px solid var(--line);border-radius:12px;padding:20px 22px;margin:0 0 18px;background:#fafbff}
+legend{padding:0 10px;font-weight:700;color:var(--brand);font-size:14px}
+
+.form-group{margin:14px 0}
+label{font-weight:600;display:block;margin-bottom:6px;font-size:14px;color:var(--navy)}
+.label-note{font-weight:400;font-size:12px;color:var(--muted);margin-left:6px}
+
+input[type="text"],input[type="email"],input[type="tel"],input[type="number"],input[type="date"],textarea,select{
+  width:100%;border:1.5px solid var(--line);border-radius:8px;padding:10px 12px;background:#fff;
+  font-size:14px;color:var(--navy);font-family:inherit;outline:none;transition:border-color .15s
+}
+input:focus,textarea:focus,select:focus{border-color:var(--brand)}
+textarea{min-height:90px;resize:vertical}
+select.narrow{max-width:280px}
+
+.split{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.split3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+@media(max-width:720px){.split,.split3{grid-template-columns:1fr}}
+
+/* Checkbox / radio groups */
+.check-group{display:flex;flex-direction:column;gap:7px;margin-top:4px}
+.check-row{display:flex;align-items:flex-start;gap:9px;font-size:14px;color:var(--navy);cursor:pointer}
+.check-row input{margin-top:2px;accent-color:var(--brand);flex-shrink:0}
+.check-row .check-sub{font-size:12px;color:var(--muted);display:block;margin-top:2px}
+
+/* Inline radio pills */
+.radio-pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.radio-pill{display:flex;align-items:center;gap:6px;padding:7px 14px;border:1.5px solid var(--line);border-radius:20px;cursor:pointer;font-size:13.5px;transition:all .12s;font-family:inherit;background:white}
+.radio-pill:has(input:checked){background:var(--brand);border-color:var(--brand);color:white}
+.radio-pill input{display:none}
+
+/* Table inputs */
+.table{width:100%;border-collapse:collapse;margin:8px 0}
+.table th{background:#eff6ff;color:var(--navy2);text-align:left;padding:9px 12px;font-size:13px;border:1px solid var(--line)}
+.table td{border:1px solid var(--line);padding:8px 10px;vertical-align:top}
+.table td input,.table td select,.table td textarea{border:none;background:transparent;padding:2px 4px;font-size:13px;width:100%;outline:none;font-family:inherit}
+.table td textarea{min-height:52px;resize:none}
+
+/* Badges */
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;border:1px solid}
+.b-req{background:#fde8ec;color:var(--red);border-color:#f5b7c0}
+.b-opt{background:var(--green-lt);color:var(--green);border-color:#86efac}
+.b-nd{background:#dbeafe;color:var(--brand-d);border-color:#93c5fd}
+.b-p2{background:var(--purple-lt);color:var(--purple);border-color:#a5b4fc}
+
+/* Info boxes */
+.info-box{background:var(--teal-lt);border-left:4px solid var(--teal);border-radius:0 8px 8px 0;padding:10px 14px;font-size:13px;color:var(--teal-dk);margin:10px 0 14px;line-height:1.5}
+.warn-box{background:var(--amber-lt);border-left:4px solid var(--amber);border-radius:0 8px 8px 0;padding:10px 14px;font-size:13px;color:var(--amber-dk);margin:10px 0 14px;line-height:1.5}
+.info-box strong,.warn-box strong{font-weight:700}
+
+/* Cycle type grid */
+.cycle-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-top:8px}
+.cycle-card{border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer;transition:all .12s;background:white}
+.cycle-card:has(input:checked){border-color:var(--brand);background:var(--brand);color:white}
+.cycle-card input{display:none}
+.cycle-card .cc-title{font-size:13.5px;font-weight:700;display:block;margin-bottom:3px}
+.cycle-card .cc-desc{font-size:12px;opacity:.75;line-height:1.4}
+
+/* Review weights calculator */
+.weights-row{display:grid;grid-template-columns:140px 1fr 80px;gap:10px;align-items:center;margin-bottom:10px}
+.weights-label{font-size:13.5px;font-weight:600;color:var(--navy)}
+.weights-bar-track{height:8px;background:var(--line);border-radius:4px;overflow:hidden}
+.weights-bar-fill{height:8px;border-radius:4px;transition:width .2s}
+.weights-input{border:1.5px solid var(--line);border-radius:6px;padding:6px 8px;font-size:13px;text-align:center;width:70px;font-family:inherit}
+.weights-total{font-size:12px;font-weight:600;margin-top:4px;padding:6px 10px;border-radius:6px;display:inline-block}
+.wt-ok{background:var(--green-lt);color:var(--green)}
+.wt-bad{background:#fde8ec;color:var(--red)}
+
+/* Submit zone */
+.submit-zone{background:var(--navy);border-radius:0 0 16px 16px;padding:28px 36px;text-align:center}
+.sz-title{font-size:18px;font-weight:700;color:white;margin-bottom:8px}
+.sz-sub{font-size:13px;color:rgba(255,255,255,.6);margin-bottom:22px}
+.confirm-checks{text-align:left;max-width:600px;margin:0 auto 24px;display:flex;flex-direction:column;gap:10px}
+.confirm-row{display:flex;align-items:flex-start;gap:10px;font-size:13.5px;color:rgba(255,255,255,.85)}
+.confirm-row input{margin-top:2px;accent-color:var(--teal);flex-shrink:0}
+.btn-submit{background:var(--teal);color:white;border:none;border-radius:8px;padding:14px 40px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:background .15s}
+.btn-submit:hover{background:var(--teal-dk)}
+.btn-save{background:rgba(255,255,255,.12);color:white;border:1.5px solid rgba(255,255,255,.2);border-radius:8px;padding:12px 28px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;margin-right:12px}
+
+/* Signature / date row */
+.sig-row{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+
+/* Sticky header on scroll */
+.sticky-hd{position:sticky;top:0;z-index:50;background:var(--navy);padding:10px 36px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--red);display:none}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- HEADER -->
+<div class="form-header">
+  <div class="fh-top">
+    <div class="fh-logo">ATS360</div>
+    <div class="fh-product">Performance Center</div>
+  </div>
+  <div class="fh-h1">Business Process Mapping</div>
+  <div class="fh-sub">This questionnaire captures everything NetDynamic needs to configure your Performance Center implementation correctly on the first attempt. Complete every required section before your kickoff call. The more detail you provide, the less time we spend in workshops clarifying basics.</div>
+  <div class="fh-note"><strong>Your answers are your configuration.</strong> Once submitted, this form constitutes the basis of your Business Requirements Document (BRD). Post-submission changes to confirmed scope require a Change Order.</div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:8%"></div></div>
+
+<!-- ══════════════════════════════════════════
+     SECTION 1 — CLIENT INFORMATION
+═══════════════════════════════════════════ -->
+<div class="form-card">
+  <div class="section-hd">
+    <div class="section-num">1</div>
+    <div>
+      <div class="section-title">Client information</div>
+      <div class="section-desc">Your organisation details and the people who will own this implementation.</div>
+    </div>
+  </div>
+
+  <fieldset>
+    <legend>Organisation</legend>
+    <div class="split">
+      <div class="form-group">
+        <label>Company name <span class="badge b-req">Required</span></label>
+        <input type="text" placeholder="Legal entity name as it appears in NetSuite">
+      </div>
+      <div class="form-group">
+        <label>Contract date <span class="badge b-req">Required</span></label>
+        <input type="date">
+      </div>
+    </div>
+    <div class="split">
+      <div class="form-group">
+        <label>NetSuite Account ID <span class="badge b-req">Required</span></label>
+        <input type="text" placeholder="e.g. 1234567">
+      </div>
+      <div class="form-group">
+        <label>Primary subsidiary for Performance Center <span class="badge b-req">Required</span></label>
+        <input type="text" placeholder="Subsidiary name or ID">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Does this installation include a sandbox environment?</label>
+      <div class="radio-pills">
+        <label class="radio-pill"><input type="radio" name="sandbox" value="yes">Yes — sandbox + production</label>
+        <label class="radio-pill"><input type="radio" name="sandbox" value="prod">Production only</label>
+        <label class="radio-pill"><input type="radio" name="sandbox" value="unsure">Not sure</label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Target go-live date <span class="badge b-req">Required</span></label>
+      <input type="date" class="narrow">
+      <div class="info-box" style="margin-top:8px">Standard implementation is 6–8 weeks from kickoff. If your target date is sooner, let your PM know — we can discuss what is possible.</div>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Project contacts</legend>
+    <div class="info-box">We need three named contacts from your side before we can begin. These people must be available during the implementation period.</div>
+    <table class="table">
+      <thead><tr><th>Role</th><th>Name</th><th>Email</th><th>Phone (optional)</th></tr></thead>
+      <tbody>
+        <tr><td><strong>HR Lead (SPAA)</strong><br><span style="font-size:12px;color:#5a6473">Single point of approval. Signs off on all deliverables.</span></td><td><input type="text" placeholder="Full name"></td><td><input type="email" placeholder="Work email"></td><td><input type="tel" placeholder="Direct line"></td></tr>
+        <tr><td><strong>NS Admin / IT contact</strong><br><span style="font-size:12px;color:#5a6473">Provisions access, confirms environment.</span></td><td><input type="text" placeholder="Full name"></td><td><input type="email" placeholder="Work email"></td><td><input type="tel" placeholder="Direct line"></td></tr>
+        <tr><td><strong>Executive sponsor</strong><br><span style="font-size:12px;color:#5a6473">Escalation point for scope or budget decisions.</span></td><td><input type="text" placeholder="Full name"></td><td><input type="email" placeholder="Work email"></td><td><input type="tel" placeholder="Direct line"></td></tr>
+      </tbody>
+    </table>
+    <div class="form-group" style="margin-top:14px">
+      <label>Subscribe to ATS360 Performance Center product updates and best practices</label>
+      <label class="check-row"><input type="checkbox"> Yes — add our HR Lead to the mailing list</label>
+    </div>
+  </fieldset>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SECTION 2 — ORGANISATION HEALTH CHECK
+═══════════════════════════════════════════ -->
+<div class="form-card">
+  <div class="section-hd">
+    <div class="section-num">2</div>
+    <div>
+      <div class="section-title">Organisation health check</div>
+      <div class="section-desc">Helps us understand your performance management context. Honest answers lead to better configuration.</div>
+    </div>
+  </div>
+
+  <fieldset>
+    <legend>Current state</legend>
+    <div class="form-group">
+      <label>1. Primary reason for implementing Performance Center <span class="badge b-req">Required</span></label>
+      <div class="check-group">
+        <label class="check-row"><input type="checkbox"> We have no formal performance review process and need to build one</label>
+        <label class="check-row"><input type="checkbox"> We have a process but it runs on spreadsheets and we want to modernise it</label>
+        <label class="check-row"><input type="checkbox"> We already use a standalone performance tool and want to consolidate into NetSuite</label>
+        <label class="check-row"><input type="checkbox"> We need better visibility into goal alignment across the org</label>
+        <label class="check-row"><input type="checkbox"> HR compliance — we need a documented review trail</label>
+        <label class="check-row"><input type="checkbox"> Manager accountability — we need to make sure reviews actually happen</label>
+        <label class="check-row"><input type="checkbox"> Growth phase — headcount is scaling and informal feedback no longer works</label>
+        <label class="check-row"><input type="checkbox"> Other: <input type="text" placeholder="Describe" style="width:340px;margin-left:6px;display:inline"></label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>2. How many employees will use Performance Center?</label>
+      <div class="split">
+        <div>
+          <label class="label-note">Total active employees</label>
+          <input type="number" placeholder="e.g. 85">
+        </div>
+        <div>
+          <label class="label-note">People managers (supervisors)</label>
+          <input type="number" placeholder="e.g. 12">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>3. Have you run formal performance reviews before?</label>
+      <div class="radio-pills">
+        <label class="radio-pill"><input type="radio" name="prev_reviews" value="yes">Yes — annually</label>
+        <label class="radio-pill"><input type="radio" name="prev_reviews" value="semi">Yes — semi-annually</label>
+        <label class="radio-pill"><input type="radio" name="prev_reviews" value="ad">Yes — ad hoc</label>
+        <label class="radio-pill"><input type="radio" name="prev_reviews" value="no">No formal process</label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>4. Where are your current points of friction with performance management?</label>
+      <textarea placeholder="e.g. Managers don't complete reviews on time. We have no visibility into goal progress between cycles. Legacy scores live in a spreadsheet nobody updates."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>5. Do you have historical performance scores to import?</label>
+      <div class="radio-pills">
+        <label class="radio-pill"><input type="radio" name="legacy" value="yes">Yes — I have data to import</label>
+        <label class="radio-pill"><input type="radio" name="legacy" value="no">No — starting fresh</label>
+        <label class="radio-pill"><input type="radio" name="legacy" value="partial">Partial — some years only</label>
+      </div>
+      <div class="info-box" style="margin-top:8px">If yes: your data must be in this exact format before Phase 3 begins — <strong>NS Employee Internal ID, Cycle Name, Score (decimal 0–5), Date (YYYY-MM-DD), Notes (optional)</strong>. Data cleaning is your responsibility. NetDynamic imports clean data only.</div>
+    </div>
+
+    <div class="form-group">
+      <label>6. How many years of historical data do you want to import?</label>
+      <select class="narrow">
+        <option value="">Select</option>
+        <option>1 year</option>
+        <option>2 years</option>
+        <option>3 years</option>
+        <option>4–5 years</option>
+        <option>More than 5 years</option>
+        <option>No historical data to import</option>
+      </select>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>NetSuite environment</legend>
+    <div class="form-group">
+      <label>7. Is SuitePeople HR currently in use?</label>
+      <div class="radio-pills">
+        <label class="radio-pill"><input type="radio" name="suitep" value="yes">Yes — full SuitePeople</label>
+        <label class="radio-pill"><input type="radio" name="suitep" value="basic">SuitePeople Basic only</label>
+        <label class="radio-pill"><input type="radio" name="suitep" value="no">No — NS employee records only</label>
+        <label class="radio-pill"><input type="radio" name="suitep" value="unsure">Not sure</label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>8. Is your NS supervisor hierarchy complete and accurate?</label>
+      <div class="radio-pills">
+        <label class="radio-pill"><input type="radio" name="hierarchy" value="yes">Yes — every employee has a supervisor assigned in NS</label>
+        <label class="radio-pill"><input type="radio" name="hierarchy" value="partial">Partial — some are missing or wrong</label>
+        <label class="radio-pill"><input type="radio" name="hierarchy" value="no">No — this is not set up yet</label>
+      </div>
+      <div class="warn-box" style="margin-top:8px"><strong>This is critical.</strong> Performance Center reads the NS supervisor field to build your manager groups, team health tables, and review assignments. If the hierarchy is wrong in NS, it will be wrong in the portal. NS Admin must confirm this is complete before implementation begins.</div>
+    </div>
+    <div class="form-group">
+      <label>9. Are NS departments created and all employees assigned to a department?</label>
+      <div class="radio-pills">
+        <label class="radio-pill"><input type="radio" name="depts" value="yes">Yes — complete</label>
+        <label class="radio-pill"><input type="radio" name="depts" value="partial">Partial</label>
+        <label class="radio-pill"><input type="radio" name="depts" value="no">No</label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>10. Is ATS360 also being implemented alongside Performance Center?</label>
+      <div class="radio-pills">
+        <label class="radio-pill"><input type="radio" name="ats360" value="yes">Yes — bundled implementation</label>
+        <label class="radio-pill"><input type="radio" name="ats360" value="no">No — Performance Center standalone</label>
+        <label class="radio-pill"><input type="radio" name="ats360" value="later">ATS360 already live, PC is new</label>
+      </div>
+    </div>
+  </fieldset>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SECTION 3 — REVIEW CYCLE DESIGN
+═══════════════════════════════════════════ -->
+<div class="form-card">
+  <div class="section-hd">
+    <div class="section-num">3</div>
+    <div>
+      <div class="section-title">Review cycle design</div>
+      <div class="section-desc">The most important section. These decisions drive everything else. The more specific you are, the less workshop time we need.</div>
+    </div>
+  </div>
+
+  <fieldset>
+    <legend>Cycle types</legend>
+    <div class="info-box">The standard implementation includes up to 2 review cycle templates. Each additional template beyond 2 is $500. Select all cycle types you intend to run — we will prioritise which templates to build first.</div>
+    <div class="form-group">
+      <label>Which review cycle types will you use? <span class="badge b-req">Required</span></label>
+      <div class="cycle-grid">
+        <label class="cycle-card"><input type="checkbox" name="cycle_type" value="annual"><span class="cc-title">Annual review</span><span class="cc-desc">Comprehensive year-end assessment. Highest weight in crescendo model.</span></label>
+        <label class="cycle-card"><input type="checkbox" name="cycle_type" value="semi"><span class="cc-title">Semi-annual / mid-year</span><span class="cc-desc">Two full reviews per year. Often used to catch course corrections early.</span></label>
+        <label class="cycle-card"><input type="checkbox" name="cycle_type" value="quarterly"><span class="cc-title">Quarterly check-in</span><span class="cc-desc">Lighter touch. Progress check on goals, quick ratings. High volume.</span></label>
+        <label class="cycle-card"><input type="checkbox" name="cycle_type" value="monthly"><span class="cc-title">Monthly check-in</span><span class="cc-desc">Continuous feedback model. Feeds crescendo annually.</span></label>
+        <label class="cycle-card"><input type="checkbox" name="cycle_type" value="probationary"><span class="cc-title">Probationary review</span><span class="cc-desc">For new hires — 30, 60, 90 days or 3 + 6 months.</span></label>
+        <label class="cycle-card"><input type="checkbox" name="cycle_type" value="adhoc"><span class="cc-title">Ad hoc / project review</span><span class="cc-desc">Tied to a project, not a calendar period.</span></label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>If using probationary reviews — at what intervals?</label>
+      <div class="check-group" style="flex-direction:row;flex-wrap:wrap;gap:8px">
+        <label class="check-row"><input type="checkbox"> 30 days</label>
+        <label class="check-row"><input type="checkbox"> 60 days</label>
+        <label class="check-row"><input type="checkbox"> 90 days</label>
+        <label class="check-row"><input type="checkbox"> 3 months</label>
+        <label class="check-row"><input type="checkbox"> 6 months</label>
+        <label class="check-row"><input type="checkbox"> Other: <input type="text" style="width:120px;display:inline;margin-left:4px"></label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Which cycle type should we build first? <span class="badge b-req">Required</span></label>
+      <select class="narrow">
+        <option value="">Select priority template</option>
+        <option>Annual review</option>
+        <option>Semi-annual / mid-year</option>
+        <option>Quarterly check-in</option>
+        <option>Monthly check-in</option>
+        <option>Probationary review</option>
+        <option>Ad hoc / project review</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>When do you intend to launch your first review cycle?</label>
+      <input type="date" class="narrow">
+    </div>
+
+    <div class="form-group">
+      <label>Will you do a phased rollout (one department first) or launch org-wide?</label>
+      <div class="radio-pills">
+        <label class="radio-pill"><input type="radio" name="rollout" value="org">Full org at once</label>
+        <label class="radio-pill"><input type="radio" name="rollout" value="phased">Phased — one department first</label>
+        <label class="radio-pill"><input type="radio" name="rollout" value="pilot">Pilot group (not a full department)</label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>If phased — which department goes first?</label>
+      <input type="text" placeholder="Department name" class="narrow">
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Peer reviews and 360° feedback</legend>
+    <div class="form-group">
+      <label>Will you use peer reviews? <span class="badge b-req">Required</span></label>
+      <div class="radio-pills">
+        <label class="radio-pill"><input type="radio" name="peer" value="yes">Yes</label>
+        <label class="radio-pill"><input type="radio" name="peer" value="no">No</label>
+        <label class="radio-pill"><input type="radio" name="peer" value="later">Not in first cycle — later</label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Who nominates peer reviewers?</label>
+      <div class="radio-pills">
+        <label class="radio-pill"><input type="radio" name="nominate" value="employee">Employee nominates their own peers</label>
+        <label class="radio-pill"><input type="radio" name="nominate" value="manager">Manager assigns peers</label>
+        <label class="radio-pill"><input type="radio" name="nominate" value="hr">HR assigns peers</label>
+        <label class="radio-pill"><input type="radio" name="nominate" value="both">Employee nominates, manager approves</label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Maximum number of peer reviewers per employee</label>
+      <select class="narrow">
+        <option value="">Select</option>
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+        <option>5</option>
+        <option>No limit</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Should peer reviews be anonymous to the reviewee by default?</label>
+      <div class="radio-pills">
+        <label class="radio-pill"><input type="radio" name="anon" value="yes">Yes — anonymous (default)</label>
+        <label class="radio-pill"><input type="radio" name="anon" value="no">No — names visible to reviewee</label>
+        <label class="radio-pill"><input type="radio" name="anon" value="hr">HR decides per cycle</label>
+      </div>
+      <div class="info-box" style="margin-top:8px">HR Admin always sees peer names regardless of this setting. This setting only controls what the <em>reviewee</em> sees.</div>
+    </div>
+    <div class="form-group">
+      <label>Will you use upward reviews (employees reviewing their manager)?</label>
+      <div class="radio-pills">
+        <label class="radio-pill"><input type="radio" name="upward" value="yes">Yes</label>
+        <label class="radio-pill"><input type="radio" name="upward" value="no">No</label>
+        <label class="radio-pill"><input type="radio" name="upward" value="later">Maybe later</label>
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Scoring and thresholds</legend>
+    <div class="form-group">
+      <label>What is your passing score threshold? <span class="badge b-req">Required</span><span class="label-note">The score below which a review is considered "does not meet expectations"</span></label>
+      <div class="split">
+        <div>
+          <input type="number" placeholder="e.g. 70" min="0" max="100">
+          <div style="font-size:12px;color:var(--muted);margin-top:4px">As a percentage (0–100). Industry standard is 65–75%.</div>
+        </div>
+        <div>
+          <label style="font-weight:400;font-size:13px;color:var(--muted)">Equivalence out of 5 (auto-calculated)</label>
+          <input type="text" placeholder="e.g. 3.5 / 5" disabled style="background:#f7f8fa">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>How should scores be displayed to employees?</label>
+      <div class="radio-pills">
+        <label class="radio-pill"><input type="radio" name="score_fmt" value="pct">Percentage (e.g. 78%)</label>
+        <label class="radio-pill"><input type="radio" name="score_fmt" value="5">Out of 5 (e.g. 3.9 / 5)</label>
+        <label class="radio-pill"><input type="radio" name="score_fmt" value="both">Both</label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Review component weights <span class="badge b-req">Required</span><span class="label-note">Must total exactly 100%</span></label>
+      <div class="info-box">These weights determine how your overall score is calculated. Focus areas (questions) typically carry the most weight. Adjust to match your performance philosophy.</div>
+
+      <div class="weights-row">
+        <div class="weights-label">Focus areas</div>
+        <div class="weights-bar-track"><div class="weights-bar-fill" id="bar-fa" style="background:var(--brand);width:50%"></div></div>
+        <input type="number" class="weights-input" id="w-fa" value="50" min="0" max="100" oninput="updateWeights()"> %
+      </div>
+      <div class="weights-row">
+        <div class="weights-label">Goals</div>
+        <div class="weights-bar-track"><div class="weights-bar-fill" id="bar-g" style="background:var(--teal);width:25%"></div></div>
+        <input type="number" class="weights-input" id="w-g" value="25" min="0" max="100" oninput="updateWeights()"> %
+      </div>
+      <div class="weights-row">
+        <div class="weights-label">Recognition</div>
+        <div class="weights-bar-track"><div class="weights-bar-fill" id="bar-r" style="background:var(--amber);width:15%"></div></div>
+        <input type="number" class="weights-input" id="w-r" value="15" min="0" max="100" oninput="updateWeights()"> %
+      </div>
+      <div class="weights-row">
+        <div class="weights-label">Evidence</div>
+        <div class="weights-bar-track"><div class="weights-bar-fill" id="bar-e" style="background:var(--purple);width:10%"></div></div>
+        <input type="number" class="weights-input" id="w-e" value="10" min="0" max="100" oninput="updateWeights()"> %
+      </div>
+      <div id="weights-total" class="weights-total wt-ok">Total: 100% ✓</div>
+    </div>
+
+    <div class="form-group">
+      <label>Manager group weighting — do different reviewer types have different score weights?</label>
+      <div class="radio-pills">
+        <label class="radio-pill"><input type="radio" name="mgr_group" value="simple">Simple — one manager per employee, no groups</label>
+        <label class="radio-pill"><input type="radio" name="mgr_group" value="group">Yes — some employees have multiple reviewers with different weights</label>
+      </div>
+      <div class="info-box" style="margin-top:8px">If yes, we will capture the specific manager group configurations in the org structure workshop. You do not need to specify them here.</div>
+    </div>
+
+    <div class="form-group">
+      <label>When should review results be released to employees?</label>
+      <div class="radio-pills">
+        <label class="radio-pill"><input type="radio" name="release" value="auto">Automatically when HR closes the cycle</label>
+        <label class="radio-pill"><input type="radio" name="release" value="manual">Manually — HR releases each employee separately</label>
+        <label class="radio-pill"><input type="radio" name="release" value="meeting">During a 1:1 meeting — results release triggers at meeting start</label>
+      </div>
+    </div>
+  </fieldset>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SECTION 4 — FOCUS AREAS & TEMPLATES
+═══════════════════════════════════════════ -->
+<div class="form-card">
+  <div class="section-hd">
+    <div class="section-num">4</div>
+    <div>
+      <div class="section-title">Focus areas and review template</div>
+      <div class="section-desc">Focus areas are the competencies your employees are rated on. Question content will be finalised in the content workshop — give us your starting point here.</div>
+    </div>
+  </div>
+
+  <fieldset>
+    <legend>Focus areas (competencies)</legend>
+    <div class="info-box">Standard implementation includes up to 10 focus areas. List the ones that matter to your organisation. We will define gap thresholds and question sets in the content workshop.</div>
+    <div class="form-group">
+      <label>Core competency areas you want to evaluate <span class="badge b-req">Required</span></label>
+      <div class="info-box">Common examples: Client delivery, Collaboration, Communication, Technical skills, Leadership, Growth and development, Initiative, Reliability, Innovation, Commercial awareness. Use your own language.</div>
+      <table class="table">
+        <thead><tr><th>#</th><th>Focus area name</th><th>Brief description (optional)</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td><input type="text" placeholder="e.g. Client delivery"></td><td><input type="text" placeholder="e.g. Quality and impact of client-facing work"></td></tr>
+          <tr><td>2</td><td><input type="text"></td><td><input type="text"></td></tr>
+          <tr><td>3</td><td><input type="text"></td><td><input type="text"></td></tr>
+          <tr><td>4</td><td><input type="text"></td><td><input type="text"></td></tr>
+          <tr><td>5</td><td><input type="text"></td><td><input type="text"></td></tr>
+          <tr><td>6</td><td><input type="text"></td><td><input type="text"></td></tr>
+          <tr><td>7</td><td><input type="text"></td><td><input type="text"></td></tr>
+          <tr><td>8</td><td><input type="text"></td><td><input type="text"></td></tr>
+          <tr><td>9</td><td><input type="text"></td><td><input type="text"></td></tr>
+          <tr><td>10</td><td><input type="text"></td><td><input type="text"></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Review questions and self-assessment</legend>
+    <div class="form-group">
+      <label>Will employees complete a self-assessment before the manager review?</label>
+      <div class="radio-pills">
+        <label class="radio-pill"><input type="radio" name="selfassess" value="yes">Yes — self-assessment always included</label>
+        <label class="radio-pill"><input type="radio" name="selfassess" value="no">No — manager review only</label>
+        <label class="radio-pill"><input type="radio" name="selfassess" value="per">Depends on cycle type</label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Should managers rate employees blind — without seeing the employee's self-rating first?</label>
+      <div class="radio-pills">
+        <label class="radio-pill"><input type="radio" name="blind" value="always">Always blind (manager rates first, never sees self-rating)</label>
+        <label class="radio-pill"><input type="radio" name="blind" value="default">Blind by default, manager can choose to reveal</label>
+        <label class="radio-pill"><input type="radio" name="blind" value="trans">Transparent (self-rating visible to manager)</label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Do you have specific review questions already written, or should NetDynamic draft them based on your focus areas?</label>
+      <div class="radio-pills">
+        <label class="radio-pill"><input type="radio" name="questions" value="nd">NetDynamic drafts based on our focus areas</label>
+        <label class="radio-pill"><input type="radio" name="questions" value="existing">We have existing questions to bring in</label>
+        <label class="radio-pill"><input type="radio" name="questions" value="collab">Collaborative — we have some, you help fill gaps</label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>If you have existing questions — paste or upload them here <span class="badge b-opt">Optional</span></label>
+      <textarea placeholder="Paste your existing review questions here. Format does not matter — we will tidy them up in the content workshop."></textarea>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Goals in reviews</legend>
+    <div class="form-group">
+      <label>Will goals be included in the review cycle? <span class="badge b-req">Required</span></label>
+      <div class="radio-pills">
+        <label class="radio-pill"><input type="radio" name="goals_in_review" value="yes">Yes — goals are rated and scored</label>
+        <label class="radio-pill"><input type="radio" name="goals_in_review" value="context">Goals shown for context only — not scored</label>
+        <label class="radio-pill"><input type="radio" name="goals_in_review" value="no">No — goals are separate from reviews</label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Goal framework preferences</label>
+      <div class="check-group">
+        <label class="check-row"><input type="checkbox"> SMART goals (Specific, Measurable, Achievable, Relevant, Time-bound)</label>
+        <label class="check-row"><input type="checkbox"> OKRs (Objectives and Key Results — company → team → individual cascade)</label>
+        <label class="check-row"><input type="checkbox"> WOOP goals (Wish, Outcome, Obstacle, Plan)</label>
+        <label class="check-row"><input type="checkbox"> No framework preference — use all or let employees choose</label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Who creates employee goals?</label>
+      <div class="check-group">
+        <label class="check-row"><input type="checkbox"> Employees create their own goals</label>
+        <label class="check-row"><input type="checkbox"> Managers assign goals to employees</label>
+        <label class="check-row"><input type="checkbox"> Both — employees create, managers can also assign</label>
+        <label class="check-row"><input type="checkbox"> HR creates company-wide goals that cascade down</label>
+      </div>
+    </div>
+  </fieldset>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SECTION 5 — RECOGNITION & CULTURE
+═══════════════════════════════════════════ -->
+<div class="form-card">
+  <div class="section-hd">
+    <div class="section-num">5</div>
+    <div>
+      <div class="section-title">Recognition and culture</div>
+      <div class="section-desc">Recognition is built into the review score. It also drives daily engagement. These settings shape how your team experiences the portal.</div>
+    </div>
+  </div>
+
+  <fieldset>
+    <legend>Recognition badges</legend>
+    <div class="info-box">Standard implementation includes up to 20 recognition badges. These appear when employees send kudos. Think of them as a menu of the behaviours you want to reinforce. Start with your org values or culture pillars.</div>
+    <div class="form-group">
+      <label>List the badges you want to create <span class="badge b-req">Required</span><span class="label-note">Name + optional description</span></label>
+      <table class="table">
+        <thead><tr><th>#</th><th>Badge name</th><th>What behaviour does this reward?</th><th>Expiry</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td><input type="text" placeholder="e.g. Client Champion"></td><td><input type="text" placeholder="e.g. Going above and beyond for a client"></td><td><select><option>Never</option><option>Per cycle</option><option>60 days</option><option>90 days</option><option>1 year</option></select></td></tr>
+          <tr><td>2</td><td><input type="text"></td><td><input type="text"></td><td><select><option>Never</option><option>Per cycle</option><option>60 days</option><option>90 days</option><option>1 year</option></select></td></tr>
+          <tr><td>3</td><td><input type="text"></td><td><input type="text"></td><td><select><option>Never</option><option>Per cycle</option><option>60 days</option><option>90 days</option><option>1 year</option></select></td></tr>
+          <tr><td>4</td><td><input type="text"></td><td><input type="text"></td><td><select><option>Never</option><option>Per cycle</option><option>60 days</option><option>90 days</option><option>1 year</option></select></td></tr>
+          <tr><td>5</td><td><input type="text"></td><td><input type="text"></td><td><select><option>Never</option><option>Per cycle</option><option>60 days</option><option>90 days</option><option>1 year</option></select></td></tr>
+          <tr><td>6</td><td><input type="text"></td><td><input type="text"></td><td><select><option>Never</option><option>Per cycle</option><option>60 days</option><option>90 days</option><option>1 year</option></select></td></tr>
+          <tr><td>7</td><td><input type="text"></td><td><input type="text"></td><td><select><option>Never</option><option>Per cycle</option><option>60 days</option><option>90 days</option><option>1 year</option></select></td></tr>
+          <tr><td>8</td><td><input type="text"></td><td><input type="text"></td><td><select><option>Never</option><option>Per cycle</option><option>60 days</option><option>90 days</option><option>1 year</option></select></td></tr>
+          <tr><td>9</td><td><input type="text"></td><td><input type="text"></td><td><select><option>Never</option><option>Per cycle</option><option>60 days</option><option>90 days</option><option>1 year</option></select></td></tr>
+          <tr><td>10</td><td><input type="text"></td><td><input type="text"></td><td><select><option>Never</option><option>Per cycle</option><option>60 days</option><option>90 days</option><option>1 year</option></select></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="form-group">
+      <label>Do you want department managers to be able to create department-specific badges?</label>
+      <div class="radio-pills">
+        <label class="radio-pill"><input type="radio" name="dept_badge" value="yes">Yes — with HR approval before active</label>
+        <label class="radio-pill"><input type="radio" name="dept_badge" value="no">No — HR creates all badges centrally</label>
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Org values and culture</legend>
+    <div class="form-group">
+      <label>List your company values or culture pillars <span class="badge b-opt">Optional</span><span class="label-note">These appear as tags employees can apply to recognitions</span></label>
+      <textarea placeholder="e.g. Client First, Integrity, Continuous Learning, Innovation, One Team. Paste your existing list or describe your values — we will tidy them up."></textarea>
+    </div>
+    <div class="form-group">
+      <label>Recognition spotlight settings</label>
+      <div class="split">
+        <div>
+          <label class="label-note">Spotlight cadence</label>
+          <select>
+            <option>Weekly</option>
+            <option>Monthly</option>
+            <option>Quarterly</option>
+          </select>
+        </div>
+        <div>
+          <label class="label-note">Spotlight scope</label>
+          <select>
+            <option>Org-wide</option>
+            <option>By department</option>
+            <option>By team</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Enable the Top Recognition Giver spotlight?</label>
+      <div class="radio-pills">
+        <label class="radio-pill"><input type="radio" name="top_giver" value="yes">Yes</label>
+        <label class="radio-pill"><input type="radio" name="top_giver" value="no">No</label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Enable recognition diminishing returns?</label>
+      <div class="radio-pills">
+        <label class="radio-pill"><input type="radio" name="dim_ret" value="yes">Yes — multiple recognitions from the same sender count less over time</label>
+        <label class="radio-pill"><input type="radio" name="dim_ret" value="no">No — all recognitions count equally</label>
+      </div>
+    </div>
+  </fieldset>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SECTION 6 — BRANDING & CONFIGURATION
+═══════════════════════════════════════════ -->
+<div class="form-card">
+  <div class="section-hd">
+    <div class="section-num">6</div>
+    <div>
+      <div class="section-title">Branding and configuration</div>
+      <div class="section-desc">How the portal looks and how it communicates with your employees.</div>
+    </div>
+  </div>
+
+  <fieldset>
+    <legend>Portal branding</legend>
+    <div class="split">
+      <div class="form-group">
+        <label>Company logo <span class="badge b-req">Required</span></label>
+        <input type="text" placeholder="Link to logo file (PNG, transparent background preferred, min 200×200px)">
+        <div style="font-size:12px;color:var(--muted);margin-top:4px">Or email to performance@netdynamicinc.com with subject: [Company] — Logo</div>
+      </div>
+      <div class="form-group">
+        <label>Primary brand colour <span class="badge b-req">Required</span></label>
+        <input type="text" placeholder="Hex code e.g. #1a2332">
+      </div>
+    </div>
+    <div class="split">
+      <div class="form-group">
+        <label>HR sender name for system emails <span class="badge b-req">Required</span><span class="label-note">Appears as the "from" name on all portal emails</span></label>
+        <input type="text" placeholder="e.g. People Team or HR at Acme Corp">
+      </div>
+      <div class="form-group">
+        <label>HR sender email address <span class="badge b-req">Required</span></label>
+        <input type="email" placeholder="e.g. hr@yourcorp.com">
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Communication preferences</legend>
+    <div class="form-group">
+      <label>Default email template tone</label>
+      <div class="radio-pills">
+        <label class="radio-pill"><input type="radio" name="tone" value="formal">Formal and professional</label>
+        <label class="radio-pill"><input type="radio" name="tone" value="friendly">Friendly and direct</label>
+        <label class="radio-pill"><input type="radio" name="tone" value="concise">Very concise — minimal text</label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Review form due reminder — how many days before deadline should reminders fire?</label>
+      <select class="narrow">
+        <option value="">Select</option>
+        <option>7 days before</option>
+        <option>5 days before</option>
+        <option>3 days before</option>
+        <option>1 day before</option>
+        <option>Multiple (e.g. 7 days and 2 days)</option>
+        <option>No automated reminders</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Video conferencing platform for the Meetings integration</label>
+      <div class="radio-pills">
+        <label class="radio-pill"><input type="radio" name="vchat" value="zoom">Zoom</label>
+        <label class="radio-pill"><input type="radio" name="vchat" value="teams">Microsoft Teams</label>
+        <label class="radio-pill"><input type="radio" name="vchat" value="meet">Google Meet</label>
+        <label class="radio-pill"><input type="radio" name="vchat" value="none">In-person only / none</label>
+      </div>
+      <div class="info-box" style="margin-top:8px">One platform integration is included in the standard implementation. Your IT Admin will need to provide credentials (Zoom OAuth / Teams connector / Google credentials) in Week 2.</div>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Financial and compensation</legend>
+    <div class="form-group">
+      <label>Will you use the compensation recommendation feature?</label>
+      <div class="radio-pills">
+        <label class="radio-pill"><input type="radio" name="comp_rec" value="yes">Yes — managers will submit compensation and promotion recommendations through reviews</label>
+        <label class="radio-pill"><input type="radio" name="comp_rec" value="no">No — compensation is managed separately</label>
+        <label class="radio-pill"><input type="radio" name="comp_rec" value="later">Not in first cycle — set it up for later</label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Should employees be able to see their own compensation data (if NS Payroll is connected)?</label>
+      <div class="radio-pills">
+        <label class="radio-pill"><input type="radio" name="comp_vis" value="yes">Yes — show paystubs and compensation history</label>
+        <label class="radio-pill"><input type="radio" name="comp_vis" value="no">No — financial data is manager and HR only</label>
+        <label class="radio-pill"><input type="radio" name="comp_vis" value="partial">Compensation history only, not paystubs</label>
+      </div>
+    </div>
+  </fieldset>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SECTION 7 — LICENSE SETUP
+═══════════════════════════════════════════ -->
+<div class="form-card">
+  <div class="section-hd">
+    <div class="section-num">7</div>
+    <div>
+      <div class="section-title">License and access setup</div>
+      <div class="section-desc">Three role types in Performance Center. License assignments will be confirmed in the org structure workshop.</div>
+    </div>
+  </div>
+
+  <fieldset>
+    <legend>License counts</legend>
+    <div class="info-box">Provide your best estimate — exact counts will be confirmed against your NS employee records before go-live.</div>
+    <table class="table">
+      <thead><tr><th>Role</th><th>Description</th><th>Estimated count</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Employee</strong></td>
+          <td>All staff — access to own profile, goals, evidence, recognition, review forms, documents</td>
+          <td><input type="number" placeholder="e.g. 72"></td>
+        </tr>
+        <tr>
+          <td><strong>Supervisor / Manager</strong></td>
+          <td>Anyone with NS direct reports — team management, manager review form, financial tab</td>
+          <td><input type="number" placeholder="e.g. 11"></td>
+        </tr>
+        <tr>
+          <td><strong>HR Admin</strong></td>
+          <td>Full org access, configuration, cycle management, evidence approval, Company Health</td>
+          <td><input type="number" placeholder="e.g. 2"></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="form-group" style="margin-top:14px">
+      <label>Are there contractors, temporary workers, or non-NS users who need portal access?</label>
+      <div class="radio-pills">
+        <label class="radio-pill"><input type="radio" name="contractors" value="yes">Yes</label>
+        <label class="radio-pill"><input type="radio" name="contractors" value="no">No</label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>If yes — should contractors appear in the org-wide Directory?</label>
+      <div class="radio-pills">
+        <label class="radio-pill"><input type="radio" name="cont_dir" value="yes">Yes — include them</label>
+        <label class="radio-pill"><input type="radio" name="cont_dir" value="no">No — exclude from Directory</label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>List the names and NS emails of your HR Admin users <span class="badge b-req">Required</span></label>
+      <table class="table">
+        <thead><tr><th>Name</th><th>NS email address</th><th>NS employee internal ID (if known)</th></tr></thead>
+        <tbody>
+          <tr><td><input type="text"></td><td><input type="email"></td><td><input type="text"></td></tr>
+          <tr><td><input type="text"></td><td><input type="email"></td><td><input type="text"></td></tr>
+          <tr><td><input type="text"></td><td><input type="email"></td><td><input type="text"></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="form-group">
+      <label>NS access for NetDynamic team <span class="badge b-req">Required</span></label>
+      <div class="info-box">Please add the following user to your NS sandbox and production environments as Administrator before the kickoff call. The project clock starts when access is confirmed.</div>
+      <table class="table">
+        <thead><tr><th>Name</th><th>Email</th><th>Role required</th><th>Environment</th></tr></thead>
+        <tbody>
+          <tr><td>ATS360 Performance Center Team</td><td>performance@netdynamicinc.com</td><td>Administrator</td><td>Sandbox + Production</td></tr>
+        </tbody>
+      </table>
+      <div class="form-group" style="margin-top:12px">
+        <label>Access confirmed by NS Admin?</label>
+        <div class="radio-pills">
+          <label class="radio-pill"><input type="radio" name="access_conf" value="yes">Yes — access has been provisioned</label>
+          <label class="radio-pill"><input type="radio" name="access_conf" value="pending">Pending — will be done before kickoff</label>
+          <label class="radio-pill"><input type="radio" name="access_conf" value="need">I need help with this</label>
+        </div>
+      </div>
+    </div>
+  </fieldset>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SECTION 8 — ADDITIONAL DOCUMENTS
+═══════════════════════════════════════════ -->
+<div class="form-card">
+  <div class="section-hd">
+    <div class="section-num">8</div>
+    <div>
+      <div class="section-title">Additional documents</div>
+      <div class="section-desc">Anything else that helps us understand your org.</div>
+    </div>
+  </div>
+
+  <fieldset>
+    <legend>Supplementary materials</legend>
+    <div class="form-group">
+      <label>Upload or link any of the following <span class="badge b-opt">All optional</span></label>
+      <div class="check-group">
+        <label class="check-row"><input type="checkbox"> Current org chart</label>
+        <label class="check-row"><input type="checkbox"> Existing performance review template (Word, PDF, or Google Doc)</label>
+        <label class="check-row"><input type="checkbox"> HR policy documents relevant to performance management</label>
+        <label class="check-row"><input type="checkbox"> Job level framework or career ladders</label>
+        <label class="check-row"><input type="checkbox"> Existing goal-setting templates</label>
+        <label class="check-row"><input type="checkbox"> Other: <input type="text" placeholder="Describe" style="width:300px;margin-left:6px;display:inline"></label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Link to shared folder or document (Google Drive, SharePoint, etc.) <span class="badge b-opt">Optional</span></label>
+      <input type="text" placeholder="https://...">
+    </div>
+    <div class="form-group">
+      <label>Anything else we should know before the kickoff call?</label>
+      <textarea placeholder="Special considerations, constraints, political sensitivities, upcoming org changes, acquisitions, unusual team structures, previous failed HR software implementations, or anything else that would affect how we configure the product for you."></textarea>
+    </div>
+  </fieldset>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SECTION 9 — CONFIRMATION
+═══════════════════════════════════════════ -->
+<div class="submit-zone">
+  <div class="sz-title">Ready to submit?</div>
+  <div class="sz-sub">Please confirm the following before submitting. Your submission is final — post-submission changes to confirmed scope require a Change Order.</div>
+
+  <div class="confirm-checks">
+    <label class="confirm-row"><input type="checkbox" id="conf1"> The information in this form is accurate to the best of my knowledge.</label>
+    <label class="confirm-row"><input type="checkbox" id="conf2"> I understand that Performance Center configuration is based on this form. Material changes after submission may require a Change Order and may affect the project timeline.</label>
+    <label class="confirm-row"><input type="checkbox" id="conf3"> I confirm that the HR Lead named in Section 1 is authorised to act as the Single Point of Approval Authority (SPAA) for this engagement.</label>
+    <label class="confirm-row"><input type="checkbox" id="conf4"> I understand that client delays — including late delivery of NS access, legacy data, branding assets, and content decisions — may result in a day-for-day extension of the go-live date under the terms of our engagement agreement.</label>
+  </div>
+
+  <div style="margin-bottom:22px">
+    <div class="sig-row" style="max-width:600px;margin:0 auto 16px">
+      <div class="form-group" style="margin:0">
+        <label style="color:rgba(255,255,255,.7);font-size:13px">Full name of SPAA</label>
+        <input type="text" placeholder="Legal name" style="background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);color:white">
+      </div>
+      <div class="form-group" style="margin:0">
+        <label style="color:rgba(255,255,255,.7);font-size:13px">Date</label>
+        <input type="date" style="background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);color:white">
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-save" onclick="saveDraft()">Save draft</button>
+  <button class="btn-submit" onclick="submitForm()">Submit BPM →</button>
+
+  <div style="margin-top:22px;font-size:12px;color:rgba(255,255,255,.4)">
+    Questions? Email performance@netdynamicinc.com · NetDynamic Consulting Inc. · Mississauga, Ontario
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<script>
+// Weight calculator
+function updateWeights() {
+  const fields = ['fa','g','r','e'];
+  let total = 0;
+  fields.forEach(f => {
+    const val = parseInt(document.getElementById('w-'+f).value)||0;
+    total += val;
+    document.getElementById('bar-'+f).style.width = Math.min(val,100)+'%';
+  });
+  const el = document.getElementById('weights-total');
+  if(total===100){
+    el.textContent='Total: 100% ✓';
+    el.className='weights-total wt-ok';
+  } else {
+    el.textContent='Total: '+total+'% — must equal 100%';
+    el.className='weights-total wt-bad';
+  }
+}
+
+// Progress fill — rough estimate based on visible interaction
+function updateProgress() {
+  const filled = document.querySelectorAll('input[type="text"]:not([disabled]):not([placeholder*="Link"]):not([value=""]),input[type="email"]:not([value=""]),input[type="number"]:not([value=""]),input[type="date"]:not([value=""]),input[type="radio"]:checked,input[type="checkbox"]:checked,textarea:not([value=""])').length;
+  const total = 80;
+  const pct = Math.min(Math.round((filled/total)*100),100);
+  document.getElementById('progressFill').style.width = Math.max(pct,5)+'%';
+}
+document.addEventListener('input', updateProgress);
+document.addEventListener('change', updateProgress);
+
+function saveDraft(){
+  alert('Draft saved. You can return to this form at any time using the link sent to your email.');
+}
+
+function submitForm(){
+  const checks = ['conf1','conf2','conf3','conf4'];
+  const missing = checks.filter(id=>!document.getElementById(id).checked);
+  if(missing.length){
+    alert('Please check all four confirmation boxes before submitting.');
+    return;
+  }
+  if(document.getElementById('progressFill').style.width === '5%' || parseInt(document.getElementById('progressFill').style.width)<25){
+    alert('Please complete the required sections before submitting.');
+    return;
+  }
+  alert('Thank you. Your BPM has been submitted. Your NetDynamic PM will contact you within 1 business day to confirm receipt and schedule your kickoff call.');
+}
+</script>
+</body>
+</html>
