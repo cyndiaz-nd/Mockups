@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compliance Portal (name TBD): functional mockup</title>
+<!--
+  Compliance Portal (product name TBD) - functional mockup for the dev team.
+  Single self-contained file: no external fonts, scripts, images or network calls.
+  All data is fake and lives in memory. "Reset demo" restores the starting state.
+  Demo date is fixed to Nov 19, 2026 so expiry and reminder states are predictable.
+-->
+<style>
+:root{
+  --brand:#17255a; --brand-2:#24357d; --accent:#e8590c; --accent-hover:#cf4e0a; --on-accent:#ffffff;
+  --bg:#f2f4f8; --surface:#ffffff; --surface-2:#f7f8fb; --ink:#18203a; --muted:#5b6582; --line:#dde2ec;
+  --ok:#1d7f54; --ok-bg:#e2f3ea; --warn:#8a5a0f; --warn-bg:#fcefd6; --bad:#b4332a; --bad-bg:#fbe4e1;
+  --info:#2453c4; --info-bg:#e4ecfc; --neutral-bg:#eceff5; --parsed:#fff6d6; --parsed-line:#e2b93b;
+  --note-bg:#fff8e6; --note-line:#e9c46a; --note-ink:#5c4210;
+  --head-bg:#17255a; --head-ink:#ffffff;
+  --radius:10px; --radius-sm:7px;
+  --shadow:0 1px 2px rgba(20,30,60,.06),0 6px 18px rgba(20,30,60,.07);
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --brand:#9fb3ff; --brand-2:#c3d0ff; --accent:#f27a36; --accent-hover:#ff8c4d; --on-accent:#1a0f06;
+    --bg:#0f1424; --surface:#171e33; --surface-2:#1c2440; --ink:#e7ebf5; --muted:#9aa4c0; --line:#2b3553;
+    --ok:#5fd29a; --ok-bg:#163a2a; --warn:#f0c46b; --warn-bg:#3a2e14; --bad:#ff8a7e; --bad-bg:#43201d;
+    --info:#8fb0ff; --info-bg:#1d2b55; --neutral-bg:#252e4a; --parsed:#3a3214; --parsed-line:#b38f1f;
+    --note-bg:#2e2712; --note-line:#8a6d22; --note-ink:#f3dfa6;
+    --head-bg:#0b1330; --head-ink:#ffffff;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25);
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3,h4{margin:0;line-height:1.2}
+p{margin:0}
+a{color:var(--info)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* ---------- Top demo bar ---------- */
+.demobar{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:10px 18px;background:var(--surface);border-bottom:1px solid var(--line)}
+.demobar .title{font-weight:700;font-size:15px;color:var(--brand)}
+.demobar .tbd{font-size:12px;color:var(--muted);border:1px dashed var(--line);border-radius:20px;padding:2px 8px}
+.seg{display:inline-flex;background:var(--neutral-bg);border-radius:9px;padding:3px}
+.seg button{border:0;background:transparent;padding:6px 12px;border-radius:7px;cursor:pointer;font-weight:600;color:var(--muted)}
+.seg button.on{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.demobar .spacer{flex:1}
+.switch{display:inline-flex;align-items:center;gap:8px;cursor:pointer;user-select:none;font-weight:600;color:var(--muted)}
+.switch input{appearance:none;width:34px;height:20px;border-radius:20px;background:var(--line);position:relative;cursor:pointer;transition:background .15s;flex:none}
+.switch input::after{content:"";position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#fff;transition:left .15s}
+.switch input:checked{background:var(--accent)}
+.switch input:checked::after{left:17px}
+.switch input:disabled{opacity:.5;cursor:not-allowed}
+
+/* ---------- Buttons, chips, inputs ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:7px 12px;border-radius:var(--radius-sm);cursor:pointer;font-weight:600;white-space:nowrap}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.primary:hover{background:var(--accent-hover)}
+.btn.dark{background:var(--brand);border-color:var(--brand);color:#fff}
+@media (prefers-color-scheme: dark){.btn.dark{color:#0f1424}}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn.danger{color:var(--bad)}
+.btn.sm{padding:4px 9px;font-size:13px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:2px 9px;border-radius:20px;font-size:12px;font-weight:600;background:var(--neutral-bg);color:var(--muted);white-space:nowrap}
+.chip.ok{background:var(--ok-bg);color:var(--ok)}
+.chip.warn{background:var(--warn-bg);color:var(--warn)}
+.chip.bad{background:var(--bad-bg);color:var(--bad)}
+.chip.info{background:var(--info-bg);color:var(--info)}
+.chip .dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:1px 7px;border-radius:5px;background:var(--neutral-bg);color:var(--muted)}
+label.f{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.in,select.in,textarea.in{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--surface);min-height:36px}
+textarea.in{min-height:80px;resize:vertical}
+.in.parsed{background:var(--parsed);border-color:var(--parsed-line)}
+.in.err{border-color:var(--bad);box-shadow:0 0 0 2px var(--bad-bg)}
+.err-msg{color:var(--bad);font-size:12px;margin-top:3px}
+.muted{color:var(--muted)}
+.small{font-size:12.5px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media (max-width:720px){.grid2,.grid3{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.card-h{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.card-b{padding:14px 16px}
+.stack>*+*{margin-top:12px}
+.hr-line{height:1px;background:var(--line);margin:14px 0}
+
+/* ---------- Dev notes ---------- */
+.dn{display:none;margin:8px 0;padding:8px 10px;border:1px dashed var(--note-line);background:var(--note-bg);color:var(--note-ink);border-radius:8px;font-size:12.5px;line-height:1.45}
+body.notes .dn{display:block}
+body.notes .dn.inline{display:inline-block;margin:0 0 0 6px;padding:2px 7px}
+.dn b{display:inline-block;margin-right:6px;padding:0 6px;border-radius:4px;font-size:11px;background:var(--note-line);color:#2b1f05}
+.dn.k-exists b{background:#9ad3b5;color:#0d3b25}
+.dn.k-extend b{background:#a9c2f5;color:#10265e}
+.dn.k-new b{background:#f5b48b;color:#4a1d03}
+.dn.k-legal b{background:#f2a3a3;color:#4d0c0c}
+
+/* ---------- HR portal shell ---------- */
+.hr{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 54px)}
+.side{background:var(--surface);border-right:1px solid var(--line);padding:14px 10px;display:flex;flex-direction:column;gap:2px}
+.side .ctx{font-size:12px;color:var(--muted);padding:4px 10px 12px}
+.side .ctx strong{display:block;color:var(--ink);font-size:13px}
+.navbtn{display:flex;align-items:center;justify-content:space-between;width:100%;text-align:left;padding:9px 10px;border:0;background:transparent;border-radius:8px;cursor:pointer;font-weight:600;color:var(--muted)}
+.navbtn:hover{background:var(--surface-2);color:var(--ink)}
+.navbtn.on{background:var(--brand);color:#fff}
+@media (prefers-color-scheme: dark){.navbtn.on{color:#0f1424}}
+.navbtn .n{font-size:11.5px;padding:1px 7px;border-radius:20px;background:var(--accent);color:var(--on-accent)}
+.main{min-width:0}
+.band{background:var(--head-bg);color:var(--head-ink);padding:22px 28px 20px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.band h1{font-size:34px;font-weight:800;letter-spacing:-.02em}
+.band p{opacity:.8;margin-top:6px}
+.band .who{display:flex;align-items:center;gap:8px;font-size:13px;opacity:.95}
+.band .who select{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:7px;padding:5px 8px}
+.band .who select option{color:#18203a}
+.content{padding:20px 28px 60px}
+@media (max-width:900px){
+  .hr{grid-template-columns:1fr}
+  .side{flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line);padding:8px}
+  .side .ctx{display:none}
+  .navbtn{width:auto;white-space:nowrap;gap:8px}
+  .band{padding:18px}
+  .band h1{font-size:26px}
+  .content{padding:16px}
+}
+
+/* status strip */
+.strip{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.strip button{border:1px solid var(--line);background:var(--surface);border-radius:20px;padding:5px 12px;cursor:pointer;font-weight:600;color:var(--muted)}
+.strip button b{color:var(--ink);margin-left:4px}
+.strip button.on{border-color:var(--brand);color:var(--brand);background:var(--info-bg)}
+.filters{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-bottom:12px}
+.bulkbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 12px;margin-bottom:10px;border-radius:var(--radius);background:var(--brand);color:#fff}
+@media (prefers-color-scheme: dark){.bulkbar{color:#0f1424}}
+.bulkbar .btn{background:rgba(255,255,255,.95);color:#18203a;border-color:transparent}
+
+/* tables */
+.tw{overflow-x:auto}
+table.t{width:100%;border-collapse:collapse;min-width:760px}
+table.t th{font-size:12px;font-weight:700;color:var(--muted);text-align:left;padding:9px 12px;background:var(--surface-2);border-bottom:1px solid var(--line);white-space:nowrap}
+table.t td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+table.t tr:last-child td{border-bottom:0}
+table.t tr.dim td{opacity:.55}
+.who-cell{display:flex;align-items:center;gap:10px}
+.av{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:12px;background:var(--info-bg);color:var(--info);flex:none}
+.linkbtn{border:0;background:none;padding:0;cursor:pointer;font-weight:700;color:var(--ink);text-align:left}
+.linkbtn:hover{color:var(--accent);text-decoration:underline}
+.bar{height:6px;border-radius:6px;background:var(--neutral-bg);overflow:hidden;width:90px}
+.bar i{display:block;height:100%;background:var(--accent)}
+.menuwrap{position:relative;display:inline-block}
+.menu{position:absolute;right:0;top:calc(100% + 4px);z-index:30;min-width:200px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:5px}
+.menu button{display:block;width:100%;text-align:left;border:0;background:none;padding:8px 10px;border-radius:6px;cursor:pointer}
+.menu button:hover{background:var(--surface-2)}
+.menu button:disabled{opacity:.4;cursor:not-allowed}
+.menu .sep{height:1px;background:var(--line);margin:4px 0}
+
+/* review split */
+.split{display:grid;grid-template-columns:340px 1fr;gap:16px;align-items:start}
+@media (max-width:1000px){.split{grid-template-columns:1fr}}
+.qitem{display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:var(--radius);padding:12px;cursor:pointer;margin-bottom:8px}
+.qitem.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--warn-bg)}
+.diff td.changed{background:var(--warn-bg);font-weight:600}
+
+/* drawer */
+.overlay{position:fixed;inset:0;background:rgba(10,15,35,.45);z-index:60;display:flex;justify-content:flex-end}
+.overlay.center{justify-content:center;align-items:center;padding:16px}
+.drawer{width:min(720px,100%);height:100%;background:var(--surface);display:flex;flex-direction:column;box-shadow:var(--shadow)}
+.drawer-h{padding:16px 20px;border-bottom:1px solid var(--line)}
+.drawer-b{padding:16px 20px;overflow-y:auto;flex:1}
+.drawer-f{padding:12px 20px;border-top:1px solid var(--line);display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+.modal{width:min(620px,100%);max-height:92vh;background:var(--surface);border-radius:12px;display:flex;flex-direction:column;box-shadow:var(--shadow)}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:14px;overflow-x:auto}
+.tabs button{border:0;background:none;padding:9px 12px;cursor:pointer;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap}
+.tabs button.on{color:var(--ink);border-bottom-color:var(--accent)}
+.formrow{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:var(--radius-sm);margin-bottom:8px;background:var(--surface-2)}
+.formrow.off{background:var(--surface)}
+.formrow.off .ctrls{opacity:.4;pointer-events:none}
+.formrow .ctrls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+@media (max-width:640px){.formrow{grid-template-columns:1fr}}
+.warnbox{padding:10px 12px;border-radius:8px;background:var(--warn-bg);color:var(--warn);font-size:13px}
+.badbox{padding:10px 12px;border-radius:8px;background:var(--bad-bg);color:var(--bad);font-size:13px}
+.okbox{padding:10px 12px;border-radius:8px;background:var(--ok-bg);color:var(--ok);font-size:13px}
+.infobox{padding:10px 12px;border-radius:8px;background:var(--info-bg);color:var(--info);font-size:13px}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:16px}
+.stat{padding:14px 16px}
+.stat .v{font-size:28px;font-weight:800;letter-spacing:-.02em}
+.stat .l{color:var(--muted);font-size:13px}
+.hbar{display:grid;grid-template-columns:120px 1fr 48px;gap:10px;align-items:center;margin:8px 0}
+.hbar .track{height:12px;border-radius:12px;background:var(--neutral-bg);overflow:hidden}
+.hbar .track i{display:block;height:100%;background:var(--brand)}
+
+/* ---------- Employee portal ---------- */
+.empwrap{display:flex;flex-direction:column;align-items:center;padding:18px 12px 60px;gap:12px}
+.emptools{width:min(980px,100%);display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center}
+.phone{width:min(420px,100%);background:var(--surface);border:1px solid var(--line);border-radius:28px;box-shadow:var(--shadow);overflow:hidden;min-height:720px;display:flex;flex-direction:column}
+.p-head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.p-logo{width:34px;height:34px;border-radius:8px;display:grid;place-items:center;color:#fff;font-weight:800;background:var(--portal,#7a1427)}
+.p-head .co{font-weight:700;font-size:14px}
+.p-head .sub{font-size:12px;color:var(--muted)}
+.p-body{padding:16px;flex:1}
+.p-foot{padding:14px 16px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+.p-hello h2{font-size:24px;font-weight:800;letter-spacing:-.01em}
+.p-progress{display:flex;align-items:center;gap:14px;padding:14px;border:1px solid var(--line);border-radius:14px;margin:14px 0}
+.ring{--p:0;width:64px;height:64px;border-radius:50%;background:conic-gradient(var(--portal,#7a1427) calc(var(--p)*1%),var(--neutral-bg) 0);display:grid;place-items:center;flex:none}
+.ring span{width:50px;height:50px;border-radius:50%;background:var(--surface);display:grid;place-items:center;font-weight:800;font-size:14px}
+.p-item{display:flex;gap:12px;align-items:flex-start;padding:12px;border:1px solid var(--line);border-radius:14px;margin-bottom:8px}
+.p-item .ico{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--neutral-bg);font-weight:800;color:var(--portal,#7a1427);flex:none;font-size:13px}
+.p-item .grow{flex:1;min-width:0}
+.p-item h4{font-size:14px}
+.p-btn{background:var(--portal,#7a1427);color:#fff;border:0;border-radius:10px;padding:9px 14px;font-weight:700;cursor:pointer;white-space:nowrap}
+.p-btn:disabled{opacity:.45;cursor:not-allowed}
+.p-btn.full{width:100%;padding:12px}
+.p-btn.line{background:transparent;color:var(--portal,#7a1427);border:1px solid var(--portal,#7a1427)}
+.p-sec{font-size:15px;font-weight:700;margin:18px 0 8px}
+.p-field{margin-bottom:12px}
+.methods{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 14px}
+.methods button{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px;cursor:pointer;text-align:left;font-weight:600}
+.methods button small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.methods button.on{border-color:var(--portal,#7a1427);box-shadow:0 0 0 2px var(--neutral-bg)}
+.capture{border:1px dashed var(--line);border-radius:12px;padding:12px;margin:8px 0;background:var(--surface-2)}
+.rule{padding:10px 12px;border-radius:10px;font-size:13px;margin:8px 0}
+.rule.r-capture{background:var(--info-bg);color:var(--info)}
+.rule.r-parse{background:var(--ok-bg);color:var(--ok)}
+.confirm{display:flex;gap:10px;align-items:flex-start;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);margin:14px 0}
+.confirm input{margin-top:3px;width:18px;height:18px;flex:none}
+.otp{display:flex;gap:6px;justify-content:center;margin:16px 0}
+.otp input{width:42px;height:50px;text-align:center;font-size:20px;font-weight:700;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.mail{width:min(560px,100%);background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+.mail .mh{padding:14px 18px;border-bottom:1px solid var(--line);font-size:13px}
+.mail .mb{padding:18px}
+.spinner{width:16px;height:16px;border:2px solid var(--line);border-top-color:var(--portal,#7a1427);border-radius:50%;animation:spin .8s linear infinite;display:inline-block;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion: reduce){.spinner{animation:none}}
+
+/* toast */
+#toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:90;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.toast{background:#18203a;color:#fff;padding:10px 16px;border-radius:10px;box-shadow:var(--shadow);font-weight:600;max-width:90vw}
+.toast.bad{background:#8f241c}
+@media (prefers-color-scheme: dark){.toast{background:#e7ebf5;color:#0f1424}.toast.bad{background:#ff8a7e;color:#2b0805}}
+
+/* print */
+#print-area{display:none}
+@media print{
+  body>*:not(#print-area){display:none!important}
+  #print-area{display:block;color:#000;font-family:Georgia,serif}
+  #print-area h1{font-size:20px;margin-bottom:6px}
+  #print-area table{width:100%;border-collapse:collapse;margin:10px 0}
+  #print-area td,#print-area th{border:1px solid #999;padding:6px;text-align:left;font-size:12px}
+  #print-area .pg{page-break-after:always}
+}
+</style>
+</head>
+<body>
+<div class="demobar" id="demobar"></div>
+<main id="app"></main>
+<div id="overlay-root"></div>
+<div id="toast" aria-live="polite"></div>
+<div id="print-area"></div>
+
+<script>
+'use strict';
+/* =====================================================================
+   FIXED DEMO DATE + HELPERS
+   ===================================================================== */
+const TODAY_ISO = '2026-11-19';
+function toDate(s){ const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
+function iso(dt){ return dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0'); }
+const TODAY = toDate(TODAY_ISO);
+function addDays(s,n){ const x=toDate(s); x.setDate(x.getDate()+n); return iso(x); }
+function daysFrom(s){ return Math.round((toDate(s)-TODAY)/864e5); }
+function fmt(s){ if(!s) return '-'; return toDate(s).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+function stamp(){ const t=new Date(); return fmt(TODAY_ISO)+', '+String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0'); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function initials(n){ return n.split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase(); }
+function clone(o){ return JSON.parse(JSON.stringify(o)); }
+function dn(kind,label,text,inline){ return `<div class="dn k-${kind}${inline?' inline':''}"><b>${esc(label)}</b>${text}</div>`; }
+function maskAcct(v){ v=String(v||''); return v.length>4 ? '•••• '+v.slice(-4) : v; }
+function maskSsn(v){ v=String(v||''); return v ? '•••-••-'+v.replace(/\D/g,'').slice(-4) : ''; }
+
+/* =====================================================================
+   CATALOGS (forms, fields, document types, credential types)
+   ===================================================================== */
+const CATALOG = [
+  {key:'empInfo',  type:'std',  label:'Employee information', desc:'Personal details and contact information.', payroll:false, sign:false, ico:'EI'},
+  {key:'dd',       type:'std',  label:'Direct deposit', desc:'Bank account for payroll.', payroll:true, sign:true, paper:'cheque', ico:'DD'},
+  {key:'emergency',type:'std',  label:'Emergency contact', desc:'Who to reach in an emergency.', payroll:false, sign:false, ico:'EC'},
+  {key:'i9',       type:'std',  label:'Form I-9, Section 1', desc:'U.S. employment eligibility. HR completes Section 2.', payroll:false, sign:true, i9:true, ico:'I9'},
+  {key:'w4',       type:'std',  label:'Form W-4', desc:'Federal income tax withholding.', payroll:true, sign:true, paper:'paperW4', ico:'W4'},
+  {key:'nj',       type:'tax',  label:'NJ-W4 (New Jersey)', desc:'New Jersey income tax withholding.', payroll:true, sign:true, paper:'paperState', ico:'NJ'},
+  {key:'ny',       type:'tax',  label:'IT-2104 (New York)', desc:'New York State withholding allowance certificate.', payroll:true, sign:true, paper:'paperState', ico:'NY'},
+  {key:'handbook', type:'esig', label:'Employee handbook acknowledgment', desc:'Read and sign.', payroll:false, sign:true, ico:'HB'},
+  {key:'payrollRecord', type:'esig', label:'Personnel payroll record', desc:'Client PDF with signature fields.', payroll:false, sign:true, ico:'PR'},
+  {key:'esigW4',   type:'esig', label:'Form W-4 (PDF for e-signature)', desc:'Uploaded PDF version of the W-4.', payroll:false, sign:true, dupOf:'w4', ico:'W4'},
+  {key:'esigI9',   type:'esig', label:'Form I-9 (PDF for e-signature)', desc:'Uploaded PDF version of the I-9.', payroll:false, sign:true, dupOf:'i9', ico:'I9'},
+];
+const C = k => CATALOG.find(c=>c.key===k);
+
+// [name, label, type, optional]
+const FIELDS = {
+  empInfo:[['firstName','Legal first name'],['lastName','Legal last name'],['address','Home address'],['city','City'],['state','State'],['zip','ZIP code'],['phone','Personal phone'],['email','Personal email'],['dob','Date of birth','date'],['ssn','Social Security number','ssn']],
+  emergency:[['ecName','Contact name'],['ecRel','Relationship'],['ecPhone','Phone number']],
+  dd:[['bank','Bank name'],['routing','Routing number'],['account','Account number','acct'],['acctType','Account type','select:Checking|Savings']],
+  w4:[['filing','Step 1(c): filing status','select:Single or married filing separately|Married filing jointly|Head of household'],['multiJobs','Step 2: multiple jobs or spouse works','select:No|Yes'],['dependents','Step 3: dependents amount ($)','number'],['otherIncome','Step 4(a): other income ($)','number',true],['deductions','Step 4(b): deductions ($)','number',true],['extraWh','Step 4(c): extra withholding per pay period ($)','number',true]],
+  nj:[['njFiling','Filing status','select:Single|Married/civil union couple, joint|Married/civil union partner, separate|Head of household|Qualifying widow(er)'],['njAllow','Total allowances','number'],['njExtra','Additional withholding ($)','number',true],['njTable','Rate table','select:None|A|B|C|D|E',true]],
+  ny:[['nyStatus','Status','select:Single or head of household|Married|Married, but withhold at higher single rate'],['nyAllow','New York State allowances','number'],['nyExtra','Additional NY withholding ($)','number',true]],
+  handbook:[['ack','I have read the employee handbook','check']],
+  payrollRecord:[['position','Position title'],['payRate','Pay rate ($ per hour)','number']],
+  esigW4:[['ack','I reviewed and completed the attached PDF','check']],
+  esigI9:[['ack','I reviewed and completed the attached PDF','check']],
+  i9:[], // custom renderer
+};
+const LABEL = {}; Object.values(FIELDS).flat().forEach(f=>LABEL[f[0]]=f[1]);
+Object.assign(LABEL,{citizenship:'Citizenship status', aNumber:'A-Number / USCIS number', authExp:'Work authorization expires', i9ssn:'Social Security number', docChoice:'Documents chosen', sign:'Signature (typed legal name)'});
+
+const SAMPLE_PARSE = {
+  dd:{bank:'Hudson Valley Credit Union', routing:'021000021', account:'442290181', acctType:'Checking'},
+  w4:{filing:'Married filing jointly', multiJobs:'No', dependents:'2000', otherIncome:'0', deductions:'0', extraWh:'25'},
+  nj:{njFiling:'Married/civil union couple, joint', njAllow:'2', njExtra:'0', njTable:'B'},
+  ny:{nyStatus:'Married', nyAllow:'2', nyExtra:'0'},
+};
+
+/* =====================================================================
+   INITIAL STATE
+   ===================================================================== */
+function mkPkg(id,name,desc,on,uploads){
+  return {id,name,desc,uploads:uploads||[],jobs:[],
+    items:CATALOG.map(c=>({key:c.key,on:on.includes(c.key),mode:c.key==='emergency'?'auto':'approval',confirm:['dd','w4','nj','ny','i9'].includes(c.key)}))};
+}
+function initialState(){
+  const s = {
+    view:'hr', notes:false, user:'u1',
+    hrTab:'board', recordId:null, recordTab:'overview', credTab:'exp',
+    filters:{status:'all',q:'',sub:'',loc:'',state:'',dept:'',type:'',hireFrom:'',hireTo:'',missing:''},
+    selected:[], openMenu:null, reviewSel:null, reveal:{}, activityFilter:'all',
+    emp:{id:'E-1001', screen:'invite', formKey:null, otp:'', verified:{}},
+    demo:{failSync:false},
+    settings:{
+      atsInstalled:false, visibility:'subsidiary', separation:true,
+      linkDays:14, remindersOn:true, remindEvery:3, remindMax:3, otp:true,
+      approvalLevels:1, overwrite:'history',
+      includeTypes:{Permanent:true,Contingent:true,Contractor:false,'Non-worker':false},
+      triggers:{newEmployee:false, newEmployeePkg:'P1', idExpiry:true, annual:false, annualDate:'01-15', annualPkg:'P3'},
+      i9Copies:'all', everifyOn:true, everifyWarnDays:30,
+      confirmText:'I confirm the information and documents I am submitting are true and complete. I understand that incorrect information may delay my payroll setup.',
+      notify:{nd:true, nsAdmin:'netsuite.admin@northwind.example'},
+      brand:{name:'Northwind Builders', color:'#7a1427', help:'hr@northwind.example'},
+    },
+    users:[
+      {id:'u1',name:'Priya Shah',role:'HR Manager',sub:'Northwind US',perms:{send:1,approve:1,packages:1,creds:1,everify:1,settings:1}},
+      {id:'u2',name:'Daniel Cho',role:'Payroll Administrator',sub:'Northwind US',perms:{send:0,approve:1,packages:0,creds:0,everify:0,settings:0}},
+      {id:'u3',name:'Alex Kim',role:'NetSuite Administrator',sub:'All',perms:{send:1,approve:1,packages:1,creds:1,everify:1,settings:1}},
+      {id:'u4',name:'Grace Liu',role:'HR Coordinator',sub:'Northwind Gov Services',perms:{send:1,approve:0,packages:0,creds:1,everify:0,settings:0}},
+    ],
+    packages:[
+      mkPkg('P1','New hire, New Jersey','US new hires working in New Jersey.',['empInfo','dd','emergency','i9','w4','nj','handbook'],[{title:'Licenses and certifications',desc:'Upload any license your role needs.',required:false,max:3}]),
+      mkPkg('P2','New hire, New York','US new hires working in New York.',['empInfo','dd','emergency','i9','w4','ny','handbook'],[]),
+      mkPkg('P3','W-4 and state update (NJ)','Existing employees updating federal and NJ withholding.',['w4','nj'],[]),
+      mkPkg('P4','Direct deposit and contact refresh','Existing employees confirming bank and contact details.',['empInfo','dd','emergency'],[]),
+    ],
+    docTypes:[
+      {id:'usPassport',name:'U.S. passport or passport card',list:'A',mode:'capture',msg:''},
+      {id:'greenCard',name:'Permanent Resident Card (Form I-551)',list:'A',mode:'capture',msg:''},
+      {id:'ead',name:'Employment Authorization Document (Form I-766)',list:'A',mode:'capture',msg:''},
+      {id:'dlB',name:"Driver's license or state ID card",list:'B',mode:'capture',msg:''},
+      {id:'schoolId',name:'School ID card with photo',list:'B',mode:'capture',msg:''},
+      {id:'milId',name:'U.S. military card',list:'B',mode:'capture',msg:'Federal law restricts copying military ID cards. We store a photo only if your employer requires it, and never read it.'},
+      {id:'ssCard',name:'Social Security card (unrestricted)',list:'C',mode:'capture',msg:''},
+      {id:'birthCert',name:'Birth certificate (certified copy)',list:'C',mode:'capture',msg:''},
+      {id:'cheque',name:'Voided check',list:'',mode:'parse',msg:''},
+      {id:'paperW4',name:'Paper Form W-4',list:'',mode:'parse',msg:''},
+      {id:'paperState',name:'Paper state withholding form',list:'',mode:'parse',msg:''},
+      {id:'certCard',name:'License or certificate card',list:'',mode:'parse',msg:''},
+      {id:'vaccine',name:'Vaccination record',list:'',mode:'capture',msg:'Health records are stored privately. We only use the dates you type in.'},
+    ],
+    credTypes:[
+      {id:'dl',name:"Driver's license",cat:'Government ID',idNumber:true,file:'required',verify:true,reminders:[60,30,7],rcpt:{employee:true,hr:true,supervisor:false,other:''},spSync:true,doc:'dlB'},
+      {id:'passport',name:'Passport',cat:'Government ID',idNumber:true,file:'required',verify:true,reminders:[90,30],rcpt:{employee:true,hr:true,supervisor:false,other:''},spSync:true,doc:'usPassport'},
+      {id:'rn',name:'Registered nurse license',cat:'Professional license',idNumber:true,file:'required',verify:true,reminders:[90,60,30],rcpt:{employee:true,hr:true,supervisor:true,other:''},spSync:false,doc:'certCard'},
+      {id:'cpr',name:'CPR / first aid',cat:'Training',idNumber:false,file:'optional',verify:false,reminders:[30,7],rcpt:{employee:true,hr:true,supervisor:false,other:''},spSync:false,doc:'certCard'},
+      {id:'flu',name:'Flu vaccination (dates only)',cat:'Health (dates only)',idNumber:false,file:'none',verify:false,reminders:[30],rcpt:{employee:true,hr:true,supervisor:false,other:''},spSync:false,doc:'vaccine'},
+      {id:'drug',name:'Drug test (dates only)',cat:'Health (dates only)',idNumber:false,file:'none',verify:true,reminders:[30],rcpt:{employee:false,hr:true,supervisor:false,other:'safety@northwind.example'},spSync:false,doc:'vaccine'},
+    ],
+    employees:[
+      emp('E-1001','Maria Lopez','Welder','Northwind US','Production','Newark Plant','NJ','Permanent','2026-11-30','Dan Reyes','maria.lopez@mail.example',{pkg:'P1',status:'open',sent:'2026-11-18',expires:'2026-12-02',sentBy:'u1',reminders:0}),
+      emp('E-1002','James Carter','Project Coordinator','Northwind US','Operations','Albany Office','NY','Permanent','2026-11-24','Ruth Allen','jcarter@mail.example',{pkg:'P2',status:'open',sent:'2026-11-12',expires:'2026-11-26',sentBy:'u1',reminders:1,opened:true},[cred('dl','D4471-20991',null,'2029-03-02')]),
+      emp('E-1003','Aisha Khan','Payroll Specialist','Northwind US','Finance','Newark Plant','NJ','Permanent','2023-04-03','Ruth Allen','aisha.khan@mail.example',{pkg:'P3',status:'open',sent:'2026-11-10',expires:'2026-11-24',sentBy:'u1',reminders:0,opened:true},[cred('passport','583920114',null,'2031-08-19')]),
+      emp('E-1004','Tom Nguyen','Skilled Laborer','Northwind US','Production','Newark Plant','NJ','Contingent','2026-12-01','Dan Reyes','tom.nguyen@mail.example',null),
+      emp('E-1005','Rosa Martinez','Registered Nurse','Northwind Gov Services','Clinical','Albany Office','NY','Permanent','2024-02-12','Helen Ortiz','rosa.m@mail.example',null,[cred('rn','RN-778120',null,'2027-01-10'),cred('flu','',null,'2026-12-01'),cred('cpr','',null,'2027-06-30')]),
+      emp('E-1006','Kevin Brooks','Driver','Northwind US','Field Services','Pittsburgh Yard','PA','Permanent','2022-08-22','Sam Ito','kbrooks@mail.example',null,[cred('dl','PA-88120931',null,'2026-11-10'),cred('drug','',null,'2026-12-15')]),
+      emp('E-1007','Integration Bot','System user','Northwind US','Operations','Newark Plant','NJ','Non-worker','2021-01-04','-','integration@northwind.example',null),
+      emp('E-1008','Linda Park','HR/Office Manager','Northwind Gov Services','Operations','Albany Office','NY','Permanent','2025-05-19','Helen Ortiz','lpark@mail.example',{pkg:'P4',status:'revoked',reason:'Employee terminated (auto-revoked)',sent:'2026-11-05',expires:'2026-11-19',sentBy:'u4',reminders:1},[],'terminated'),
+      emp('E-1009','Samir Haddad','Electrician','Northwind US','Field Services','Newark Plant','NJ','Permanent','2026-10-27','Sam Ito','samir.h@mail.example',{pkg:'P1',status:'open',sent:'2026-10-28',expires:'2026-11-11',sentBy:'u1',reminders:3,opened:true}),
+      emp('E-1010','Chloe Bennett','Customer Service Lead','Northwind Gov Services','Customer Service','Albany Office','NY','Permanent','2026-12-07','Helen Ortiz','chloe.b@mail.example',null),
+    ],
+    progress:{},
+    log:[],
+  };
+  // current NetSuite values for existing employees
+  const E = id => s.employees.find(e=>e.id===id);
+  E('E-1003').ns = {w4:{filing:'Single or married filing separately',multiJobs:'No',dependents:'0',otherIncome:'0',deductions:'0',extraWh:'0'}, nj:{njFiling:'Single',njAllow:'1',njExtra:'0',njTable:'None'}};
+  // progress
+  s.progress['E-1002'] = {
+    empInfo:{status:'done',data:{firstName:'James',lastName:'Carter',address:'14 Lark St',city:'Albany',state:'NY',zip:'12210',phone:'518-555-0182',email:'jcarter@mail.example',dob:'1991-06-14',ssn:'123-45-6789'},submittedAt:'Nov 13, 2026, 09:12'},
+    emergency:{status:'done',data:{ecName:'Marion Carter',ecRel:'Mother',ecPhone:'518-555-0144'},submittedAt:'Nov 13, 2026, 09:15'},
+    dd:{status:'submitted',data:{bank:'Hudson Valley Credit Union',routing:'021000021',account:'442290181',acctType:'Checking',sign:'James Carter'},parsed:['bank','routing','account','acctType'],files:{paper:{name:'voided-check.jpg',doc:'cheque'}},submittedAt:'Nov 13, 2026, 09:21',confirmation:{at:'Nov 13, 2026, 09:21',email:'jcarter@mail.example'}},
+  };
+  s.progress['E-1003'] = {
+    w4:{status:'submitted',data:{filing:'Married filing jointly',multiJobs:'Yes',dependents:'2000',otherIncome:'0',deductions:'0',extraWh:'20',sign:'Aisha Khan'},submittedAt:'Nov 11, 2026, 14:02',confirmation:{at:'Nov 11, 2026, 14:02',email:'aisha.khan@mail.example'}},
+    nj:{status:'submitted',data:{njFiling:'Married/civil union couple, joint',njAllow:'3',njExtra:'0',njTable:'B',sign:'Aisha Khan'},submittedAt:'Nov 11, 2026, 14:06',confirmation:{at:'Nov 11, 2026, 14:06',email:'aisha.khan@mail.example'}},
+  };
+  s.progress['E-1009'] = {
+    empInfo:{status:'done',data:{firstName:'Samir',lastName:'Haddad',address:'88 Ferry St',city:'Newark',state:'NJ',zip:'07105',phone:'973-555-0119',email:'samir.h@mail.example',dob:'1988-02-03',ssn:'987-65-4321'},submittedAt:'Oct 29, 2026, 18:40'},
+  };
+  s.log = [
+    {at:'Nov 18, 2026, 10:04',who:'Priya Shah',emp:'E-1001',type:'send',text:'Sent package "New hire, New Jersey" (link expires Dec 2, 2026)'},
+    {at:'Nov 16, 2026, 08:00',who:'System',emp:'E-1002',type:'reminder',text:'Automatic reminder 1 of 3 sent'},
+    {at:'Nov 13, 2026, 09:15',who:'System',emp:'E-1002',type:'auto',text:'Emergency contact auto-updated in NetSuite (no approval needed for this form)'},
+    {at:'Nov 12, 2026, 16:20',who:'System',emp:'E-1008',type:'revoke',text:'Request auto-revoked: employee terminated'},
+    {at:'Nov 11, 2026, 15:31',who:'System',emp:'E-1009',type:'error',text:'Sync failed: Employee information. SuitePeople returned SP-412 (invalid value in State field). Retried and resolved.',resolved:true,notified:'NetDynamic support, netsuite.admin@northwind.example'},
+    {at:'Nov 10, 2026, 11:48',who:'Priya Shah',emp:'E-1003',type:'send',text:'Sent package "W-4 and state update (NJ)"'},
+  ];
+  return s;
+}
+function emp(id,name,title,sub,dept,loc,state,type,hire,supervisor,email,req,creds,status){
+  return {id,name,title,sub,dept,loc,state,type,hire,supervisor,email,req,creds:creds||[],status:status||'active',ns:{},i9s2:null,everify:null,history:[]};
+}
+let credSeq=1;
+function cred(type,number,issued,expires){ return {id:'C'+(credSeq++),type,number,issued,expires,status:'valid',renewal:null,lastReminder:null}; }
+
+let S = initialState();
+
+/* =====================================================================
+   DERIVED DATA
+   ===================================================================== */
+const user = () => S.users.find(u=>u.id===S.user);
+const can = p => !!user().perms[p];
+const E = id => S.employees.find(e=>e.id===id);
+const PK = id => S.packages.find(p=>p.id===id);
+const CT = id => S.credTypes.find(c=>c.id===id);
+const DT = id => S.docTypes.find(d=>d.id===id);
+const pkgItems = pid => (PK(pid)?PK(pid).items.filter(i=>i.on):[]);
+const prog = (eid,key) => { S.progress[eid]=S.progress[eid]||{}; S.progress[eid][key]=S.progress[eid][key]||{status:'new',data:{}}; return S.progress[eid][key]; };
+const peek = (eid,key) => (S.progress[eid]||{})[key];
+function ruleMsg(dt){ if(dt.msg) return dt.msg; return dt.mode==='parse' ? 'We will fill this in for you. Take a clear photo and we will read the details. Please check every field before you submit, since photos can be misread.' : 'Photo only. For your privacy and to meet legal requirements, we will store a photo of this document but will not read the information on it. Please type the requested details yourself.'; }
+
+function reqInfo(e){
+  if(!e.req) return {code:'none',label:'Not sent',cls:'',done:0,total:0};
+  const r=e.req, items=pkgItems(r.pkg), P=S.progress[e.id]||{};
+  let done=0,sub=0,ret=0,err=0;
+  items.forEach(i=>{const st=(P[i.key]||{}).status; if(st==='done')done++; else if(st==='submitted')sub++; else if(st==='returned')ret++; else if(st==='syncError')err++;});
+  const total=items.length, complete=done+sub+err;
+  const base={done:complete,total};
+  if(r.status==='revoked') return {...base,code:'revoked',label:'Revoked',cls:''};
+  if(done===total) return {...base,code:'completed',label:'Completed',cls:'ok'};
+  if(daysFrom(r.expires)<0 && complete<total) return {...base,code:'expired',label:'Link expired',cls:'bad'};
+  if(err) return {...base,code:'error',label:'Sync error',cls:'bad'};
+  if(ret) return {...base,code:'returned',label:'Returned to employee',cls:'warn'};
+  if(complete===total) return {...base,code:'review',label:'Awaiting review',cls:'warn'};
+  if(complete===0 && !r.opened) return {...base,code:'sent',label:'Sent',cls:'info'};
+  return {...base,code:'progress',label:'In progress',cls:'info'};
+}
+function hasOpen(e){ if(!e.req||e.req.status!=='open') return false; const c=reqInfo(e).code; return c!=='completed'; }
+function visibleEmployees(){
+  const u=user();
+  return S.employees.filter(e=> S.settings.visibility==='all' || u.sub==='All' || e.sub===u.sub);
+}
+function reviewQueue(){
+  const out=[];
+  visibleEmployees().forEach(e=>{ const P=S.progress[e.id]||{}; Object.keys(P).forEach(k=>{ if(P[k].status==='submitted'||P[k].status==='syncError') out.push({eid:e.id,key:k,rec:P[k]}); }); });
+  return out;
+}
+function credStatus(e,c){
+  const t=CT(c.type), d=daysFrom(c.expires);
+  if(c.status==='pending') return {code:'pending',label:'Pending verification',cls:'warn',d};
+  if(d<0) return {code:'expired',label:'Expired',cls:'bad',d};
+  if(d<=Math.max(...t.reminders)) return {code:'expiring',label:'Expiring',cls:'warn',d};
+  return {code:'valid',label:'Valid',cls:'ok',d};
+}
+function nextReminder(c){ const t=CT(c.type), d=daysFrom(c.expires); const next=t.reminders.filter(x=>x<d).sort((a,b)=>b-a)[0]; return next==null?null:d-next; }
+function allCreds(){ const out=[]; visibleEmployees().forEach(e=>e.creds.forEach(c=>out.push({e,c,st:credStatus(e,c)}))); return out.sort((a,b)=>a.st.d-b.st.d); }
+function eligibility(e){
+  if(e.status==='terminated') return 'Terminated';
+  if(!S.settings.includeTypes[e.type]) return `Employee type "${e.type}" is excluded in Settings`;
+  if(hasOpen(e)) return 'Already has an open package';
+  return null;
+}
+function addLog(eid,type,text,extra){ S.log.unshift(Object.assign({at:stamp(),who:user().name,emp:eid,type,text},extra||{})); }
+
+/* =====================================================================
+   RENDER ROOT
+   ===================================================================== */
+const app = document.getElementById('app');
+function render(){
+  document.body.classList.toggle('notes',S.notes);
+  renderDemobar();
+  app.innerHTML = S.view==='hr' ? hrView() : empView();
+  document.documentElement.style.setProperty('--portal',S.settings.brand.color);
+}
+function renderDemobar(){
+  document.getElementById('demobar').innerHTML = `
+    <span class="title">Compliance Portal</span><span class="tbd">Product name TBD</span>
+    <div class="seg" role="tablist" aria-label="Which side to view">
+      <button class="${S.view==='hr'?'on':''}" data-act="view" data-v="hr">HR portal (inside NetSuite)</button>
+      <button class="${S.view==='emp'?'on':''}" data-act="view" data-v="emp">Employee portal (email link)</button>
+    </div>
+    <span class="spacer"></span>
+    <span class="small muted">Demo date: Nov 19, 2026</span>
+    <label class="switch"><input type="checkbox" data-chg="notes" ${S.notes?'checked':''}> Dev notes</label>
+    <button class="btn sm" data-act="reset">Reset demo</button>`;
+}
+
+/* =====================================================================
+   HR PORTAL
+   ===================================================================== */
+const NAV = [
+  ['board','Status board'],['review','Review queue'],['packages','Packages'],['creds','Credentials'],['activity','Activity and sync'],['reports','Reports'],['settings','Settings']
+];
+function hrView(){
+  const q=reviewQueue().length, expiring=allCreds().filter(x=>x.st.code!=='valid').length, errs=S.log.filter(l=>l.type==='error'&&!l.resolved).length;
+  const counts={review:q,creds:expiring,activity:errs};
+  const titles={board:['Status board','Send packages and track who has completed their documents.'],review:['Review queue','Approve submitted forms before they update NetSuite.'],packages:['Packages','Reusable bundles of forms you send to employees.'],creds:['Credentials','Track expiring IDs, licenses and certifications.'],activity:['Activity and sync','Everything sent, submitted, approved and synced.'],reports:['Reports','Completion, outstanding items and expirations.'],settings:['Settings','Options chosen during implementation. Anything not listed here is a change order.'],record:['Employee record','Compliance view of one employee.']};
+  const [t,sub]=titles[S.hrTab];
+  return `<div class="hr">
+    <nav class="side" aria-label="HR portal">
+      <div class="ctx"><strong>HR portal</strong>Opened from the NetSuite portlet or link on HR and admin roles</div>
+      ${NAV.map(([k,l])=>`<button class="navbtn ${S.hrTab===k||(k==='board'&&S.hrTab==='record')?'on':''}" data-act="tab" data-t="${k}">${l}${counts[k]?`<span class="n">${counts[k]}</span>`:''}</button>`).join('')}
+    </nav>
+    <section class="main">
+      <div class="band">
+        <div><h1>${t}</h1><p>${sub}</p></div>
+        <div class="who"><span>Signed in as</span>
+          <select data-chg="user" aria-label="Signed in user">${S.users.map(u=>`<option value="${u.id}" ${u.id===S.user?'selected':''}>${esc(u.name)}, ${esc(u.role)}</option>`).join('')}</select>
+        </div>
+      </div>
+      <div class="content">
+        ${dn('new','Access','Only NetSuite-licensed users with this portal enabled can open it. Each user has feature permissions (Settings › Access). Switch "Signed in as" to see buttons enable and disable. Employees never get NetSuite access; they only receive the email link.')}
+        ${({board:boardView,review:reviewView,packages:packagesView,creds:credsView,activity:activityView,reports:reportsView,settings:settingsView,record:recordView})[S.hrTab]()}
+      </div>
+    </section>
+  </div>`;
+}
+
+/* ---------- Status board ---------- */
+function boardRows(){
+  const f=S.filters;
+  return visibleEmployees().filter(e=>{
+    const ri=reqInfo(e);
+    if(f.status!=='all' && ri.code!==f.status) return false;
+    if(f.q && !(e.name+' '+e.id+' '+e.title).toLowerCase().includes(f.q.toLowerCase())) return false;
+    if(f.sub && e.sub!==f.sub) return false;
+    if(f.loc && e.loc!==f.loc) return false;
+    if(f.state && e.state!==f.state) return false;
+    if(f.dept && e.dept!==f.dept) return false;
+    if(f.type && e.type!==f.type) return false;
+    if(f.hireFrom && e.hire<f.hireFrom) return false;
+    if(f.hireTo && e.hire>f.hireTo) return false;
+    if(f.missing){ const r=peek(e.id,f.missing); if(r && r.status==='done') return false; }
+    return true;
+  });
+}
+function opts(list,val,blank){ return (blank!=null?`<option value="">${blank}</option>`:'')+list.map(x=>{const [v,l]=Array.isArray(x)?x:[x,x];return `<option value="${esc(v)}" ${String(v)===String(val)?'selected':''}>${esc(l)}</option>`}).join(''); }
+const uniq = k => [...new Set(S.employees.map(e=>e[k]))].sort();
+function boardView(){
+  const rows=boardRows(), f=S.filters, all=visibleEmployees();
+  const codes=[['all','All'],['none','Not sent'],['sent','Sent'],['progress','In progress'],['review','Awaiting review'],['returned','Returned'],['error','Sync error'],['completed','Completed'],['expired','Link expired'],['revoked','Revoked']];
+  const cnt=c=>c==='all'?all.length:all.filter(e=>reqInfo(e).code===c).length;
+  const sel=S.selected.filter(id=>rows.some(r=>r.id===id));
+  return `
+  <div class="strip" role="group" aria-label="Filter by status">${codes.map(([c,l])=>`<button class="${f.status===c?'on':''}" data-act="fstatus" data-c="${c}">${l}<b>${cnt(c)}</b></button>`).join('')}</div>
+  <div class="filters">
+    <input class="in" placeholder="Search name, ID, title" value="${esc(f.q)}" data-chg="filter" data-k="q" aria-label="Search">
+    <select class="in" data-chg="filter" data-k="sub" aria-label="Subsidiary">${opts(uniq('sub'),f.sub,'All subsidiaries')}</select>
+    <select class="in" data-chg="filter" data-k="loc" aria-label="Location">${opts(uniq('loc'),f.loc,'All locations')}</select>
+    <select class="in" data-chg="filter" data-k="state" aria-label="Work state">${opts(uniq('state'),f.state,'All work states')}</select>
+    <select class="in" data-chg="filter" data-k="dept" aria-label="Department">${opts(uniq('dept'),f.dept,'All departments')}</select>
+    <select class="in" data-chg="filter" data-k="type" aria-label="Employee type">${opts(uniq('type'),f.type,'All employee types')}</select>
+    <select class="in" data-chg="filter" data-k="missing" aria-label="Missing document">${opts(CATALOG.filter(c=>c.type!=='esig'||c.key==='handbook').map(c=>[c.key,c.label]),f.missing,'Missing document: any')}</select>
+    <div class="row" style="gap:6px"><input class="in" type="date" value="${f.hireFrom}" data-chg="filter" data-k="hireFrom" aria-label="Hire date from" title="Hire date from"><input class="in" type="date" value="${f.hireTo}" data-chg="filter" data-k="hireTo" aria-label="Hire date to" title="Hire date to"></div>
+  </div>
+  ${dn('new','Bulk launch','Filters are the eligible set for bulk send. Ineligible people are skipped and listed with the reason before sending (terminated, excluded employee type, already has an open package). Visibility is limited to the signed-in user\'s subsidiary when Settings › Visibility is "Own subsidiary".')}
+  ${sel.length?`<div class="bulkbar"><strong>${sel.length} selected</strong><span style="flex:1"></span>
+     <button class="btn sm" data-act="bulkSend" ${can('send')?'':'disabled title="Your permissions do not include sending packages"'}>Send package</button>
+     <button class="btn sm" data-act="bulk" data-op="remind" ${can('send')?'':'disabled'}>Send reminder</button>
+     <button class="btn sm" data-act="bulk" data-op="extend" ${can('send')?'':'disabled'}>Extend links</button>
+     <button class="btn sm" data-act="bulk" data-op="revoke" ${can('send')?'':'disabled'}>Revoke</button>
+     <button class="btn sm" data-act="clearSel">Clear</button></div>`:''}
+  <div class="row" style="justify-content:space-between;margin-bottom:10px">
+    <span class="muted small">${rows.length} of ${all.length} employees shown${S.settings.visibility==='subsidiary'&&user().sub!=='All'?` (visibility: ${esc(user().sub)})`:''}</span>
+    <div class="row"><button class="btn sm" data-act="clearFilters">Clear filters</button><button class="btn sm" data-act="exportCsv">Export CSV</button></div>
+  </div>
+  <div class="card tw"><table class="t">
+    <thead><tr><th><input type="checkbox" data-chg="selAll" aria-label="Select all" ${rows.length&&sel.length===rows.length?'checked':''}></th><th>Employee</th><th>Work state</th><th>Type</th><th>Hire date</th><th>Package</th><th>Status</th><th>Link expires</th><th></th></tr></thead>
+    <tbody>${rows.map(boardRow).join('')||`<tr><td colspan="9" class="muted" style="padding:24px;text-align:center">No employees match these filters. Clear a filter to see more.</td></tr>`}</tbody>
+  </table></div>`;
+}
+function boardRow(e){
+  const ri=reqInfo(e), r=e.req, open=r&&r.status==='open'&&ri.code!=='completed';
+  const pct=ri.total?Math.round(ri.done/ri.total*100):0;
+  const exp=r&&open?(()=>{const d=daysFrom(r.expires);return d<0?`<span class="chip bad">${fmt(r.expires)}</span>`:`${fmt(r.expires)} <span class="muted small">(${d}d)</span>`})():'-';
+  const menuOpen=S.openMenu===e.id;
+  return `<tr class="${e.status==='terminated'||e.type==='Non-worker'?'dim':''}">
+    <td><input type="checkbox" data-chg="sel" data-id="${e.id}" ${S.selected.includes(e.id)?'checked':''} aria-label="Select ${esc(e.name)}"></td>
+    <td><div class="who-cell"><span class="av">${initials(e.name)}</span><div><button class="linkbtn" data-act="openRecord" data-id="${e.id}">${esc(e.name)}</button><div class="small muted">${e.id}, ${esc(e.title)}${e.status==='terminated'?', terminated':''}</div></div></div></td>
+    <td>${e.state}</td><td>${esc(e.type)}</td><td>${fmt(e.hire)}</td>
+    <td>${r?esc(PK(r.pkg).name):'<span class="muted">-</span>'}</td>
+    <td><div class="row" style="gap:8px"><span class="chip ${ri.cls}"><span class="dot"></span>${ri.label}</span>${ri.total?`<span class="bar" title="${ri.done} of ${ri.total}"><i style="width:${pct}%"></i></span><span class="small muted">${ri.done}/${ri.total}</span>`:''}</div>
+      ${r&&r.status==='revoked'?`<div class="small muted">${esc(r.reason||'')}</div>`:''}</td>
+    <td>${exp}</td>
+    <td><div class="menuwrap"><button class="btn sm" data-act="menu" data-id="${e.id}" aria-expanded="${menuOpen}">Actions</button>${menuOpen?rowMenu(e,open,ri):''}</div></td>
+  </tr>`;
+}
+function rowMenu(e,open,ri){
+  const s=can('send'), elig=eligibility(e);
+  return `<div class="menu" role="menu">
+    <button data-act="openRecord" data-id="${e.id}">Open employee record</button>
+    <div class="sep"></div>
+    <button data-act="singleSend" data-id="${e.id}" ${s&&!elig?'':'disabled'} title="${esc(elig||'')}">Send package</button>
+    <button data-act="rowOp" data-op="resend" data-id="${e.id}" ${s&&open?'':'disabled'}>Resend link (new link, old one stops working)</button>
+    <button data-act="rowOp" data-op="remind" data-id="${e.id}" ${s&&open&&ri.code!=='expired'?'':'disabled'}>Send reminder</button>
+    <button data-act="rowOp" data-op="extend" data-id="${e.id}" ${s&&open?'':'disabled'}>Extend link by ${S.settings.linkDays} days</button>
+    <button data-act="reassign" data-id="${e.id}" ${s&&open?'':'disabled'}>Reassign package</button>
+    <button data-act="rowOp" data-op="revoke" data-id="${e.id}" ${s&&open?'':'disabled'} class="danger">Revoke request</button>
+  </div>`;
+}
+
+/* ---------- Send / reassign modals ---------- */
+function sendModal(ids,single){
+  const list=ids.map(E);
+  const pid=(S.tmpSend&&S.tmpSend.pkg)||'P1';
+  S.tmpSend={ids,pkg:pid};
+  const elig=list.filter(e=>!eligibility(e)), skip=list.filter(e=>eligibility(e));
+  const expires=addDays(TODAY_ISO,S.settings.linkDays);
+  openOverlay(`<div class="modal" role="dialog" aria-label="Send package">
+    <div class="drawer-h"><h3>Send package${single?' to '+esc(list[0].name):''}</h3><p class="muted small">Employees get an email with a secure link. ${S.settings.otp?'They confirm a code sent to their email before the form opens.':''}</p></div>
+    <div class="drawer-b stack">
+      <div><label class="f" for="sendPkg">Package</label><select id="sendPkg" class="in" data-chg="sendPkg">${opts(S.packages.map(p=>[p.id,p.name]),pid)}</select>
+        <div class="small muted" style="margin-top:4px">${pkgItems(pid).map(i=>C(i.key).label).join(', ')}</div></div>
+      <div class="infobox">Link expires ${fmt(expires)} (${S.settings.linkDays} days). ${S.settings.remindersOn?`Reminders every ${S.settings.remindEvery} days, up to ${S.settings.remindMax}.`:'Automatic reminders are off.'}</div>
+      <div><strong>${elig.length} will receive it</strong><div class="small muted">${elig.map(e=>esc(e.name)).join(', ')||'Nobody in this selection is eligible.'}</div></div>
+      ${skip.length?`<div class="warnbox"><strong>${skip.length} skipped</strong><ul style="margin:6px 0 0 18px;padding:0">${skip.map(e=>`<li>${esc(e.name)}: ${esc(eligibility(e))}</li>`).join('')}</ul></div>`:''}
+      ${dn('new','Rule','One open package per employee. Credential renewals are separate single-item requests and are not blocked by this rule.')}
+    </div>
+    <div class="drawer-f"><button class="btn" data-act="close">Cancel</button><button class="btn primary" data-act="doSend" ${elig.length?'':'disabled'}>Send to ${elig.length} ${elig.length===1?'employee':'employees'}</button></div>
+  </div>`,true);
+}
+function doSend(){
+  const {ids,pkg}=S.tmpSend; let n=0;
+  ids.map(E).forEach(e=>{ if(eligibility(e)) return; if(e.req) e.history.push(e.req);
+    e.req={pkg,status:'open',sent:TODAY_ISO,expires:addDays(TODAY_ISO,S.settings.linkDays),sentBy:S.user,reminders:0};
+    S.progress[e.id]={}; addLog(e.id,'send',`Sent package "${PK(pkg).name}" (link expires ${fmt(e.req.expires)})`); n++; });
+  closeOverlay(); S.selected=[]; S.openMenu=null; render(); toast(`Package sent to ${n} ${n===1?'employee':'employees'}`);
+}
+function reassignModal(id){
+  const e=E(id); S.tmpSend={ids:[id],pkg:e.req.pkg};
+  openOverlay(`<div class="modal" role="dialog" aria-label="Reassign package">
+    <div class="drawer-h"><h3>Reassign package for ${esc(e.name)}</h3></div>
+    <div class="drawer-b stack">
+      <div><label class="f" for="rp">New package</label><select id="rp" class="in" data-chg="sendPkgSilent">${opts(S.packages.map(p=>[p.id,p.name]),e.req.pkg)}</select></div>
+      <div class="infobox">What was already captured is kept. Forms that exist in both packages keep their answers; the employee only completes what is new.</div>
+    </div>
+    <div class="drawer-f"><button class="btn" data-act="close">Cancel</button><button class="btn primary" data-act="doReassign">Reassign package</button></div></div>`,true);
+}
+
+/* ---------- Review queue ---------- */
+function reviewView(){
+  const q=reviewQueue();
+  if(!q.length) return `<div class="card card-b"><h3>Nothing to review</h3><p class="muted" style="margin-top:6px">Submitted forms that need HR approval show up here. Forms set to "Auto-update" go straight to NetSuite.</p></div>`;
+  if(!S.reviewSel || !q.some(x=>x.eid+'|'+x.key===S.reviewSel)) S.reviewSel=q[0].eid+'|'+q[0].key;
+  const [eid,key]=S.reviewSel.split('|'), e=E(eid), rec=peek(eid,key), item=(e.req?pkgItems(e.req.pkg).find(i=>i.key===key):null)||{mode:'approval'};
+  return `<div class="split">
+    <div>${q.map(x=>{const xe=E(x.eid);return `<button class="qitem ${S.reviewSel===x.eid+'|'+x.key?'on':''}" data-act="rsel" data-v="${x.eid}|${x.key}">
+      <div class="row" style="justify-content:space-between"><strong>${esc(xe.name)}</strong>${x.rec.status==='syncError'?'<span class="chip bad">Sync error</span>':x.rec.parsed&&x.rec.parsed.length?'<span class="chip warn">Read from photo</span>':''}</div>
+      <div>${esc(C(x.key).label)}</div><div class="small muted">Submitted ${esc(x.rec.submittedAt||'')}${x.rec.approvals&&x.rec.approvals.length?`, 1 of 2 approvals`:''}</div></button>`}).join('')}</div>
+    <div class="card">${reviewDetail(e,key,rec,item)}</div>
+  </div>`;
+}
+function fieldsFor(key){ if(key==='i9') return [['citizenship'],['aNumber'],['authExp'],['i9ssn'],['docChoice']]; return FIELDS[key]||[]; }
+function showVal(name,v,key){
+  if(v==null||v==='') return '<span class="muted">-</span>';
+  const r=S.reveal[key+name];
+  if(name==='account') return r?esc(v):esc(maskAcct(v));
+  if(name==='ssn'||name==='i9ssn') return r?esc(v):esc(maskSsn(v));
+  return esc(v);
+}
+function reviewDetail(e,key,rec,item){
+  const cur=e.ns[key]||{}, sensitive=['account','ssn','i9ssn'];
+  const sepBlock = S.settings.separation && e.req && e.req.sentBy===S.user;
+  const secondBlock = S.settings.approvalLevels===2 && rec.approvals && rec.approvals.includes(S.user);
+  const blockMsg = !can('approve')?'Your permissions do not include approving updates.':sepBlock?'Role separation is on: the person who sent this package cannot approve it. Switch "Signed in as" to Daniel Cho.':secondBlock?'You gave the first approval. A different approver must give the second.':'';
+  return `<div class="card-h"><div><h3>${esc(C(key).label)}</h3><div class="small muted">${esc(e.name)}, ${e.id}, package "${e.req?esc(PK(e.req.pkg).name):'-'}"</div></div><button class="btn sm" data-act="openRecord" data-id="${e.id}">Open record</button></div>
+  <div class="card-b stack">
+    ${rec.status==='syncError'?`<div class="badbox"><strong>NetSuite update failed.</strong> ${esc(rec.syncError)} The NetDynamic team and the NetSuite admin were notified (message contains employee ID and error code only). <button class="btn sm" data-act="retry" data-v="${e.id}|${key}" style="margin-left:6px">Retry update</button></div>`:''}
+    ${rec.parsed&&rec.parsed.length?`<div class="warnbox">Some values were read from a photo of a paper form (highlighted). The employee confirmed them, but check them against the photo. Parsed forms always need HR approval, even when the form is set to auto-update.</div>`:''}
+    <div class="tw"><table class="t diff" style="min-width:520px"><thead><tr><th>Field</th><th>Current in NetSuite</th><th>Submitted</th></tr></thead><tbody>
+      ${fieldsFor(key).map(f=>{const n=f[0],nv=(rec.data||{})[n],ov=cur[n];const ch=String(nv??'')!==String(ov??'');return `<tr><td>${esc(LABEL[n]||n)}${rec.parsed&&rec.parsed.includes(n)?' <span class="tag">from photo</span>':''}${sensitive.includes(n)?` <button class="btn ghost sm" data-act="reveal" data-v="${key+n}">${S.reveal[key+n]?'Hide':'Show'}</button>`:''}</td><td>${showVal(n,ov,key)}</td><td class="${ch?'changed':''}">${showVal(n,nv,key)}</td></tr>`}).join('')}
+      ${C(key).sign?`<tr><td>Signature</td><td>-</td><td>${esc((rec.data||{}).sign||'')}</td></tr>`:''}
+    </tbody></table></div>
+    ${dn('new','Masking','Account and Social Security numbers are masked. "Show" is logged in the activity record.')}
+    <div class="grid2">
+      <div class="card card-b"><div class="small muted">Employee confirmation</div>${rec.confirmation?`<div><strong>Confirmed</strong> ${esc(rec.confirmation.at)}</div><div class="small muted">${esc(rec.confirmation.email)}</div><div class="small" style="margin-top:6px">"${esc(S.settings.confirmText)}"</div>`:'<div class="muted">Not required for this form</div>'}</div>
+      <div class="card card-b"><div class="small muted">Signed file</div>${C(key).sign?`<div><strong>${e.id}_${key}_signed.pdf</strong></div><div class="small muted">File Cabinet › Compliance Portal › ${e.id}</div><div class="row" style="margin-top:8px"><button class="btn sm" data-act="printDoc" data-v="${e.id}|${key}">Print</button><button class="btn sm" data-act="dlDoc" data-v="${e.id}|${key}">Download</button></div>`:'<div class="muted">No signature on this form</div>'}${Object.values(rec.files||{}).map(f=>`<div class="small" style="margin-top:6px">Photo: ${esc(f.name)}</div>`).join('')}</div>
+    </div>
+    ${dn('new','Update rule',`Approval writes to NetSuite. Overwrite setting: "${S.settings.overwrite==='history'?'Replace and keep history':'Replace'}". Approval levels: ${S.settings.approvalLevels}.`)}
+    ${blockMsg?`<div class="infobox">${blockMsg}</div>`:''}
+    <div class="row" style="justify-content:flex-end">
+      <button class="btn" data-act="returnForm" data-v="${e.id}|${key}" ${can('approve')?'':'disabled'}>Return to employee</button>
+      ${rec.status==='syncError'?'':`<button class="btn primary" data-act="approve" data-v="${e.id}|${key}" ${blockMsg?'disabled':''}>${S.settings.approvalLevels===2&&!(rec.approvals&&rec.approvals.length)?'Give first approval':'Approve and update NetSuite'}</button>`}
+    </div>
+  </div>`;
+}
+function approve(eid,key){
+  const e=E(eid), rec=peek(eid,key);
+  if(S.settings.approvalLevels===2 && !(rec.approvals&&rec.approvals.length)){ rec.approvals=[S.user]; addLog(eid,'approve',`First approval: ${C(key).label}`); render(); toast('First approval recorded. A second approver must finish.'); return; }
+  if(S.demo.failSync && C(key).payroll){ rec.status='syncError'; rec.syncError='SuitePeople Payroll returned SP-412 (invalid value).'; addLog(eid,'error',`Sync failed: ${C(key).label}. SuitePeople returned SP-412.`,{notified:'NetDynamic support, '+S.settings.notify.nsAdmin}); render(); toast('NetSuite update failed. Team notified.','bad'); return; }
+  writeNs(e,key,rec); addLog(eid,'approve',`Approved and updated NetSuite: ${C(key).label}`); render(); toast(`${C(key).label} approved. NetSuite updated.`);
+}
+function writeNs(e,key,rec){
+  const clean={}; Object.keys(rec.data||{}).forEach(k=>{ if(k[0]!=='_') clean[k]=rec.data[k]; });
+  if(S.settings.overwrite==='history' && e.ns[key]) e.history.push({form:key,old:e.ns[key],at:stamp()});
+  e.ns[key]=clean; rec.status='done'; rec.syncError=null;
+}
+
+/* ---------- Packages ---------- */
+function packagesView(){
+  return `<div class="row" style="justify-content:space-between;margin-bottom:12px">
+    <span class="muted small">${S.packages.length} packages. Each employee can have one open package at a time.</span>
+    <button class="btn primary" data-act="newPkg" ${can('packages')?'':'disabled title="Your permissions do not include managing packages"'}>New package</button></div>
+  ${dn('extend','Reuses ATS360','Same builder as Pre-Hire Form Groups (standard forms, e-signature forms, Form Builder groups, upload boxes). What changes: assignment happens from the Status board instead of job openings, each form gets an update mode and a confirmation toggle, and copy says "employees" instead of "candidates".')}
+  <div class="card tw"><table class="t"><thead><tr><th>Package</th><th>Forms</th><th>Open requests</th><th></th></tr></thead><tbody>
+  ${S.packages.map(p=>{const items=pkgItems(p.id);const openN=S.employees.filter(e=>e.req&&e.req.pkg===p.id&&hasOpen(e)).length;
+    return `<tr><td><strong>${esc(p.name)}</strong><div class="small muted">${esc(p.desc)}</div></td>
+    <td><div class="row" style="gap:5px">${items.slice(0,4).map(i=>`<span class="chip">${esc(C(i.key).label)}</span>`).join('')}${items.length>4?`<span class="chip">+${items.length-4} more</span>`:''}</div></td>
+    <td>${openN}</td><td><div class="row"><button class="btn sm" data-act="editPkg" data-id="${p.id}">${can('packages')?'Edit':'View'}</button><button class="btn sm" data-act="printBlank" data-id="${p.id}">Print blank package</button></div></td></tr>`}).join('')}
+  </tbody></table></div>`;
+}
+function pkgDrawer(keep){
+  const p=S.tmpPkg, tab=S.pkgTab||'settings', ro=!can('packages');
+  const row=(i)=>{const c=C(i.key); return `<div class="formrow ${i.on?'':'off'}">
+     <div><strong>${esc(c.label)}</strong>${c.payroll?' <span class="tag">payroll</span>':''}<div class="small muted">${esc(c.desc)}</div></div>
+     <div class="ctrls">
+       <label class="small">Update <select class="in" style="min-height:30px;padding:3px 6px;width:auto" data-chg="pkgItem" data-k="${i.key}" data-f="mode" ${ro?'disabled':''}>${opts([['approval','HR approval'],['auto','Auto-update']],i.mode)}</select></label>
+       <label class="switch small"><input type="checkbox" data-chg="pkgItem" data-k="${i.key}" data-f="confirm" ${i.confirm?'checked':''} ${ro?'disabled':''}> Confirmation</label>
+     </div>
+     <label class="switch"><input type="checkbox" data-chg="pkgItem" data-k="${i.key}" data-f="on" ${i.on?'checked':''} ${ro?'disabled':''} aria-label="Include ${esc(c.label)}"></label>
+   </div>`;};
+  const dups=p.items.filter(i=>i.on&&C(i.key).dupOf&&p.items.find(x=>x.key===C(i.key).dupOf).on);
+  const body = tab==='settings' ? `
+    <div class="grid2"><div><label class="f">Package name</label><input class="in" value="${esc(p.name)}" data-chg="pkgName" ${ro?'disabled':''}></div><div><label class="f">Description</label><input class="in" value="${esc(p.desc)}" data-chg="pkgDesc" ${ro?'disabled':''}></div></div>
+    <h4 style="margin:18px 0 8px">Standard forms</h4>
+    ${p.items.filter(i=>C(i.key).type==='std').map(row).join('')}
+    ${dn('exists','Exists','Standard forms and their templates (Default template / Edit / New) exist in ATS360. Official government PDFs (W-4, I-9, state forms) are pulled fresh each time.')}
+    ${dn('new','New','"Update" (auto vs HR approval) and "Confirmation" toggles are new per form. Defaults: approval for everything except emergency contact; confirmation on for payroll forms and I-9. Forms read from a photo always need approval.')}
+    <h4 style="margin:18px 0 8px">State tax forms</h4>
+    ${p.items.filter(i=>C(i.key).type==='tax').map(row).join('')}
+    ${dn('exists','Mapped','All state forms are mapped to SuitePeople Payroll fields. Validation happens per client in production at go-live, on a call, with the client committing the update.')}
+    <h4 style="margin:18px 0 8px">E-signature forms</h4>
+    ${dups.length?`<div class="warnbox" style="margin-bottom:8px">${dups.map(i=>`"${esc(C(i.key).label)}" duplicates the standard ${esc(C(C(i.key).dupOf).label)}`).join('. ')}. Employees would complete it twice. Turn one off.</div>`:''}
+    ${p.items.filter(i=>C(i.key).type==='esig').map(row).join('')}
+    <h4 style="margin:18px 0 8px">Upload boxes</h4>
+    ${p.uploads.map((u,ix)=>`<div class="formrow"><div class="grid2" style="gap:8px"><input class="in" value="${esc(u.title)}" data-chg="upl" data-ix="${ix}" data-f="title" ${ro?'disabled':''} aria-label="Box title"><input class="in" value="${esc(u.desc)}" data-chg="upl" data-ix="${ix}" data-f="desc" ${ro?'disabled':''} aria-label="Box description"></div>
+      <div class="ctrls"><label class="small">Max files <input class="in" type="number" min="1" style="width:64px;min-height:30px;padding:3px 6px" value="${u.max}" data-chg="upl" data-ix="${ix}" data-f="max" ${ro?'disabled':''}></label><label class="switch small"><input type="checkbox" data-chg="upl" data-ix="${ix}" data-f="required" ${u.required?'checked':''} ${ro?'disabled':''}> Required</label></div>
+      <button class="btn sm ghost danger" data-act="delUpl" data-ix="${ix}" ${ro?'disabled':''}>Remove</button></div>`).join('')||'<div class="muted small">No upload boxes.</div>'}
+    <button class="btn sm" data-act="addUpl" style="margin-top:6px" ${ro?'disabled':''}>Add upload box</button>
+    ${S.settings.atsInstalled?`<h4 style="margin:18px 0 8px">Job openings (ATS360 installed)</h4><div class="infobox">Candidates hired into these openings get this package automatically. The one-open-package rule applies across both paths.</div>
+      ${['Welder','Project Coordinator','Skilled Laborer','Electrician','Front Desk'].map(j=>`<label class="switch" style="display:flex;margin:6px 0"><input type="checkbox" data-chg="pkgJob" data-j="${j}" ${p.jobs.includes(j)?'checked':''}> ${j}</label>`).join('')}`
+      :dn('new','Standalone','The "Job openings" section is hidden when ATS360 is not installed. Turn on Settings › Demo controls › "ATS360 installed" to see it.')}
+  ` : `<div class="phone" style="min-height:0;margin:0 auto">${portalHeader()}<div class="p-body"><div class="p-hello"><h2>Welcome, Maria</h2><p class="muted">Preview of "${esc(p.name)}". Buttons are inactive.</p></div>
+       <div class="p-sec">Required documents</div>${p.items.filter(i=>i.on).map(i=>`<div class="p-item"><span class="ico">${C(i.key).ico}</span><div class="grow"><h4>${esc(C(i.key).label)}</h4><div class="small muted">${esc(C(i.key).desc)}</div></div><button class="p-btn" disabled>Complete</button></div>`).join('')}
+       ${p.uploads.length?`<div class="p-sec">Additional items</div>${p.uploads.map(u=>`<div class="p-item"><span class="ico">UP</span><div class="grow"><h4>${esc(u.title)}</h4><div class="small muted">${esc(u.desc)}</div></div><button class="p-btn line" disabled>Upload</button></div>`).join('')}`:''}
+     </div></div>`;
+  openOverlay(`<div class="drawer" role="dialog" aria-label="Edit package">
+    <div class="drawer-h"><div class="row" style="justify-content:space-between"><h3>${p.isNew?'New package':'Edit package'}</h3><button class="btn ghost sm" data-act="close" aria-label="Close">Close</button></div>
+      <div class="tabs" style="margin:10px 0 0;border:0"><button class="${tab==='settings'?'on':''}" data-act="pkgTab" data-v="settings">Settings</button><button class="${tab==='preview'?'on':''}" data-act="pkgTab" data-v="preview">Portal preview</button></div></div>
+    <div class="drawer-b">${body}${dn('extend','Live edits','Edits apply to open requests right away (as today). A form removed mid-way is only kept if it was already submitted. Signed files already in the File Cabinet do not change.')}</div>
+    <div class="drawer-f"><button class="btn" data-act="printBlankTmp">Print blank package</button><span style="flex:1"></span><button class="btn" data-act="close">Cancel</button>${ro?'':`<button class="btn primary" data-act="savePkg">${p.isNew?'Create package':'Save changes'}</button>`}</div>
+  </div>`,false,keep);
+}
+
+/* ---------- Credentials ---------- */
+function credsView(){
+  const tab=S.credTab;
+  return `<div class="tabs"><button class="${tab==='exp'?'on':''}" data-act="credTab" data-v="exp">Expirations</button><button class="${tab==='types'?'on':''}" data-act="credTab" data-v="types">Credential types</button></div>
+  ${tab==='exp'?credExp():credTypesView()}`;
+}
+function credExp(){
+  const list=allCreds();
+  return `${dn('new','Certification module','Custom credential record is the source of truth for every type. Government ID types also write to the SuitePeople Government-Issued ID subtab (new mapping; does not exist in pre-hire today). Health types store dates and status only.')}
+  ${dn('new','Renewals','"Send renewal request" creates a single-item request outside the one-open-package rule. Reminders follow each type\'s schedule; this demo lets you send one now.')}
+  <div class="card tw"><table class="t"><thead><tr><th>Employee</th><th>Credential</th><th>Expires</th><th>Status</th><th>Next reminder</th><th>Notify</th><th></th></tr></thead><tbody>
+  ${list.map(({e,c,st})=>{const t=CT(c.type), nr=nextReminder(c), r=c.renewal; const rc=Object.entries(t.rcpt).filter(([k,v])=>v&&k!=='other').map(([k])=>k).concat(t.rcpt.other?[t.rcpt.other]:[]);
+   return `<tr><td><button class="linkbtn" data-act="openRecord" data-id="${e.id}">${esc(e.name)}</button><div class="small muted">${esc(e.title)}</div></td>
+    <td>${esc(t.name)}${c.number?`<div class="small muted">${esc(c.number)}</div>`:''}</td>
+    <td>${fmt(c.expires)}<div class="small muted">${st.d<0?Math.abs(st.d)+' days ago':st.d+' days'}</div>${c.status==='pending'?`<div class="small">New: ${fmt(c.newExpires)}</div>`:''}</td>
+    <td><span class="chip ${st.cls}"><span class="dot"></span>${st.label}</span>${r&&r.status==='sent'?'<div class="small muted">Renewal requested</div>':''}</td>
+    <td>${st.code==='expired'?'<span class="muted">-</span>':nr==null?'<span class="muted">All sent</span>':`in ${nr} days`}<div class="small muted">${t.reminders.join(' / ')} days before</div></td>
+    <td class="small">${rc.map(esc).join(', ')}</td>
+    <td>${c.status==='pending'?`<button class="btn sm primary" data-act="verifyCred" data-v="${e.id}|${c.id}" ${can('creds')?'':'disabled'}>Verify</button>`:`<button class="btn sm" data-act="renewCred" data-v="${e.id}|${c.id}" ${can('creds')&&!(r&&r.status==='sent')?'':'disabled'}>${r&&r.status==='sent'?'Requested':'Send renewal request'}</button>`}</td></tr>`}).join('')}
+  </tbody></table></div>`;
+}
+function credTypesView(){
+  return `<div class="row" style="justify-content:space-between;margin-bottom:12px"><span class="muted small">Clients create their own credential types.</span><button class="btn primary" data-act="editCt" data-id="" ${can('creds')?'':'disabled'}>New credential type</button></div>
+  <div class="card tw"><table class="t"><thead><tr><th>Type</th><th>Category</th><th>Reminders</th><th>HR verification</th><th>Photo</th><th>SuitePeople sync</th><th></th></tr></thead><tbody>
+  ${S.credTypes.map(t=>`<tr><td><strong>${esc(t.name)}</strong></td><td>${esc(t.cat)}</td><td>${t.reminders.join(' / ')} days</td><td>${t.verify?'Required':'Auto-accept'}</td><td>${t.file==='none'?'Not stored':t.file==='required'?'Required':'Optional'}<div class="small muted">${DT(t.doc)?DT(t.doc).mode==='parse'?'Can be read':'Capture only':''}</div></td><td>${t.cat==='Government ID'?(t.spSync?'On':'Off'):'<span class="muted">n/a</span>'}</td><td><button class="btn sm" data-act="editCt" data-id="${t.id}" ${can('creds')?'':'disabled'}>Edit</button></td></tr>`).join('')}
+  </tbody></table></div>
+  ${dn('legal','Validate with counsel','Health-related types (vaccination, drug test) keep dates and status only by default. If a file is stored, it goes to a separately restricted folder.')}`;
+}
+function ctModal(id,working){
+  const t=working||(id?clone(CT(id)):{id:'',name:'',cat:'Professional license',idNumber:true,file:'required',verify:true,reminders:[60,30],rcpt:{employee:true,hr:true,supervisor:false,other:''},spSync:false,doc:'certCard'});
+  S.tmpCt=t;
+  openOverlay(`<div class="modal" role="dialog" aria-label="Credential type"><div class="drawer-h"><h3>${id?'Edit credential type':'New credential type'}</h3></div>
+  <div class="drawer-b stack">
+    <div class="grid2"><div><label class="f">Name</label><input class="in" data-chg="ct" data-f="name" value="${esc(t.name)}"></div>
+    <div><label class="f">Category</label><select class="in" data-chg="ct" data-f="cat">${opts(['Government ID','Professional license','Training','Health (dates only)'],t.cat)}</select></div></div>
+    <div class="grid2"><div><label class="f">Reminder days before expiry (comma separated)</label><input class="in" data-chg="ct" data-f="reminders" value="${t.reminders.join(', ')}"></div>
+    <div><label class="f">Photo or file</label><select class="in" data-chg="ct" data-f="file">${opts([['required','Required'],['optional','Optional'],['none','Do not store (dates only)']],t.file)}</select></div></div>
+    <div class="grid2"><div><label class="f">Document rule</label><select class="in" data-chg="ct" data-f="doc">${opts(S.docTypes.filter(d=>!d.list||['dlB','usPassport'].includes(d.id)).map(d=>[d.id,d.name+(d.mode==='parse'?' (can be read)':' (capture only)')]),t.doc)}</select></div>
+    <div><label class="f">Other recipient email</label><input class="in" data-chg="ct" data-f="other" value="${esc(t.rcpt.other)}"></div></div>
+    <div class="row"><label class="switch"><input type="checkbox" data-chg="ct" data-f="idNumber" ${t.idNumber?'checked':''}> Ask for ID number</label>
+    <label class="switch"><input type="checkbox" data-chg="ct" data-f="verify" ${t.verify?'checked':''}> HR verifies uploads</label>
+    <label class="switch"><input type="checkbox" data-chg="ct" data-f="spSync" ${t.spSync?'checked':''} ${t.cat==='Government ID'?'':'disabled'}> Sync to SuitePeople ID subtab</label></div>
+    <div><label class="f">Notify about expiry</label><div class="row"><label class="switch"><input type="checkbox" data-chg="ct" data-f="r_employee" ${t.rcpt.employee?'checked':''}> Employee</label><label class="switch"><input type="checkbox" data-chg="ct" data-f="r_hr" ${t.rcpt.hr?'checked':''}> HR</label><label class="switch"><input type="checkbox" data-chg="ct" data-f="r_supervisor" ${t.rcpt.supervisor?'checked':''}> Supervisor</label></div></div>
+  </div><div class="drawer-f"><button class="btn" data-act="close">Cancel</button><button class="btn primary" data-act="saveCt">Save credential type</button></div></div>`,true,!!working);
+}
+
+/* ---------- Activity ---------- */
+function activityView(){
+  const f=S.activityFilter, list=S.log.filter(l=>f==='all'||(f==='errors'&&l.type==='error')||(f==='sync'&&['auto','approve','error'].includes(l.type)));
+  const label={send:'Sent',reminder:'Reminder',auto:'Auto-update',approve:'Approved',error:'Sync error',revoke:'Revoked',return:'Returned',submit:'Submitted',everify:'E-Verify',credential:'Credential',resend:'Resent',extend:'Extended',reassign:'Reassigned',settings:'Settings',section2:'I-9 Section 2',terminate:'Terminated'};
+  return `<div class="row" style="justify-content:space-between;margin-bottom:12px"><div class="seg"><button class="${f==='all'?'on':''}" data-act="afilter" data-v="all">All activity</button><button class="${f==='sync'?'on':''}" data-act="afilter" data-v="sync">NetSuite updates</button><button class="${f==='errors'?'on':''}" data-act="afilter" data-v="errors">Sync errors</button></div></div>
+  ${dn('new','Sync failure notices','Sent to the NetDynamic team and the client NetSuite admin. The message carries employee ID, form and error code only, never personal data. Turn on Settings › Demo controls › "Simulate sync failure" and approve a payroll form to see it.')}
+  <div class="card tw"><table class="t"><thead><tr><th>When</th><th>Who</th><th>Employee</th><th>What happened</th><th></th></tr></thead><tbody>
+  ${list.map((l,ix)=>`<tr><td class="small">${esc(l.at)}</td><td class="small">${esc(l.who)}</td><td>${l.emp?`<button class="linkbtn" data-act="openRecord" data-id="${l.emp}">${esc(E(l.emp).name)}</button>`:''}</td>
+   <td><span class="chip ${l.type==='error'?(l.resolved?'':'bad'):l.type==='approve'||l.type==='auto'?'ok':''}">${label[l.type]||l.type}</span> ${esc(l.text)}${l.notified?`<div class="small muted">Notified: ${esc(l.notified)}</div>`:''}</td>
+   <td>${l.type==='error'&&!l.resolved?`<button class="btn sm" data-act="retryLog" data-ix="${S.log.indexOf(l)}">Retry</button>`:''}</td></tr>`).join('')||'<tr><td colspan="5" class="muted" style="padding:20px;text-align:center">No activity for this filter.</td></tr>'}
+  </tbody></table></div>`;
+}
+
+/* ---------- Reports ---------- */
+function reportsView(){
+  const emps=visibleEmployees(), withReq=emps.filter(e=>e.req&&e.req.status==='open');
+  const openN=withReq.filter(e=>reqInfo(e).code!=='completed').length;
+  const reviewN=reviewQueue().length, doneN=withReq.filter(e=>reqInfo(e).code==='completed').length;
+  const creds=allCreds(), exp30=creds.filter(x=>x.st.d>=0&&x.st.d<=30).length, exp60=creds.filter(x=>x.st.d>30&&x.st.d<=60).length, exp90=creds.filter(x=>x.st.d>60&&x.st.d<=90).length, expired=creds.filter(x=>x.st.d<0).length;
+  const states=[...new Set(withReq.map(e=>e.state))];
+  const outstanding={}; withReq.forEach(e=>pkgItems(e.req.pkg).forEach(i=>{const r=peek(e.id,i.key); if(!r||['new','returned'].includes(r.status)) outstanding[i.key]=(outstanding[i.key]||0)+1;}));
+  const errs=S.log.filter(l=>l.type==='error'&&!l.resolved).length;
+  return `<div class="stats">
+    <div class="card stat"><div class="v">${openN}</div><div class="l">Open requests</div></div>
+    <div class="card stat"><div class="v">${reviewN}</div><div class="l">Forms awaiting review</div></div>
+    <div class="card stat"><div class="v">${doneN}</div><div class="l">Completed packages</div></div>
+    <div class="card stat"><div class="v">${errs}</div><div class="l">Unresolved sync errors</div></div>
+  </div>
+  <div class="grid2">
+    <div class="card"><div class="card-h"><h3>Completion by work state</h3></div><div class="card-b">${states.map(s=>{const L=withReq.filter(e=>e.state===s);const tot=L.reduce((a,e)=>a+reqInfo(e).total,0),dn2=L.reduce((a,e)=>a+reqInfo(e).done,0);const pc=tot?Math.round(dn2/tot*100):0;return `<div class="hbar"><span>${s} <span class="small muted">(${L.length})</span></span><span class="track"><i style="width:${pc}%"></i></span><strong>${pc}%</strong></div>`}).join('')||'<span class="muted">No open requests.</span>'}</div></div>
+    <div class="card"><div class="card-h"><h3>Credential expirations</h3></div><div class="card-b">
+      <div class="hbar"><span>Expired</span><span class="track"><i style="width:${Math.min(100,expired*25)}%;background:var(--bad)"></i></span><strong>${expired}</strong></div>
+      <div class="hbar"><span>0 to 30 days</span><span class="track"><i style="width:${Math.min(100,exp30*25)}%;background:var(--accent)"></i></span><strong>${exp30}</strong></div>
+      <div class="hbar"><span>31 to 60 days</span><span class="track"><i style="width:${Math.min(100,exp60*25)}%"></i></span><strong>${exp60}</strong></div>
+      <div class="hbar"><span>61 to 90 days</span><span class="track"><i style="width:${Math.min(100,exp90*25)}%"></i></span><strong>${exp90}</strong></div></div></div>
+  </div>
+  <div class="card" style="margin-top:16px"><div class="card-h"><h3>Outstanding forms</h3><button class="btn sm" data-act="exportCsv">Export status CSV</button></div><div class="tw"><table class="t" style="min-width:420px"><thead><tr><th>Form</th><th>Employees still to complete</th></tr></thead><tbody>${Object.entries(outstanding).sort((a,b)=>b[1]-a[1]).map(([k,n])=>`<tr><td>${esc(C(k).label)}</td><td>${n}</td></tr>`).join('')||'<tr><td colspan="2" class="muted">Nothing outstanding.</td></tr>'}</tbody></table></div></div>
+  ${dn('new','Reports','v1 reports: completion, outstanding items, expiring documents, sync errors. Built as saved searches plus this dashboard.')}`;
+}
+
+/* ---------- Settings ---------- */
+function settingsView(){
+  const st=S.settings, ro=!can('settings'), dis=ro?'disabled':'';
+  const sw=(path,label,extra)=>`<label class="switch"><input type="checkbox" data-chg="set" data-p="${path}" ${get(st,path)?'checked':''} ${dis} ${extra||''}> ${label}</label>`;
+  const sel=(path,list,label)=>`<div><label class="f">${label}</label><select class="in" data-chg="set" data-p="${path}" ${dis}>${opts(list,get(st,path))}</select></div>`;
+  const num=(path,label,min)=>`<div><label class="f">${label}</label><input class="in" type="number" min="${min||0}" data-chg="set" data-p="${path}" data-num="1" value="${get(st,path)}" ${dis}></div>`;
+  const txt=(path,label)=>`<div><label class="f">${label}</label><input class="in" data-chg="set" data-p="${path}" value="${esc(get(st,path))}" ${dis}></div>`;
+  const perms=[['send','Send packages'],['approve','Approve updates'],['packages','Manage packages'],['creds','Manage credentials'],['everify','Launch E-Verify'],['settings','Change settings']];
+  return `${ro?'<div class="infobox" style="margin-bottom:12px">You can view settings but your permissions do not include changing them.</div>':''}
+  ${dn('new','Settings catalog','This page is the scope boundary for implementation: implementation selects options here. Anything not on this page is a change order.')}
+  <div class="stack">
+  <div class="card"><div class="card-h"><h3>Access and permissions</h3></div><div class="card-b stack">
+    <div class="tw"><table class="t" style="min-width:720px"><thead><tr><th>NetSuite user</th><th>Subsidiary</th>${perms.map(p=>`<th>${p[1]}</th>`).join('')}</tr></thead><tbody>
+    ${S.users.map(u=>`<tr><td><strong>${esc(u.name)}</strong><div class="small muted">${esc(u.role)}</div></td><td class="small">${esc(u.sub)}</td>${perms.map(p=>`<td><input type="checkbox" data-chg="perm" data-u="${u.id}" data-p="${p[0]}" ${u.perms[p[0]]?'checked':''} ${dis} aria-label="${esc(u.name)} ${p[1]}"></td>`).join('')}</tr>`).join('')}
+    </tbody></table></div>
+    <div class="grid2">${sel('visibility',[['all','All employees'],['subsidiary','Own subsidiary only']],'Who each user can see')}<div style="align-self:end">${sw('separation','Role separation: the person who sends a package cannot approve its updates')}</div></div>
+    ${dn('new','Licensing','Only NetSuite-licensed users appear here. The number of users with the portal enabled can drive licence pricing (decision pending).')}
+  </div></div>
+
+  <div class="card"><div class="card-h"><h3>Links, codes and reminders</h3></div><div class="card-b stack">
+    <div class="grid3">${num('linkDays','Link valid for (days)',1)}${num('remindEvery','Reminder every (days)',1)}${num('remindMax','Maximum reminders',0)}</div>
+    <div class="row">${sw('remindersOn','Automatic reminders')} ${sw('otp','Email code before forms open')}</div>
+    ${dn('rule','Rule','Expired links keep everything already captured. Extending or resending picks up where the employee stopped.')}
+  </div></div>
+
+  <div class="card"><div class="card-h"><h3>Updates and approvals</h3></div><div class="card-b stack">
+    <div class="grid2">${sel('approvalLevels',[[1,'1 approval'],[2,'2 approvals (different users)']],'Approval levels')}${sel('overwrite',[['replace','Replace current value'],['history','Replace and keep history']],'When an update overwrites NetSuite')}</div>
+    <p class="small muted">Auto-update vs HR approval is set per form inside each package.</p>
+  </div></div>
+
+  <div class="card"><div class="card-h"><h3>Bulk eligibility</h3></div><div class="card-b stack">
+    <div class="row">${Object.keys(st.includeTypes).map(k=>sw('includeTypes.'+k,'Include '+k)).join('')}</div>
+    <p class="small muted">Terminated and inactive employees are always excluded. Employees with an open package are skipped.</p>
+  </div></div>
+
+  <div class="card"><div class="card-h"><h3>Automatic triggers</h3></div><div class="card-b stack">
+    <div class="row">${sw('triggers.newEmployee','When a new employee record is created, send')}<select class="in" style="width:auto" data-chg="set" data-p="triggers.newEmployeePkg" ${dis}>${opts(S.packages.map(p=>[p.id,p.name]),st.triggers.newEmployeePkg)}</select></div>
+    <div class="row">${sw('triggers.idExpiry','Send renewal requests automatically at the first reminder')}</div>
+    <div class="row">${sw('triggers.annual','Every year on')}<input class="in" style="width:90px" data-chg="set" data-p="triggers.annualDate" value="${esc(st.triggers.annualDate)}" ${dis} aria-label="Annual date MM-DD"><span class="small muted">send</span><select class="in" style="width:auto" data-chg="set" data-p="triggers.annualPkg" ${dis}>${opts(S.packages.map(p=>[p.id,p.name]),st.triggers.annualPkg)}</select></div>
+  </div></div>
+
+  <div class="card"><div class="card-h"><h3>Document rules</h3></div><div class="card-b stack">
+    <p class="small muted">The document type the employee picks decides whether the photo can be read. "Capture only" stores the photo and never reads it.</p>
+    <div class="tw"><table class="t" style="min-width:680px"><thead><tr><th>Document type</th><th>I-9 list</th><th>Photo handling</th><th>Message shown to employee (blank uses the default)</th></tr></thead><tbody>
+    ${S.docTypes.map(d=>`<tr><td>${esc(d.name)}</td><td>${d.list||'-'}</td><td><select class="in" style="width:auto" data-chg="dt" data-id="${d.id}" data-f="mode" ${dis}>${opts([['capture','Capture only'],['parse','Can be read']],d.mode)}</select></td><td><input class="in" data-chg="dt" data-id="${d.id}" data-f="msg" value="${esc(d.msg)}" placeholder="Default ${d.mode==='parse'?'parse':'capture only'} message" ${dis}></td></tr>`).join('')}
+    </tbody></table></div>
+    ${dn('legal','Validate with counsel','NetDynamic ships the default capture-only list (federal ID cards, driver\'s licenses in restricted states, health records). Clients can add types. AI detection of document types is a future idea, not v1.')}
+  </div></div>
+
+  <div class="card"><div class="card-h"><h3>Submission confirmation</h3></div><div class="card-b stack">
+    <div><label class="f">Text employees confirm (shown on forms where the Confirmation toggle is on)</label><textarea class="in" data-chg="set" data-p="confirmText" ${dis}>${esc(st.confirmText)}</textarea></div>
+    ${dn('rule','Record','Each confirmation is saved with the form: date, time, email and the exact text. Separate from the signature statements on government forms.')}
+  </div></div>
+
+  <div class="card"><div class="card-h"><h3>I-9 and E-Verify</h3></div><div class="card-b stack">
+    <div class="grid2">${sel('i9Copies',[['all','Keep copies for every employee'],['none','Do not keep copies']],'I-9 document copies')}${num('everifyWarnDays','Warn before E-Verify when hire date is more than (days) ago',1)}</div>
+    ${sw('everifyOn','E-Verify button on employee records')}
+    ${dn('legal','Rule','If copies are kept, they must be kept for every employee, not selectively. The employee chooses which documents to present; the employer cannot require specific ones.')}
+  </div></div>
+
+  <div class="card"><div class="card-h"><h3>Notifications and branding</h3></div><div class="card-b stack">
+    <div class="grid2">${txt('notify.nsAdmin','NetSuite admin email for sync failures')}<div style="align-self:end">${sw('notify.nd','Also notify the NetDynamic team')}</div></div>
+    <div class="grid3">${txt('brand.name','Company name in the portal')}<div><label class="f">Portal color</label><input class="in" type="color" data-chg="set" data-p="brand.color" value="${esc(st.brand.color)}" ${dis} style="padding:2px;height:36px"></div>${txt('brand.help','Help contact shown to employees')}</div>
+  </div></div>
+
+  <div class="card" style="border-style:dashed"><div class="card-h"><h3>Demo controls</h3><span class="tag">not part of the product</span></div><div class="card-b row">
+    <label class="switch"><input type="checkbox" data-chg="demo" data-p="failSync" ${S.demo.failSync?'checked':''}> Simulate sync failure on payroll forms</label>
+    <label class="switch"><input type="checkbox" data-chg="set" data-p="atsInstalled" ${st.atsInstalled?'checked':''}> ATS360 installed</label>
+  </div></div>
+  </div>`;
+}
+function get(o,p){ return p.split('.').reduce((a,k)=>a==null?a:a[k],o); }
+function setp(o,p,v){ const ks=p.split('.'); const last=ks.pop(); ks.reduce((a,k)=>a[k],o)[last]=v; }
+
+/* ---------- Employee record ---------- */
+function recordView(){
+  const e=E(S.recordId); if(!e) return '';
+  const ri=reqInfo(e), tab=S.recordTab;
+  const tabs=[['overview','Overview'],['docs','Documents'],['i9','I-9 and E-Verify'],['creds','Credentials']];
+  return `<button class="btn sm" data-act="tab" data-t="board" style="margin-bottom:12px">Back to status board</button>
+  <div class="card card-b" style="margin-bottom:14px"><div class="row" style="justify-content:space-between">
+    <div class="who-cell"><span class="av" style="width:44px;height:44px">${initials(e.name)}</span><div><h2 style="font-size:20px">${esc(e.name)}</h2><div class="muted small">${e.id}, ${esc(e.title)}, ${esc(e.sub)}</div></div></div>
+    <div class="row"><span class="chip ${ri.cls}"><span class="dot"></span>${ri.label}</span>${e.status==='terminated'?'<span class="chip bad">Terminated</span>':''}</div></div>
+    ${dn('extend','Where this lives','Employee record subtab or panel in NetSuite. E-Verify and I-9 Section 2 already exist on the employee record in the E-Verify add-on.')}
+  </div>
+  <div class="tabs">${tabs.map(([k,l])=>`<button class="${tab===k?'on':''}" data-act="rtab" data-v="${k}">${l}</button>`).join('')}</div>
+  ${({overview:recOverview,docs:recDocs,i9:recI9,creds:recCreds})[tab](e)}`;
+}
+function recOverview(e){
+  const r=e.req;
+  return `<div class="grid2">
+   <div class="card card-b"><h3 style="margin-bottom:10px">Employee</h3>
+     ${[['Subsidiary',e.sub],['Department',e.dept],['Location',e.loc],['Work state',e.state],['Employee type',e.type],['Hire date (first day worked)',fmt(e.hire)],['Supervisor',e.supervisor],['Personal email',e.email],['Status',e.status==='terminated'?'Terminated':'Active']].map(([a,b])=>`<div class="row" style="justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--line)"><span class="muted">${a}</span><span>${esc(b)}</span></div>`).join('')}
+     <div class="row" style="margin-top:12px"><button class="btn sm danger" data-act="terminate" data-id="${e.id}" ${e.status==='terminated'?'disabled':''}>Terminate employee (demo)</button></div>
+     ${dn('rule','Auto-revoke','Terminating an employee with an open package revokes it automatically.')}
+   </div>
+   <div class="card card-b"><h3 style="margin-bottom:10px">Current request</h3>
+     ${r?`<div><strong>${esc(PK(r.pkg).name)}</strong></div><div class="small muted">Sent ${fmt(r.sent)} by ${esc((S.users.find(u=>u.id===r.sentBy)||{}).name||'')}, link expires ${fmt(r.expires)}, reminders sent: ${r.reminders||0}</div>
+       <div style="margin-top:10px">${pkgItems(r.pkg).map(i=>{const p=peek(e.id,i.key);const st=p?p.status:'new';const m={new:['Not started',''],draft:['Started','info'],submitted:['Awaiting review','warn'],done:['In NetSuite','ok'],returned:['Returned','warn'],syncError:['Sync error','bad']}[st];return `<div class="row" style="justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line)"><span>${esc(C(i.key).label)} <span class="small muted">(${i.mode==='auto'?'auto-update':'HR approval'})</span></span><span class="chip ${m[1]}">${m[0]}</span></div>`}).join('')}</div>`
+       :'<p class="muted">No package sent yet.</p>'}
+     <div class="row" style="margin-top:12px"><button class="btn sm primary" data-act="singleSend" data-id="${e.id}" ${can('send')&&!eligibility(e)?'':'disabled'}>Send package</button>${eligibility(e)?`<span class="small muted">${esc(eligibility(e))}</span>`:''}</div>
+     ${e.history.filter(h=>h.form).length?`<h4 style="margin:14px 0 6px">Overwrite history</h4>${e.history.filter(h=>h.form).map(h=>`<div class="small">${esc(h.at)}: ${esc(C(h.form).label)} replaced (previous values kept)</div>`).join('')}`:''}
+   </div></div>`;
+}
+function signedDocs(e){ const P=S.progress[e.id]||{}; return Object.keys(P).filter(k=>['submitted','done','syncError'].includes(P[k].status)&&C(k).sign).map(k=>({key:k,rec:P[k]})); }
+function recDocs(e){
+  const docs=signedDocs(e);
+  return `<div class="card"><div class="card-h"><div><h3>Signed documents</h3><div class="small muted">File Cabinet › Compliance Portal › ${e.id}</div></div><div class="row"><button class="btn sm" data-act="printAll" data-id="${e.id}" ${docs.length?'':'disabled'}>Print all</button><button class="btn sm" data-act="dlAll" data-id="${e.id}" ${docs.length?'':'disabled'}>Download all</button></div></div>
+  <div class="tw"><table class="t" style="min-width:560px"><thead><tr><th>Document</th><th>Signed</th><th>Confirmation</th><th></th></tr></thead><tbody>
+  ${docs.map(d=>`<tr><td><strong>${e.id}_${d.key}_signed.pdf</strong><div class="small muted">${esc(C(d.key).label)}</div></td><td class="small">${esc(d.rec.submittedAt||'')}</td><td class="small">${d.rec.confirmation?'Recorded':'-'}</td><td><div class="row"><button class="btn sm" data-act="printDoc" data-v="${e.id}|${d.key}">Print</button><button class="btn sm" data-act="dlDoc" data-v="${e.id}|${d.key}">Download</button></div></td></tr>`).join('')||'<tr><td colspan="4" class="muted" style="padding:20px;text-align:center">No signed documents yet.</td></tr>'}
+  </tbody></table></div></div>
+  ${dn('extend','Printable','For clients that need paper (government). Signed PDFs are fixed copies saved at signing; editing a template never changes them.')}`;
+}
+function recI9(e){
+  const s1=peek(e.id,'i9'), s1done=s1&&['submitted','done'].includes(s1.status), d=s1?s1.data:{};
+  const s2=e.i9s2, ev=e.everify;
+  return `<div class="grid2">
+   <div class="card card-b stack"><h3>Section 1 (employee)</h3>
+     ${s1done?`<div class="okbox">Completed in the portal ${esc(s1.submittedAt||'')}</div><div class="small">Citizenship status: <strong>${esc(d.citizenship||'')}</strong></div><div class="small">Documents the employee will present: <strong>${esc(d.docChoice||'')}</strong></div>`:'<div class="warnbox">Not completed yet. Section 1 is due by the first day of work.</div>'}
+     ${dn('exists','Exists','I-9 collection in the portal works today.')}
+   </div>
+   <div class="card card-b stack"><h3>Section 2 (employer)</h3>
+     ${s2?`<div class="okbox">Completed by ${esc(s2.by)} on ${esc(s2.at)}</div><div class="small">Examined: ${esc(s2.docs)}${s2.number?`, number ${esc(s2.number)}`:''}${s2.exp?`, expires ${fmt(s2.exp)}`:''}</div>`
+       :`<p class="small muted">HR examines the original documents in person, then records them here.</p>
+       <div><label class="f">Document title(s) examined</label><input class="in" id="s2docs" value="${esc(d.docChoice||'')}" ${s1done?'':'disabled'}></div>
+       <div class="grid2"><div><label class="f">Document number</label><input class="in" id="s2num" ${s1done?'':'disabled'}></div><div><label class="f">Expiration date</label><input class="in" type="date" id="s2exp" ${s1done?'':'disabled'}></div></div>
+       <div><label class="f">First day of employment</label><input class="in" type="date" id="s2first" value="${e.hire}" ${s1done?'':'disabled'}></div>
+       <button class="btn primary" data-act="s2" data-id="${e.id}" ${s1done?'':'disabled'}>Complete Section 2</button>`}
+     ${dn('exists','Exists (E-Verify add-on)','Section 2 is done on the employee record by the existing add-on. The standalone product reuses it.')}
+   </div></div>
+   <div class="card card-b stack" style="margin-top:16px"><div class="row" style="justify-content:space-between"><h3>E-Verify</h3>${ev?`<span class="chip ok">${esc(ev.status)}</span>`:''}</div>
+     ${ev?`<div class="small">Case ${esc(ev.caseNo)}, opened ${esc(ev.at)} by ${esc(ev.by)}</div>`:`<p class="small muted">Manual, one employee at a time. Never available in bulk.</p>
+     <button class="btn dark" data-act="everify" data-id="${e.id}" ${S.settings.everifyOn&&can('everify')&&s2&&e.status!=='terminated'?'':'disabled'}>Launch E-Verify case</button>
+     <div class="small muted">${!S.settings.everifyOn?'E-Verify is turned off in Settings.':!can('everify')?'Your permissions do not include E-Verify.':!s2?'Complete Section 2 first.':''}</div>`}
+     ${dn('legal','Guardrail','Confirmation prompt before launching; extra warning when the hire date is older than the setting. E-Verify cannot be used to screen candidates or re-verify existing employees (federal-contractor exceptions aside). Case status tracking stays in the existing add-on.')}
+   </div>`;
+}
+function recCreds(e){
+  return `<div class="card tw"><table class="t" style="min-width:560px"><thead><tr><th>Credential</th><th>Expires</th><th>Status</th><th></th></tr></thead><tbody>
+  ${e.creds.map(c=>{const st=credStatus(e,c);return `<tr><td>${esc(CT(c.type).name)}${c.number?`<div class="small muted">${esc(c.number)}</div>`:''}</td><td>${fmt(c.expires)}</td><td><span class="chip ${st.cls}"><span class="dot"></span>${st.label}</span></td><td>${c.status==='pending'?`<button class="btn sm primary" data-act="verifyCred" data-v="${e.id}|${c.id}" ${can('creds')?'':'disabled'}>Verify</button>`:`<button class="btn sm" data-act="renewCred" data-v="${e.id}|${c.id}" ${can('creds')&&!(c.renewal&&c.renewal.status==='sent')?'':'disabled'}>${c.renewal&&c.renewal.status==='sent'?'Requested':'Send renewal request'}</button>`}</td></tr>`}).join('')||'<tr><td colspan="4" class="muted" style="padding:20px;text-align:center">No credentials tracked.</td></tr>'}
+  </tbody></table></div>
+  <div class="row" style="margin-top:10px"><button class="btn sm" data-act="addCred" data-id="${e.id}" ${can('creds')?'':'disabled'}>Add credential</button></div>
+  ${dn('new','SuitePeople','Government ID types also write to the Government-Issued ID subtab when sync is on for that type.')}`;
+}
+
+/* =====================================================================
+   EMPLOYEE PORTAL
+   ===================================================================== */
+function portalEmployees(){ return S.employees.filter(e=>(e.req&&e.req.status==='open')||e.creds.some(c=>c.renewal&&c.renewal.status==='sent')||(e.req&&e.req.status==='revoked')); }
+function empView(){
+  const list=portalEmployees();
+  if(!list.some(e=>e.id===S.emp.id)) S.emp.id=list[0]?list[0].id:null;
+  const e=S.emp.id?E(S.emp.id):null;
+  const screens=[['invite','1. Email invite'],['otp','2. Email code'],['home','3. Portal']];
+  return `<div class="empwrap">
+    <div class="emptools">
+      <label class="small muted" for="asEmp">Viewing as</label>
+      <select id="asEmp" class="in" style="width:auto" data-chg="asEmp">${list.map(x=>`<option value="${x.id}" ${x.id===S.emp.id?'selected':''}>${esc(x.name)} (${reqInfo(x).label}${x.creds.some(c=>c.renewal&&c.renewal.status==='sent')?', renewal requested':''})</option>`).join('')}</select>
+      <div class="seg">${screens.map(([k,l])=>`<button class="${(S.emp.screen===k||(k==='home'&&['form','renewal'].includes(S.emp.screen)))?'on':''}" data-act="escreen" data-v="${k}">${l}</button>`).join('')}</div>
+    </div>
+    ${dn('extend','Employee side','Same external Suitelet as today\'s pre-hire portal. No login, no NetSuite access: secure link from email, plus an email code when that setting is on. Copy says "your documents" instead of "pre-hire" because existing employees use it too.')}
+    ${e?(S.emp.screen==='invite'?mailView(e):`<div class="phone">${portalHeader(e)}${portalBody(e)}${portalFooter()}</div>`):'<div class="card card-b">Nobody has an open request. Send a package from the HR portal.</div>'}
+  </div>`;
+}
+function portalHeader(e){
+  const b=S.settings.brand;
+  return `<div class="p-head"><span class="p-logo">${esc(initials(b.name))}</span><div style="flex:1"><div class="co">${esc(b.name)}</div><div class="sub">Employee documents</div></div>${e?`<span class="av" title="${esc(e.name)}" style="background:var(--neutral-bg);color:var(--ink)">${initials(e.name)}</span>`:''}</div>`;
+}
+function portalFooter(){ return `<div class="p-foot">Your information is sent securely and used for payroll and employment records. Questions? Contact ${esc(S.settings.brand.help)}.</div>`; }
+function mailView(e){
+  const renew=e.creds.find(c=>c.renewal&&c.renewal.status==='sent');
+  const pk=e.req&&e.req.status==='open'?PK(e.req.pkg):null;
+  if(!pk&&!renew) return `<div class="phone">${portalHeader(e)}<div class="p-body"><div class="p-hello"><h2>This request is closed</h2><p class="muted" style="margin-top:8px">Your employer has closed this request. If the employee opens an old email link, this is what they see.</p></div></div>${portalFooter()}</div>`;
+  return `<div class="mail"><div class="mh"><div><strong>From:</strong> ${esc(S.settings.brand.name)} HR</div><div><strong>To:</strong> ${esc(e.email)}</div><div><strong>Subject:</strong> ${pk?'Action needed: complete your payroll documents':'Action needed: update your '+esc(CT(renew.type).name.toLowerCase())}</div></div>
+   <div class="mb stack"><p>Hi ${esc(e.name.split(' ')[0])},</p>
+     ${pk?`<p>Please complete your documents for <strong>${esc(pk.name)}</strong>. It takes about 15 minutes and you can do it on your phone. You can stop and come back; your progress is saved.</p><p class="muted small">This link expires ${fmt(e.req.expires)}.</p>`:''}
+     ${renew?`<p>Your ${esc(CT(renew.type).name.toLowerCase())} on file expires ${fmt(renew.expires)}. Please upload the new one.</p>`:''}
+     <button class="p-btn" data-act="escreen" data-v="${S.settings.otp?'otp':'home'}">Open my documents</button>
+     <p class="small muted">If you did not expect this email, contact ${esc(S.settings.brand.help)}.</p></div></div>
+   ${dn('new','Email','Sent by the client\'s HR (from address configurable). No attachments, no personal data in the email body.')}`;
+}
+function portalBody(e){
+  const r=e.req;
+  if(S.emp.screen==='otp' && S.settings.otp && !S.emp.verified[e.id]){
+    return `<div class="p-body"><div class="p-hello"><h2>Check your email</h2><p class="muted">We sent a 6-digit code to ${esc(e.email.replace(/^(.).*(@.*)$/,'$1•••$2'))}. Enter it to open your documents.</p></div>
+      <div class="otp">${[0,1,2,3,4,5].map(i=>`<input inputmode="numeric" maxlength="1" data-inp="otp" data-i="${i}" aria-label="Digit ${i+1}" value="${esc(S.emp.otp[i]||'')}">`).join('')}</div>
+      <button class="p-btn full" data-act="otpGo">Continue</button>
+      <p class="small muted" style="margin-top:10px;text-align:center">Code expires in 10 minutes. <button class="linkbtn small" data-act="otpResend">Send a new code</button></p>
+      ${dn('new','Demo','Code is 482913. Any other code shows the error state.')}</div>`;
+  }
+  if(S.emp.screen==='otp') S.emp.screen='home';
+  if(S.emp.screen==='form') return formScreen(e,S.emp.formKey);
+  if(S.emp.screen==='renewal') return renewalScreen(e,S.emp.formKey);
+  const renews=e.creds.filter(c=>c.renewal&&c.renewal.status==='sent');
+  if(r&&r.status==='revoked' && !renews.length) return `<div class="p-body"><div class="p-hello"><h2>This request is closed</h2><p class="muted" style="margin-top:8px">Your employer has closed this request, so there is nothing to complete here. If you think this is a mistake, contact ${esc(S.settings.brand.help)}.</p></div></div>`;
+  const ri=reqInfo(e);
+  if(r&&r.status==='open'&&ri.code==='expired') return `<div class="p-body"><div class="p-hello"><h2>This link has expired</h2><p class="muted" style="margin-top:8px">Everything you already completed is saved. Ask ${esc(S.settings.brand.help)} for a new link and you will pick up where you stopped.</p></div>${dn('rule','Rule','Expired link keeps captured data. HR uses "Extend link" or "Resend link" on the status board.')}</div>`;
+  if(r&&r.status==='open') r.opened=true;
+  const items=r&&r.status==='open'?pkgItems(r.pkg):[];
+  const P=S.progress[e.id]||{};
+  const done=items.filter(i=>['submitted','done','syncError'].includes((P[i.key]||{}).status)).length;
+  const pct=items.length?Math.round(done/items.length*100):100;
+  const allDone=items.length&&done===items.length;
+  const pk=r&&r.status==='open'?PK(r.pkg):null;
+  return `<div class="p-body">
+    <div class="p-hello"><h2>Welcome, ${esc(e.name.split(' ')[0])}</h2><p class="muted">${pk?'Each document is completed separately, so you can work through them at your own pace.':'Your employer asked you to update a document.'}</p></div>
+    ${pk?`<div class="p-progress"><div class="ring" style="--p:${pct}"><span>${pct}%</span></div><div><strong>${allDone?'All done':'Your progress'}</strong><div class="small muted">${done} of ${items.length} documents completed</div><div class="small muted">Link expires ${fmt(r.expires)}</div></div></div>
+      ${allDone?`<div class="okbox" style="margin-bottom:10px">Thanks. HR will review your documents and contact you if anything needs a change.</div>`:''}
+      <div class="p-sec">Required documents</div>
+      ${items.map(i=>{const p=P[i.key]||{status:'new'};const st={new:['Not started',''],draft:['Started','info'],submitted:['Submitted','ok'],done:['Complete','ok'],returned:['Needs a change','warn'],syncError:['Submitted','ok']}[p.status]||['Not started',''];
+        const editable=['new','draft','returned'].includes(p.status);
+        return `<div class="p-item"><span class="ico">${C(i.key).ico}</span><div class="grow"><h4>${esc(C(i.key).label)}</h4><div class="small muted">${esc(C(i.key).desc)}</div><div style="margin-top:6px"><span class="chip ${st[1]}">${st[0]}</span></div>${p.status==='returned'?`<div class="warnbox" style="margin-top:6px">HR note: ${esc(p.note)}</div>`:''}</div>
+          ${editable?`<button class="p-btn" data-act="openForm" data-k="${i.key}">${p.status==='draft'?'Continue':p.status==='returned'?'Fix':'Complete'}</button>`:''}</div>`}).join('')}
+      ${pk.uploads.length?`<div class="p-sec">Additional items</div>${pk.uploads.map((u,ix)=>{const f=(P['_upl'+ix]||{}).files||[];return `<div class="p-item"><span class="ico">UP</span><div class="grow"><h4>${esc(u.title)}${u.required?' <span class="chip warn">Required</span>':''}</h4><div class="small muted">${esc(u.desc)} Up to ${u.max} files.</div>${f.map(n=>`<div class="small" style="margin-top:4px">Uploaded: ${esc(n)}</div>`).join('')}</div><label class="p-btn line" style="cursor:pointer">Upload<input type="file" class="sr" data-chg="uplFile" data-ix="${ix}" accept="image/*,.pdf" capture="environment"></label></div>`}).join('')}`:''}`:''}
+    ${renews.length?`<div class="p-sec">Renewals requested</div>${renews.map(c=>`<div class="p-item"><span class="ico">ID</span><div class="grow"><h4>${esc(CT(c.type).name)}</h4><div class="small muted">On file until ${fmt(c.expires)}. Upload the new one.</div></div><button class="p-btn" data-act="openRenewal" data-k="${c.id}">Update</button></div>`).join('')}`:''}
+  </div>`;
+}
+function formScreen(e,key){
+  const item=pkgItems(e.req.pkg).find(i=>i.key===key), c=C(key), rec=prog(e.id,key), d=rec.data, errs=rec.errors||[];
+  const method=d._method||'online';
+  return `<div class="p-body">
+    <button class="linkbtn small" data-act="ehome">Back to my documents</button>
+    <div class="p-hello" style="margin-top:8px"><h2 style="font-size:20px">${esc(c.label)}</h2><p class="muted small">${esc(c.desc)}</p></div>
+    ${rec.status==='returned'?`<div class="warnbox" style="margin-top:10px">HR asked for a change: ${esc(rec.note)}</div>`:''}
+    ${c.paper?`<div class="methods" role="group" aria-label="How do you want to fill this in?"><button class="${method==='online'?'on':''}" data-act="method" data-k="${key}" data-v="online">Fill in online<small>Type your answers</small></button><button class="${method==='photo'?'on':''}" data-act="method" data-k="${key}" data-v="photo">Photo of paper form<small>We read it for you</small></button></div>`:''}
+    ${c.paper&&method==='photo'?captureBox(e,key,'paper',c.paper):''}
+    ${['w4','nj','ny','i9'].includes(key)?`<p class="small muted" style="margin:6px 0 12px">This is the current official government form. ${key==='i9'?'You choose which documents to show HR.':''}</p>`:''}
+    ${key==='i9'?i9Form(e,rec):(FIELDS[key]||[]).map(f=>fieldHTML(e.id,key,f,d,rec.parsed,errs)).join('')}
+    ${c.sign?`<div class="p-field"><label class="f">Signature: type your full legal name</label><input class="in ${errs.includes('sign')?'err':''}" data-inp="field" data-k="${key}" data-n="sign" value="${esc(d.sign||'')}" autocomplete="name">${errs.includes('sign')?'<div class="err-msg">Type your name to sign.</div>':''}</div>`:''}
+    ${item.confirm?`<label class="confirm"><input type="checkbox" data-chg="confirm" data-k="${key}" ${d._confirm?'checked':''}><span class="small">${esc(S.settings.confirmText)}</span></label>`:''}
+    ${dn('new','Per-form setting',`Update mode: ${item.mode==='auto'?'auto-update NetSuite on submit':'HR approval before NetSuite'}. Confirmation toggle: ${item.confirm?'on':'off'}.`)}
+    <div class="row" style="margin-top:10px"><button class="p-btn line" data-act="saveDraft" data-k="${key}">Save and finish later</button><button class="p-btn" style="flex:1" data-act="submitForm" data-k="${key}" ${item.confirm&&!d._confirm?'disabled':''}>Submit</button></div>
+  </div>`;
+}
+function fieldHTML(eid,key,f,d,parsed,errs){
+  const [n,label,type,opt]=f, v=d[n]==null?'':d[n], cls=(parsed&&parsed.includes(n)?'parsed ':'')+(errs.includes(n)?'err':'');
+  const a=`data-inp="field" data-k="${key}" data-n="${n}" id="f_${key}_${n}"`;
+  let input;
+  if(type&&type.startsWith('select:')) input=`<select class="in ${cls}" ${a}><option value="">Choose</option>${type.slice(7).split('|').map(o=>`<option ${o===v?'selected':''}>${esc(o)}</option>`).join('')}</select>`;
+  else if(type==='check') return `<label class="confirm" style="margin:8px 0"><input type="checkbox" data-chg="fieldCheck" data-k="${key}" data-n="${n}" ${v?'checked':''}><span>${esc(label)}</span></label>${errs.includes(n)?'<div class="err-msg">Required.</div>':''}`;
+  else if(type==='number') input=`<input class="in ${cls}" type="number" inputmode="decimal" ${a} value="${esc(v)}">`;
+  else if(type==='date') input=`<input class="in ${cls}" type="date" ${a} value="${esc(v)}">`;
+  else if(type==='ssn') input=`<input class="in ${cls}" inputmode="numeric" placeholder="123-45-6789" ${a} value="${esc(v)}" autocomplete="off">`;
+  else input=`<input class="in ${cls}" ${a} value="${esc(v)}">`;
+  return `<div class="p-field"><label class="f" for="f_${key}_${n}">${esc(label)}${opt?' (optional)':''}${parsed&&parsed.includes(n)?' <span class="tag">read from photo</span>':''}</label>${input}${errs.includes(n)?'<div class="err-msg">Required.</div>':''}</div>`;
+}
+function captureBox(e,key,slot,docId,opts2){
+  const rec=prog(e.id,key), dt=DT(docId), f=(rec.files||{})[slot];
+  if(!dt) return '';
+  return `<div class="capture">
+    <div class="rule r-${dt.mode}">${esc(ruleMsg(dt))}</div>
+    ${rec.parsing===slot?`<div class="small"><span class="spinner"></span> Reading your photo...</div>`:
+      f?`<div class="small"><strong>${esc(f.name)}</strong> ${dt.mode==='parse'?'read':'stored, not read'}. <button class="linkbtn small" data-act="clearFile" data-k="${key}" data-s="${slot}">Retake</button></div>`:
+      `<div class="row"><label class="p-btn" style="cursor:pointer">Take or upload photo<input type="file" class="sr" accept="image/*,.pdf" capture="environment" data-chg="capFile" data-k="${key}" data-s="${slot}" data-d="${docId}"></label><button class="p-btn line" data-act="samplePhoto" data-k="${key}" data-s="${slot}" data-d="${docId}">Use sample photo</button></div>`}
+    ${(opts2&&opts2.err)?'<div class="err-msg">A photo is required.</div>':''}
+    ${dn(dt.mode==='parse'?'new':'legal',dt.mode==='parse'?'Parsing':'Capture only',dt.mode==='parse'?'Third-party OCR (security review + data processing agreement needed). Parsed fields are highlighted; the employee must check them; HR approval is forced.':'Document type is set to capture only in Settings › Document rules. Photo stored in a restricted File Cabinet folder; nothing is read.')}
+  </div>`;
+}
+function i9Form(e,rec){
+  const d=rec.data, errs=rec.errors||[];
+  const cs=['A citizen of the United States','A noncitizen national of the United States','A lawful permanent resident','A noncitizen authorized to work'];
+  const choice=d._choice||'';
+  const slotUI=(slot,list,label)=>{const sel=d['_'+slot]||'';return `<div class="p-field"><label class="f">${label}</label><select class="in ${errs.includes('_'+slot)?'err':''}" data-inp="field" data-k="i9" data-n="_${slot}" data-rerender="1"><option value="">Choose a document</option>${S.docTypes.filter(x=>x.list===list).map(x=>`<option value="${x.id}" ${x.id===sel?'selected':''}>${esc(x.name)}</option>`).join('')}</select>
+    ${sel?`${S.settings.i9Copies==='all'?captureBox(e,'i9',slot,sel,{err:errs.includes('file_'+slot)}):`<div class="rule r-capture">Your employer does not keep copies. Bring the original on your first day.</div>`}
+      <div class="grid2" style="margin-top:6px"><div><label class="f">Document number</label><input class="in ${(rec.parsed||[]).includes(slot+'Num')?'parsed':''}" data-inp="field" data-k="i9" data-n="${slot}Num" value="${esc(d[slot+'Num']||'')}"></div><div><label class="f">Expiration date (if any)</label><input class="in ${(rec.parsed||[]).includes(slot+'Exp')?'parsed':''}" type="date" data-inp="field" data-k="i9" data-n="${slot}Exp" value="${esc(d[slot+'Exp']||'')}"></div></div>`:''}</div>`;};
+  return `<div class="p-field"><label class="f">I attest that I am</label>${cs.map(o=>`<label class="confirm" style="margin:6px 0;padding:9px"><input type="radio" name="cit" data-chg="i9cit" value="${esc(o)}" ${d.citizenship===o?'checked':''}><span class="small">${esc(o)}</span></label>`).join('')}${errs.includes('citizenship')?'<div class="err-msg">Choose one.</div>':''}</div>
+    ${d.citizenship===cs[2]||d.citizenship===cs[3]?`<div class="p-field"><label class="f">A-Number / USCIS number</label><input class="in ${errs.includes('aNumber')?'err':''}" data-inp="field" data-k="i9" data-n="aNumber" value="${esc(d.aNumber||'')}"></div>`:''}
+    ${d.citizenship===cs[3]?`<div class="p-field"><label class="f">Work authorization expires</label><input class="in" type="date" data-inp="field" data-k="i9" data-n="authExp" value="${esc(d.authExp||'')}"></div>`:''}
+    <div class="p-field"><label class="f">Social Security number</label><input class="in ${errs.includes('i9ssn')?'err':''}" inputmode="numeric" data-inp="field" data-k="i9" data-n="i9ssn" value="${esc(d.i9ssn||'')}" autocomplete="off"></div>
+    <div class="p-sec">Documents you will show HR</div>
+    <p class="small muted" style="margin-bottom:8px">You choose which documents to present from the lists below. Bring the originals on your first day.</p>
+    <div class="methods"><button class="${choice==='A'?'on':''}" data-act="i9choice" data-v="A">One document<small>From List A</small></button><button class="${choice==='BC'?'on':''}" data-act="i9choice" data-v="BC">Two documents<small>One from List B and one from List C</small></button></div>
+    ${errs.includes('_choice')?'<div class="err-msg">Choose which documents you will show.</div>':''}
+    ${choice==='A'?slotUI('docA','A','List A document'):''}
+    ${choice==='BC'?slotUI('docB','B','List B document (identity)')+slotUI('docC','C','List C document (employment authorization)'):''}
+    ${dn('legal','I-9 rules','The employee picks the documents; the product never asks for a specific one. Copies are all-or-nothing per Settings › I-9. HR still examines originals in Section 2. Full document lists come from the USCIS handbook (M-274); this demo shows a subset.')}`;
+}
+function renewalScreen(e,cid){
+  const c=e.creds.find(x=>x.id===cid), t=CT(c.type), key='_renew_'+cid, rec=prog(e.id,key), d=rec.data, errs=rec.errors||[];
+  return `<div class="p-body"><button class="linkbtn small" data-act="ehome">Back to my documents</button>
+    <div class="p-hello" style="margin-top:8px"><h2 style="font-size:20px">Update your ${esc(t.name.toLowerCase())}</h2><p class="muted small">The one on file expires ${fmt(c.expires)}.</p></div>
+    ${t.file!=='none'?captureBox(e,key,'doc',t.doc,{err:errs.includes('file_doc')}):`<div class="rule r-capture">We only need the dates. Do not upload a health record.</div>`}
+    ${t.idNumber?`<div class="p-field"><label class="f">Number</label><input class="in ${(rec.parsed||[]).includes('number')?'parsed':''}" data-inp="field" data-k="${key}" data-n="number" value="${esc(d.number||'')}"></div>`:''}
+    <div class="grid2"><div class="p-field"><label class="f">Issue date</label><input class="in" type="date" data-inp="field" data-k="${key}" data-n="issued" value="${esc(d.issued||'')}"></div><div class="p-field"><label class="f">New expiration date</label><input class="in ${errs.includes('expires')?'err':''} ${(rec.parsed||[]).includes('expires')?'parsed':''}" type="date" data-inp="field" data-k="${key}" data-n="expires" value="${esc(d.expires||'')}">${errs.includes('expires')?'<div class="err-msg">Enter a future date.</div>':''}</div></div>
+    <label class="confirm"><input type="checkbox" data-chg="confirm" data-k="${key}" ${d._confirm?'checked':''}><span class="small">${esc(S.settings.confirmText)}</span></label>
+    <button class="p-btn full" data-act="submitRenewal" data-k="${cid}" ${d._confirm?'':'disabled'}>Submit update</button>
+    ${dn('new','Renewal request','Single-item request outside the one-open-package rule. If the type needs HR verification, the credential shows "Pending verification" in Credentials until HR verifies it.')}
+  </div>`;
+}
+
+/* =====================================================================
+   OVERLAYS, TOASTS, PRINT, DOWNLOAD
+   ===================================================================== */
+const overlayRoot=document.getElementById('overlay-root');
+function openOverlay(html,center,keep){
+  const prev=overlayRoot.querySelector('.drawer-b'); const sc=prev?prev.scrollTop:0;
+  overlayRoot.innerHTML=`<div class="overlay ${center?'center':''}" data-act="overlayBg">${html}</div>`;
+  if(keep){ const b=overlayRoot.querySelector('.drawer-b'); if(b) b.scrollTop=sc; }
+  else { const f=overlayRoot.querySelector('select,input,button.primary'); if(f) f.focus(); }
+}
+function closeOverlay(){ overlayRoot.innerHTML=''; S.tmpPkg=null; S.pkgTab='settings'; }
+function toast(msg,kind){ const t=document.createElement('div'); t.className='toast '+(kind||''); t.textContent=msg; document.getElementById('toast').appendChild(t); setTimeout(()=>t.remove(),3200); }
+function docHtml(e,key){
+  const rec=peek(e.id,key)||{data:{}};
+  const rows=fieldsFor(key).map(f=>`<tr><th>${esc(LABEL[f[0]]||f[0])}</th><td>${esc(['account'].includes(f[0])?maskAcct(rec.data[f[0]]):['ssn','i9ssn'].includes(f[0])?maskSsn(rec.data[f[0]]):(rec.data[f[0]]||''))}</td></tr>`).join('');
+  return `<div class="pg"><h1>${esc(C(key).label)}</h1><p>${esc(e.name)} (${e.id}), ${esc(S.settings.brand.name)}</p><table>${rows}<tr><th>Signature</th><td>${esc(rec.data.sign||'')}</td></tr><tr><th>Signed</th><td>${esc(rec.submittedAt||'')}</td></tr>${rec.confirmation?`<tr><th>Confirmation</th><td>${esc(S.settings.confirmText)} (${esc(rec.confirmation.at)}, ${esc(rec.confirmation.email)})</td></tr>`:''}</table><p style="font-size:11px">Mockup output. The real file is the signed government PDF stored in the File Cabinet.</p></div>`;
+}
+function blankHtml(p){
+  return `<h1>${esc(p.name)}</h1><p>${esc(S.settings.brand.name)}. Print, complete by hand, sign, then return or photograph each page in the portal.</p>`+p.items.filter(i=>i.on).map(i=>`<div class="pg"><h2>${esc(C(i.key).label)}</h2><table>${(i.key==='i9'?[['citizenship'],['i9ssn'],['docChoice']]:FIELDS[i.key]||[]).map(f=>`<tr><th style="width:45%">${esc(LABEL[f[0]]||f[0])}</th><td>&nbsp;</td></tr>`).join('')}${C(i.key).sign?'<tr><th>Signature</th><td>&nbsp;</td></tr><tr><th>Date</th><td>&nbsp;</td></tr>':''}</table></div>`).join('');
+}
+function doPrint(html){ document.getElementById('print-area').innerHTML=html; window.print(); }
+function download(name,html){
+  const blob=new Blob([`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${esc(name)}</title><style>body{font-family:Georgia,serif;padding:24px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #999;padding:6px;text-align:left}</style></head><body>${html}</body></html>`],{type:'text/html'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);
+  toast('Download started: '+name);
+}
+function csv(){
+  const rows=[['Employee ID','Name','Subsidiary','Work state','Type','Hire date','Package','Status','Completed','Total','Link expires']];
+  boardRows().forEach(e=>{const ri=reqInfo(e);rows.push([e.id,e.name,e.sub,e.state,e.type,e.hire,e.req?PK(e.req.pkg).name:'',ri.label,ri.done,ri.total,e.req?e.req.expires:''])});
+  const text=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([text],{type:'text/csv'})); a.download='compliance-status.csv'; document.body.appendChild(a); a.click(); setTimeout(()=>a.remove(),500); toast('Download started: compliance-status.csv');
+}
+
+/* =====================================================================
+   PORTAL LOGIC
+   ===================================================================== */
+function handleCapture(eid,key,slot,docId,fileName){
+  const rec=prog(eid,key), dt=DT(docId);
+  rec.files=rec.files||{}; rec.files[slot]={name:fileName,doc:docId}; if(rec.status==='new') rec.status='draft';
+  if(dt.mode==='parse'){
+    rec.parsing=slot; render();
+    setTimeout(()=>{
+      let sample = SAMPLE_PARSE[key];
+      if(key==='i9') sample={[slot+'Num']:'X'+Math.floor(1e6+Math.random()*9e6),[slot+'Exp']:'2031-05-14'};
+      if(key.startsWith('_renew_')) sample={number:'RN-'+Math.floor(1e5+Math.random()*9e5),expires:addDays(TODAY_ISO,730),issued:TODAY_ISO};
+      sample=sample||{};
+      Object.assign(rec.data,sample); rec.parsed=[...new Set([...(rec.parsed||[]),...Object.keys(sample)])]; rec.parsing=null; render();
+      toast('Fields filled from your photo. Check each highlighted field.');
+    },900);
+  } else { render(); toast('Photo stored. It will not be read.'); }
+}
+function validate(e,key){
+  const rec=prog(e.id,key), d=rec.data, errs=[];
+  if(key==='i9'){
+    if(!d.citizenship) errs.push('citizenship');
+    if(/permanent|authorized/.test(d.citizenship||'')&&!d.aNumber) errs.push('aNumber');
+    if(!d.i9ssn) errs.push('i9ssn');
+    if(!d._choice) errs.push('_choice');
+    const slots=d._choice==='A'?['docA']:d._choice==='BC'?['docB','docC']:[];
+    slots.forEach(s=>{ if(!d['_'+s]) errs.push('_'+s); else if(S.settings.i9Copies==='all'&&!(rec.files||{})[s]) errs.push('file_'+s); });
+    d.docChoice=slots.map(s=>d['_'+s]?DT(d['_'+s]).name:'').filter(Boolean).join(' + ');
+  } else {
+    (FIELDS[key]||[]).forEach(f=>{ if(!f[3] && (d[f[0]]==null||d[f[0]]==='')) errs.push(f[0]); });
+    if(C(key).paper && d._method==='photo' && !(rec.files||{}).paper){ /* allow typed values even without photo */ }
+  }
+  if(C(key).sign && !d.sign) errs.push('sign');
+  return errs;
+}
+function submitForm(eid,key){
+  const e=E(eid), rec=prog(eid,key), item=pkgItems(e.req.pkg).find(i=>i.key===key);
+  const errs=validate(e,key); rec.errors=errs;
+  if(errs.length){ render(); toast('Complete the highlighted fields to submit.','bad'); return; }
+  rec.submittedAt=stamp(); rec.confirmation=item.confirm?{at:rec.submittedAt,email:e.email}:null; rec.note=null;
+  const parsed=rec.parsed&&rec.parsed.length;
+  if(item.mode==='auto' && !parsed){
+    if(S.demo.failSync && C(key).payroll){ rec.status='syncError'; rec.syncError='SuitePeople Payroll returned SP-412 (invalid value).'; addLogSys(eid,'error',`Sync failed: ${C(key).label}. SuitePeople returned SP-412.`,{notified:'NetDynamic support, '+S.settings.notify.nsAdmin}); }
+    else { writeNs(e,key,rec); addLogSys(eid,'auto',`${C(key).label} auto-updated in NetSuite (no approval needed for this form)`); }
+  } else { rec.status='submitted'; addLogSys(eid,'submit',`Employee submitted ${C(key).label}${parsed?' (values read from photo)':''}. Waiting for HR approval.`); }
+  S.emp.screen='home'; S.emp.formKey=null; render(); toast(`${C(key).label} submitted`);
+}
+function addLogSys(eid,type,text,extra){ S.log.unshift(Object.assign({at:stamp(),who:E(eid).name+' (employee)',emp:eid,type,text},extra||{})); }
+
+/* =====================================================================
+   EVENTS
+   ===================================================================== */
+const ACT = {
+  view:t=>{S.view=t.dataset.v; S.openMenu=null; render(); window.scrollTo(0,0);},
+  reset:()=>{ if(!confirm('Reset the demo to its starting data?')) return; const notes=S.notes; S=initialState(); S.notes=notes; closeOverlay(); render(); toast('Demo reset'); },
+  tab:t=>{S.hrTab=t.dataset.t; S.openMenu=null; render(); window.scrollTo(0,0);},
+  fstatus:t=>{S.filters.status=t.dataset.c; render();},
+  clearFilters:()=>{S.filters={status:'all',q:'',sub:'',loc:'',state:'',dept:'',type:'',hireFrom:'',hireTo:'',missing:''}; render();},
+  clearSel:()=>{S.selected=[]; render();},
+  menu:(t,ev)=>{ev.stopPropagation(); S.openMenu=S.openMenu===t.dataset.id?null:t.dataset.id; render();},
+  openRecord:t=>{S.recordId=t.dataset.id; S.recordTab='overview'; S.hrTab='record'; S.openMenu=null; S.view='hr'; render(); window.scrollTo(0,0);},
+  rtab:t=>{S.recordTab=t.dataset.v; render();},
+  singleSend:t=>{S.openMenu=null; S.tmpSend=null; render(); sendModal([t.dataset.id],true);},
+  bulkSend:()=>{S.tmpSend=null; sendModal(S.selected.slice(),false);},
+  doSend:()=>doSend(),
+  bulk:t=>{ const op=t.dataset.op; let n=0; S.selected.map(E).forEach(e=>{ if(!(e.req&&e.req.status==='open'&&reqInfo(e).code!=='completed')) return; rowOp(e,op,true); n++; }); S.selected=[]; render(); toast(n?`${({remind:'Reminder sent',extend:'Link extended',revoke:'Revoked'})[op]} for ${n} ${n===1?'employee':'employees'}`:'None of the selected employees has an open request','bad'); },
+  rowOp:t=>{ rowOp(E(t.dataset.id),t.dataset.op); S.openMenu=null; render(); },
+  reassign:t=>{S.openMenu=null; render(); reassignModal(t.dataset.id);},
+  doReassign:()=>{ const e=E(S.tmpSend.ids[0]); const old=PK(e.req.pkg).name; e.req.pkg=S.tmpSend.pkg; addLog(e.id,'reassign',`Reassigned from "${old}" to "${PK(e.req.pkg).name}". Captured answers kept.`); closeOverlay(); render(); toast('Package reassigned'); },
+  close:()=>{closeOverlay();},
+  overlayBg:(t,ev)=>{ if(ev.target===t) closeOverlay(); },
+  rsel:t=>{S.reviewSel=t.dataset.v; render();},
+  reveal:t=>{ S.reveal[t.dataset.v]=!S.reveal[t.dataset.v]; if(S.reveal[t.dataset.v]) addLog(S.reviewSel.split('|')[0],'settings','Viewed a masked value (account or SSN)'); render(); },
+  approve:t=>{ const [eid,key]=t.dataset.v.split('|'); approve(eid,key); },
+  retry:t=>{ const [eid,key]=t.dataset.v.split('|'); retry(eid,key); },
+  retryLog:t=>{ const l=S.log[+t.dataset.ix]; const P=S.progress[l.emp]||{}; const k=Object.keys(P).find(k=>P[k].status==='syncError'); if(k) retry(l.emp,k,l); else { l.resolved=true; render(); toast('Marked resolved'); } },
+  returnForm:t=>{ const [eid,key]=t.dataset.v.split('|'); S.tmpRet={eid,key};
+    openOverlay(`<div class="modal" role="dialog" aria-label="Return to employee"><div class="drawer-h"><h3>Return ${esc(C(key).label)} to ${esc(E(eid).name)}</h3><p class="small muted">Only this form reopens. The employee sees your note.</p></div><div class="drawer-b"><label class="f" for="retReason">What needs to change</label><textarea id="retReason" class="in" placeholder="Example: The routing number does not match the voided check. Please check it."></textarea></div><div class="drawer-f"><button class="btn" data-act="close">Cancel</button><button class="btn primary" data-act="doReturn">Return to employee</button></div></div>`,true); },
+  doReturn:()=>{ const reason=document.getElementById('retReason').value.trim(); if(!reason){toast('Add a note so the employee knows what to fix.','bad');return;} const {eid,key}=S.tmpRet, rec=peek(eid,key); rec.status='returned'; rec.note=reason; rec.data._confirm=false; rec.confirmation=null; rec.approvals=null; addLog(eid,'return',`Returned ${C(key).label}: ${reason}`); closeOverlay(); render(); toast('Returned to employee'); },
+  newPkg:()=>{ S.tmpPkg=Object.assign(mkPkg('P'+(S.packages.length+1)+'_'+Date.now().toString(36),'New package','Describe who this package is for.',['empInfo']),{isNew:true}); S.pkgTab='settings'; pkgDrawer(false); },
+  editPkg:t=>{ S.tmpPkg=clone(PK(t.dataset.id)); S.pkgTab='settings'; pkgDrawer(false); },
+  pkgTab:t=>{ S.pkgTab=t.dataset.v; pkgDrawer(false); },
+  addUpl:()=>{ S.tmpPkg.uploads.push({title:'New upload box',desc:'What to upload',required:false,max:2}); pkgDrawer(true); },
+  delUpl:t=>{ S.tmpPkg.uploads.splice(+t.dataset.ix,1); pkgDrawer(true); },
+  savePkg:()=>{ const p=S.tmpPkg; if(!p.name.trim()){toast('Give the package a name.','bad');return;} if(!p.items.some(i=>i.on)){toast('Turn on at least one form.','bad');return;} const isNew=p.isNew; delete p.isNew; if(isNew) S.packages.push(p); else S.packages[S.packages.findIndex(x=>x.id===p.id)]=p; closeOverlay(); render(); toast(isNew?'Package created':'Changes saved'); },
+  printBlank:t=>doPrint(blankHtml(PK(t.dataset.id))),
+  printBlankTmp:()=>doPrint(blankHtml(S.tmpPkg)),
+  credTab:t=>{S.credTab=t.dataset.v; render();},
+  renewCred:t=>{ const [eid,cid]=t.dataset.v.split('|'); const e=E(eid), c=e.creds.find(x=>x.id===cid); c.renewal={status:'sent',sent:TODAY_ISO,by:S.user}; addLog(eid,'credential',`Renewal request sent: ${CT(c.type).name}`); render(); toast(`Renewal request sent to ${e.name}`); },
+  verifyCred:t=>{ const [eid,cid]=t.dataset.v.split('|'); const e=E(eid), c=e.creds.find(x=>x.id===cid); c.expires=c.newExpires; if(c.newNumber) c.number=c.newNumber; c.status='valid'; c.renewal=null; addLog(eid,'credential',`Verified ${CT(c.type).name}, now expires ${fmt(c.expires)}${CT(c.type).spSync?'. Synced to SuitePeople Government-Issued ID subtab':''}`); render(); toast('Credential verified'); },
+  editCt:t=>ctModal(t.dataset.id),
+  saveCt:()=>{ const t=S.tmpCt; if(!t.name.trim()){toast('Name the credential type.','bad');return;} if(!t.reminders.length){toast('Add at least one reminder day.','bad');return;} if(!t.id){t.id='ct'+Date.now().toString(36); S.credTypes.push(t);} else S.credTypes[S.credTypes.findIndex(x=>x.id===t.id)]=t; closeOverlay(); render(); toast('Credential type saved'); },
+  addCred:t=>{ const e=E(t.dataset.id); S.tmpAdd={eid:e.id};
+    openOverlay(`<div class="modal" role="dialog" aria-label="Add credential"><div class="drawer-h"><h3>Add credential for ${esc(e.name)}</h3></div><div class="drawer-b stack"><div><label class="f" for="acType">Type</label><select id="acType" class="in">${opts(S.credTypes.map(c=>[c.id,c.name]))}</select></div><div class="grid2"><div><label class="f" for="acNum">Number (if any)</label><input id="acNum" class="in"></div><div><label class="f" for="acExp">Expiration date</label><input id="acExp" type="date" class="in"></div></div></div><div class="drawer-f"><button class="btn" data-act="close">Cancel</button><button class="btn primary" data-act="doAddCred">Add credential</button></div></div>`,true); },
+  doAddCred:()=>{ const exp=document.getElementById('acExp').value; if(!exp){toast('Add an expiration date.','bad');return;} const e=E(S.tmpAdd.eid); const c=cred(document.getElementById('acType').value,document.getElementById('acNum').value,null,exp); e.creds.push(c); addLog(e.id,'credential',`Added ${CT(c.type).name}, expires ${fmt(exp)}`); closeOverlay(); render(); toast('Credential added'); },
+  afilter:t=>{S.activityFilter=t.dataset.v; render();},
+  exportCsv:()=>csv(),
+  terminate:t=>{ const e=E(t.dataset.id); if(!confirm(`Terminate ${e.name}? (demo of auto-revoke)`)) return; e.status='terminated'; addLog(e.id,'terminate','Employee terminated in NetSuite'); if(e.req&&e.req.status==='open'&&reqInfo(e).code!=='completed'){ e.req.status='revoked'; e.req.reason='Employee terminated (auto-revoked)'; S.log.unshift({at:stamp(),who:'System',emp:e.id,type:'revoke',text:'Request auto-revoked: employee terminated'}); } render(); toast('Employee terminated. Open request revoked.'); },
+  s2:t=>{ const e=E(t.dataset.id); const docs=document.getElementById('s2docs').value.trim(); if(!docs){toast('Enter the document title examined.','bad');return;} e.i9s2={docs,number:document.getElementById('s2num').value,exp:document.getElementById('s2exp').value,first:document.getElementById('s2first').value,by:user().name,at:stamp()}; addLog(e.id,'section2','I-9 Section 2 completed'); render(); toast('Section 2 completed'); },
+  everify:t=>{ const e=E(t.dataset.id); const old=-daysFrom(e.hire)>S.settings.everifyWarnDays;
+    openOverlay(`<div class="modal" role="dialog" aria-label="Launch E-Verify"><div class="drawer-h"><h3>Launch E-Verify for ${esc(e.name)}</h3></div><div class="drawer-b stack">
+      ${old?`<div class="badbox">Hire date is ${fmt(e.hire)}, more than ${S.settings.everifyWarnDays} days ago. E-Verify is for new hires. Only continue if your federal contract allows verifying existing employees.</div>`:`<div class="infobox">Hire date ${fmt(e.hire)}.</div>`}
+      <label class="confirm"><input type="checkbox" id="evOk"><span class="small">I confirm this person is a new hire (or covered by our federal contract), Section 2 is complete, and E-Verify is not being used to screen a candidate.</span></label></div>
+      <div class="drawer-f"><button class="btn" data-act="close">Cancel</button><button class="btn dark" data-act="doEverify" data-id="${e.id}">Launch case</button></div></div>`,true); },
+  doEverify:t=>{ if(!document.getElementById('evOk').checked){toast('Tick the confirmation to continue.','bad');return;} const e=E(t.dataset.id); e.everify={status:'Employment authorized',caseNo:'2026'+Math.floor(1e9+Math.random()*9e9),at:stamp(),by:user().name}; addLog(e.id,'everify','E-Verify case opened: employment authorized'); closeOverlay(); render(); toast('E-Verify case opened'); },
+  printDoc:t=>{ const [eid,key]=t.dataset.v.split('|'); doPrint(docHtml(E(eid),key)); },
+  dlDoc:t=>{ const [eid,key]=t.dataset.v.split('|'); download(`${eid}_${key}_signed.html`,docHtml(E(eid),key)); },
+  printAll:t=>{ const e=E(t.dataset.id); doPrint(signedDocs(e).map(d=>docHtml(e,d.key)).join('')); },
+  dlAll:t=>{ const e=E(t.dataset.id); download(`${e.id}_all_signed.html`,signedDocs(e).map(d=>docHtml(e,d.key)).join('')); },
+  // employee portal
+  escreen:t=>{ const v=t.dataset.v; S.emp.screen=v; if(v==='otp'&&!S.settings.otp) S.emp.screen='home'; render(); window.scrollTo(0,0); },
+  ehome:()=>{S.emp.screen='home'; render(); window.scrollTo(0,0);},
+  otpGo:()=>{ if(S.emp.otp==='482913'){ S.emp.verified[S.emp.id]=true; S.emp.screen='home'; render(); } else toast('That code does not match. Check the latest email or send a new code.','bad'); },
+  otpResend:()=>toast('New code sent. Demo code: 482913'),
+  openForm:t=>{S.emp.screen='form'; S.emp.formKey=t.dataset.k; const r=prog(S.emp.id,t.dataset.k); if(r.status==='new') r.status='draft'; render(); window.scrollTo(0,0);},
+  openRenewal:t=>{S.emp.screen='renewal'; S.emp.formKey=t.dataset.k; render(); window.scrollTo(0,0);},
+  method:t=>{ prog(S.emp.id,t.dataset.k).data._method=t.dataset.v; render(); },
+  samplePhoto:t=>handleCapture(S.emp.id,t.dataset.k,t.dataset.s,t.dataset.d,'sample-photo.jpg'),
+  clearFile:t=>{ const r=prog(S.emp.id,t.dataset.k); delete r.files[t.dataset.s]; render(); },
+  i9choice:t=>{ prog(S.emp.id,'i9').data._choice=t.dataset.v; render(); },
+  saveDraft:t=>{ const r=prog(S.emp.id,t.dataset.k); if(r.status==='new') r.status='draft'; S.emp.screen='home'; render(); toast('Saved. You can finish later from the same link.'); },
+  submitForm:t=>submitForm(S.emp.id,t.dataset.k),
+  submitRenewal:t=>{ const e=E(S.emp.id), c=e.creds.find(x=>x.id===t.dataset.k), ct=CT(c.type), key='_renew_'+c.id, rec=prog(e.id,key), d=rec.data, errs=[];
+    if(!d.expires||daysFrom(d.expires)<=0) errs.push('expires'); if(ct.file==='required'&&!(rec.files||{}).doc) errs.push('file_doc'); rec.errors=errs;
+    if(errs.length){render(); toast('Complete the highlighted fields to submit.','bad'); return;}
+    if(ct.verify){ c.status='pending'; c.newExpires=d.expires; c.newNumber=d.number; c.renewal.status='submitted'; addLogSys(e.id,'credential',`Submitted new ${ct.name}. Waiting for HR verification.`); }
+    else { c.expires=d.expires; if(d.number) c.number=d.number; c.renewal=null; addLogSys(e.id,'credential',`Updated ${ct.name} (auto-accepted), now expires ${fmt(d.expires)}`); }
+    delete S.progress[e.id][key]; S.emp.screen='home'; render(); toast('Update submitted'); },
+};
+function rowOp(e,op,quiet){
+  const r=e.req;
+  if(op==='remind'){ if(r.reminders>=S.settings.remindMax && S.settings.remindMax>0){ if(!quiet) toast(`Already sent ${r.reminders} reminders (maximum ${S.settings.remindMax}). You can still send manually.`); } r.reminders=(r.reminders||0)+1; addLog(e.id,'reminder',`Manual reminder sent (${r.reminders} total)`); if(!quiet) toast('Reminder sent'); }
+  if(op==='extend'){ const base=daysFrom(r.expires)<0?TODAY_ISO:r.expires; r.expires=addDays(base,S.settings.linkDays); addLog(e.id,'extend',`Link extended to ${fmt(r.expires)}. Captured answers kept.`); if(!quiet) toast('Link extended to '+fmt(r.expires)); }
+  if(op==='resend'){ r.expires=addDays(TODAY_ISO,S.settings.linkDays); r.sent=TODAY_ISO; addLog(e.id,'resend',`New link sent, expires ${fmt(r.expires)}. Previous link no longer works.`); if(!quiet) toast('New link sent'); }
+  if(op==='revoke'){ r.status='revoked'; r.reason='Revoked by '+user().name; addLog(e.id,'revoke','Request revoked'); if(!quiet) toast('Request revoked'); }
+}
+function retry(eid,key,logEntry){
+  const rec=peek(eid,key);
+  if(S.demo.failSync){ addLog(eid,'error',`Retry failed: ${C(key).label}. SuitePeople returned SP-412.`,{notified:'NetDynamic support, '+S.settings.notify.nsAdmin}); render(); toast('Retry failed. Turn off "Simulate sync failure" in Settings › Demo controls to succeed.','bad'); return; }
+  writeNs(E(eid),key,rec); S.log.forEach(l=>{ if(l.type==='error'&&l.emp===eid) l.resolved=true; }); addLog(eid,'approve',`Retry succeeded: ${C(key).label} updated in NetSuite`); render(); toast('NetSuite updated');
+}
+
+const CHG = {
+  notes:t=>{S.notes=t.checked; render();},
+  user:t=>{S.user=t.value; S.selected=[]; render(); toast('Signed in as '+user().name);},
+  filter:t=>{S.filters[t.dataset.k]=t.value; render();},
+  sel:t=>{ const id=t.dataset.id; S.selected=t.checked?[...new Set([...S.selected,id])]:S.selected.filter(x=>x!==id); render(); },
+  selAll:t=>{ S.selected=t.checked?boardRows().map(e=>e.id):[]; render(); },
+  sendPkg:t=>{ S.tmpSend.pkg=t.value; sendModal(S.tmpSend.ids,S.tmpSend.ids.length===1); },
+  sendPkgSilent:t=>{ S.tmpSend.pkg=t.value; },
+  pkgItem:t=>{ const i=S.tmpPkg.items.find(x=>x.key===t.dataset.k); const f=t.dataset.f; i[f]=f==='mode'?t.value:t.checked; pkgDrawer(true); },
+  pkgName:t=>{ S.tmpPkg.name=t.value; },
+  pkgDesc:t=>{ S.tmpPkg.desc=t.value; },
+  pkgJob:t=>{ const j=t.dataset.j, p=S.tmpPkg; p.jobs=t.checked?[...p.jobs,j]:p.jobs.filter(x=>x!==j); },
+  upl:t=>{ const u=S.tmpPkg.uploads[+t.dataset.ix], f=t.dataset.f; u[f]=f==='required'?t.checked:f==='max'?Math.max(1,+t.value||1):t.value; },
+  ct:t=>{ const c=S.tmpCt, f=t.dataset.f;
+    if(f==='reminders') c.reminders=t.value.split(',').map(x=>parseInt(x,10)).filter(x=>x>0).sort((a,b)=>b-a);
+    else if(f.startsWith('r_')) c.rcpt[f.slice(2)]=t.checked;
+    else if(f==='other') c.rcpt.other=t.value;
+    else if(['idNumber','verify','spSync'].includes(f)) c[f]=t.checked;
+    else { c[f]=t.value; if(f==='cat'){ if(t.value!=='Government ID') c.spSync=false; ctModal(c.id,c); } } },
+  set:t=>{ let v=t.type==='checkbox'?t.checked:t.value; if(t.dataset.num) v=Math.max(0,parseInt(v,10)||0); if(t.dataset.p==='approvalLevels') v=+v; setp(S.settings,t.dataset.p,v); addLog(null,'settings','Setting changed: '+t.dataset.p); render(); },
+  perm:t=>{ S.users.find(u=>u.id===t.dataset.u).perms[t.dataset.p]=t.checked?1:0; render(); },
+  dt:t=>{ const d=DT(t.dataset.id); d[t.dataset.f]=t.value; render(); },
+  demo:t=>{ S.demo[t.dataset.p]=t.checked; render(); },
+  asEmp:t=>{ S.emp.id=t.value; S.emp.screen='invite'; S.emp.otp=''; render(); },
+  confirm:t=>{ prog(S.emp.id,t.dataset.k).data._confirm=t.checked; render(); },
+  fieldCheck:t=>{ const r=prog(S.emp.id,t.dataset.k); r.data[t.dataset.n]=t.checked?'Yes':''; },
+  i9cit:t=>{ prog(S.emp.id,'i9').data.citizenship=t.value; render(); },
+  capFile:t=>{ const f=t.files&&t.files[0]; if(!f) return; handleCapture(S.emp.id,t.dataset.k,t.dataset.s,t.dataset.d,f.name); },
+  uplFile:t=>{ const f=t.files&&t.files[0]; if(!f) return; const r=prog(S.emp.id,'_upl'+t.dataset.ix); r.files=r.files||[]; const max=PK(E(S.emp.id).req.pkg).uploads[+t.dataset.ix].max; if(r.files.length>=max){toast(`You can upload up to ${max} files here.`,'bad');return;} r.files.push(f.name); render(); toast('File uploaded'); },
+};
+const INP = {
+  field:t=>{ const r=prog(S.emp.id,t.dataset.k); r.data[t.dataset.n]=t.value; if(r.status==='new') r.status='draft';
+    if(r.errors&&r.errors.includes(t.dataset.n)){ r.errors=r.errors.filter(x=>x!==t.dataset.n); t.classList.remove('err'); const m=t.parentElement.querySelector('.err-msg'); if(m) m.remove(); }
+    if(r.parsed&&r.parsed.includes(t.dataset.n)){ t.classList.remove('parsed'); }
+    if(t.dataset.rerender) render(); },
+  otp:t=>{ const i=+t.dataset.i; t.value=t.value.replace(/\D/g,'').slice(-1); const a=(S.emp.otp||'').padEnd(6,' ').split(''); a[i]=t.value||' '; S.emp.otp=a.join('').replace(/\s+$/,''); if(t.value){ const nx=document.querySelector(`[data-inp="otp"][data-i="${i+1}"]`); if(nx) nx.focus(); } },
+};
+
+document.addEventListener('click',ev=>{
+  const t=ev.target.closest('[data-act]');
+  if(!t){ if(S.openMenu){ S.openMenu=null; render(); } return; }
+  if(t.disabled) return;
+  const fn=ACT[t.dataset.act]; if(fn) fn(t,ev);
+});
+document.addEventListener('change',ev=>{ const t=ev.target.closest('[data-chg]'); if(t&&CHG[t.dataset.chg]) CHG[t.dataset.chg](t,ev); });
+document.addEventListener('input',ev=>{ const t=ev.target.closest('[data-inp]'); if(t&&INP[t.dataset.inp]) INP[t.dataset.inp](t,ev); });
+document.addEventListener('keydown',ev=>{ if(ev.key==='Escape'){ if(overlayRoot.innerHTML) closeOverlay(); else if(S.openMenu){S.openMenu=null; render();} } });
+
+render();
+</script>
+</body>
+</html>
