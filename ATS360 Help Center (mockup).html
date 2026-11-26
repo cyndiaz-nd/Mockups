@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ATS360 Help Center</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧭</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+
+:root {
+  --ink: #1B2340;
+  --ink-soft: #2C3457;
+  --gold: #C89B3C;
+  --gold-soft: #E3C784;
+  --paper: #F7F4EC;
+  --paper-raised: #FFFFFF;
+  --line: #E4DFD0;
+  --text: #24282E;
+  --text-muted: #6E6A5C;
+  --ok: #3F6B53;
+  --ok-bg: #E6EFE8;
+  --pending: #9A6A1E;
+  --pending-bg: #FBEFD9;
+  --radius: 10px;
+  --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --sans: "IBM Plex Sans", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  --mono: "IBM Plex Mono", "SF Mono", Consolas, monospace;
+  color-scheme: light;
+}
+:root:not([data-theme="light"]) {
+  @media (prefers-color-scheme: dark) {
+    --ink: #10152A;
+    --ink-soft: #1C2340;
+    --gold: #D9AE54;
+    --gold-soft: #4A3C1E;
+    --paper: #15171C;
+    --paper-raised: #1C1F26;
+    --line: #333748;
+    --text: #E8E6DD;
+    --text-muted: #9B9788;
+    --ok: #86C7A0;
+    --ok-bg: #1D2E24;
+    --pending: #E3B35C;
+    --pending-bg: #3A2E14;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --ink: #10152A;
+  --ink-soft: #1C2340;
+  --gold: #D9AE54;
+  --gold-soft: #4A3C1E;
+  --paper: #15171C;
+  --paper-raised: #1C1F26;
+  --line: #333748;
+  --text: #E8E6DD;
+  --text-muted: #9B9788;
+  --ok: #86C7A0;
+  --ok-bg: #1D2E24;
+  --pending: #E3B35C;
+  --pending-bg: #3A2E14;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body {
+  height: 100%;
+  margin: 0;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+body {
+  background: var(--paper);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px);
+  z-index: 50;
+  background: var(--ink);
+}
+h1, h2, h3 { font-family: var(--serif); font-weight: 600; color: var(--text); margin: 0 0 0.4em; }
+a { color: inherit; }
+button { font-family: var(--sans); }
+
+.shell {
+  display: flex;
+  min-height: 100%;
+}
+
+/* ---------- sidebar ---------- */
+.sidebar {
+  width: 248px;
+  flex: none;
+  background: var(--ink);
+  color: #EDE9DC;
+  padding: 28px 18px;
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  height: 100vh;
+  overflow-y: auto;
+}
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 0 10px 22px;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  margin-bottom: 18px;
+}
+.brand .mark { font-family: var(--serif); font-size: 21px; font-weight: 700; color: var(--gold-soft); }
+.brand .sub { font-size: 12px; color: rgba(237,233,220,0.6); }
+.nav-group-label { font-size: 11px; letter-spacing: 0.02em; color: rgba(237,233,220,0.45); padding: 14px 10px 6px; }
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: rgba(237,233,220,0.82);
+  font-size: 14px;
+  text-decoration: none;
+}
+.nav-item:hover { background: rgba(255,255,255,0.06); }
+.nav-item.active { background: rgba(200,155,60,0.18); color: #F4E7C4; font-weight: 500; }
+.nav-item .ic { font-size: 15px; width: 18px; text-align: center; }
+.sidebar-foot {
+  margin-top: 24px;
+  padding: 12px 10px 0;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  font-size: 12px;
+  color: rgba(237,233,220,0.45);
+}
+.theme-toggle {
+  margin-top: 10px;
+  display: inline-flex;
+  gap: 6px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 20px;
+  padding: 3px;
+}
+.theme-toggle button {
+  border: none;
+  background: transparent;
+  color: rgba(237,233,220,0.65);
+  font-size: 12px;
+  padding: 5px 11px;
+  border-radius: 16px;
+  cursor: pointer;
+}
+.theme-toggle button.on { background: var(--gold); color: #2A2106; }
+
+/* ---------- main ---------- */
+.main {
+  flex: 1;
+  min-width: 0;
+  padding: 34px 42px 90px;
+}
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 26px;
+  flex-wrap: wrap;
+}
+.topbar h1 { font-size: 27px; }
+.view-note { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+.search-box {
+  position: relative;
+  width: 300px;
+  max-width: 100%;
+}
+.search-box input {
+  width: 100%;
+  padding: 10px 14px 10px 34px;
+  border-radius: 9px;
+  border: 1px solid var(--line);
+  background: var(--paper-raised);
+  color: var(--text);
+  font-size: 14px;
+}
+.search-box input:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
+.search-box .glass { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); opacity: 0.55; font-size: 13px; }
+
+.view { display: none; }
+.view.active { display: block; }
+
+.lede {
+  max-width: 68ch;
+  color: var(--text-muted);
+  margin-bottom: 26px;
+}
+
+/* ---------- terms ---------- */
+.progress-bar-wrap {
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.progress-track {
+  flex: 1;
+  height: 7px;
+  background: var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--gold);
+  width: 0%;
+  transition: width 0.35s ease;
+}
+.progress-label { font-size: 13px; color: var(--text-muted); white-space: nowrap; }
+
+.term-card {
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+.term-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px;
+  cursor: pointer;
+}
+.term-head-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.term-title { font-family: var(--serif); font-size: 17px; font-weight: 600; }
+.term-dep { font-size: 12.5px; color: var(--text-muted); margin-top: 2px; }
+.chip {
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.chip.accepted { background: var(--ok-bg); color: var(--ok); }
+.chip.unread { background: var(--line); color: var(--text-muted); }
+.chevron { transition: transform 0.2s ease; opacity: 0.6; font-size: 13px; }
+.term-card.open .chevron { transform: rotate(90deg); }
+.term-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.28s ease;
+}
+.term-card.open .term-body { max-height: 900px; }
+.term-body-in { padding: 0 18px 18px; border-top: 1px solid var(--line); }
+.term-row { display: grid; grid-template-columns: 150px 1fr; gap: 14px; padding: 12px 0; border-bottom: 1px dashed var(--line); }
+.term-row:last-of-type { border-bottom: none; }
+.term-row dt { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+.term-row dd { margin: 0; font-size: 14px; }
+.term-quote {
+  margin: 12px 0 2px;
+  padding: 11px 14px;
+  background: var(--paper);
+  border-left: 3px solid var(--gold);
+  border-radius: 4px;
+  font-size: 13.5px;
+  font-style: italic;
+  color: var(--text);
+}
+.accept-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 14px;
+  font-size: 13.5px;
+}
+.accept-row input { width: 16px; height: 16px; accent-color: var(--gold); }
+
+.sticky-accept {
+  position: sticky;
+  bottom: 14px;
+  margin-top: 22px;
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
+.btn-primary {
+  background: var(--gold);
+  color: #2A2106;
+  border: none;
+  padding: 11px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-primary:not(:disabled):hover { background: var(--gold-soft); }
+
+/* ---------- faq ---------- */
+.faq-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.filter-pill {
+  border: 1px solid var(--line);
+  background: var(--paper-raised);
+  color: var(--text-muted);
+  padding: 7px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.filter-pill.active { background: var(--ink); color: #EDE9DC; border-color: var(--ink); }
+.faq-group-title {
+  font-family: var(--serif);
+  font-size: 15px;
+  font-weight: 600;
+  margin: 26px 0 10px;
+  color: var(--text-muted);
+}
+.faq-item {
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 15px 18px;
+  margin-bottom: 10px;
+}
+.faq-q { display: flex; align-items: flex-start; gap: 10px; font-weight: 600; font-size: 14.5px; cursor: pointer; }
+.faq-q .mark-q { color: var(--gold); flex: none; }
+.faq-a { margin: 10px 0 0 24px; font-size: 14px; color: var(--text); display: none; }
+.faq-item.open .faq-a { display: block; }
+.badge-pending {
+  display: inline-block;
+  font-size: 10.5px;
+  font-weight: 600;
+  background: var(--pending-bg);
+  color: var(--pending);
+  padding: 2px 8px;
+  border-radius: 20px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+.empty-state { color: var(--text-muted); padding: 30px 0; font-size: 14px; }
+
+/* ---------- release notes ---------- */
+.sample-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--pending-bg);
+  color: var(--pending);
+  border-radius: 8px;
+  padding: 9px 13px;
+  font-size: 13px;
+  margin-bottom: 22px;
+}
+.timeline { position: relative; padding-left: 26px; }
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 6px; top: 6px; bottom: 6px;
+  width: 1px;
+  background: var(--line);
+}
+.rel-entry { position: relative; padding-bottom: 28px; }
+.rel-entry::before {
+  content: "";
+  position: absolute;
+  left: -26px; top: 4px;
+  width: 11px; height: 11px;
+  border-radius: 50%;
+  background: var(--paper-raised);
+  border: 2px solid var(--gold);
+}
+.rel-version { font-family: var(--mono); font-size: 12.5px; color: var(--gold); margin-bottom: 2px; }
+.rel-title { font-family: var(--serif); font-size: 17px; font-weight: 600; margin-bottom: 8px; }
+.rel-list { margin: 0; padding-left: 18px; font-size: 14px; }
+.rel-list li { margin-bottom: 5px; }
+.rel-tag { font-size: 10.5px; font-weight: 600; padding: 1px 7px; border-radius: 10px; margin-right: 7px; }
+.rel-tag.new { background: var(--ok-bg); color: var(--ok); }
+.rel-tag.flag { background: var(--pending-bg); color: var(--pending); }
+
+/* ---------- responsive ---------- */
+@media (max-width: 820px) {
+  .shell { flex-direction: column; }
+  .sidebar { width: auto; height: auto; position: relative; padding: 16px; }
+  .main { padding: 24px 18px 70px; }
+  .term-row { grid-template-columns: 1fr; gap: 4px; }
+  .search-box { width: 100%; }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <nav class="sidebar">
+    <div class="brand">
+      <span class="mark">ATS360</span>
+      <span class="sub">Help Center</span>
+    </div>
+
+    <div class="nav-group-label">Client-facing</div>
+    <a class="nav-item" data-view="terms" href="#terms"><span class="ic">✓</span> Terms &amp; Conditions</a>
+    <a class="nav-item" data-view="faq" href="#faq"><span class="ic">?</span> Module FAQ</a>
+
+    <div class="nav-group-label">Product</div>
+    <a class="nav-item" data-view="release-notes" href="#release-notes"><span class="ic">◷</span> Release Notes</a>
+
+    <div class="sidebar-foot">
+      Mockup build — for development reference only. Not the production help center.
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" data-theme-btn="light">Light</button>
+        <button type="button" data-theme-btn="dark">Dark</button>
+        <button type="button" data-theme-btn="system" class="on">Auto</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main">
+
+    <!-- ===================== TERMS VIEW ===================== -->
+    <section id="view-terms" class="view">
+      <div class="topbar">
+        <div>
+          <h1>Terms &amp; Conditions by Module</h1>
+          <div class="view-note">What each integration needs from you, and what happens if you don't provide it.</div>
+        </div>
+      </div>
+      <p class="lede">Some ATS360 modules depend on something you provide — a credential, an account with a third party, or your own legal compliance. Review and accept each term that applies to the modules on your plan before implementation begins. Declining a term doesn't block the rest of the product; it switches that one feature to its fallback behavior, described below.</p>
+
+      <div class="progress-bar-wrap">
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-label" id="progressLabel">0 of 7 reviewed</div>
+      </div>
+
+      <div id="termsList"></div>
+
+      <div class="sticky-accept">
+        <div style="font-size:13.5px;color:var(--text-muted);">Accepting records your choices for each module above. You can revisit this list any time before go-live.</div>
+        <button class="btn-primary" id="acceptAllBtn" disabled>Accept and continue</button>
+      </div>
+    </section>
+
+    <!-- ===================== FAQ VIEW ===================== -->
+    <section id="view-faq" class="view">
+      <div class="topbar">
+        <div>
+          <h1>Module FAQ</h1>
+          <div class="view-note">Answers to what clients ask most about how modules behave.</div>
+        </div>
+        <div class="search-box">
+          <span class="glass">⌕</span>
+          <input type="text" id="faqSearch" placeholder="Search questions…" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="faq-filters" id="faqFilters"></div>
+      <div id="faqList"></div>
+      <div class="empty-state" id="faqEmpty" style="display:none;">No questions match that search. Try a different term, or clear the filter.</div>
+    </section>
+
+    <!-- ===================== RELEASE NOTES VIEW ===================== -->
+    <section id="view-release-notes" class="view">
+      <div class="topbar">
+        <div>
+          <h1>Release Notes</h1>
+          <div class="view-note">What changed in ATS360, by version.</div>
+        </div>
+      </div>
+      <div class="sample-flag">⚠ Example entries for this mockup — populate from the real release history before shipping.</div>
+      <div class="timeline" id="releaseList"></div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- data ---------------- */
+
+  var terms = [
+    { id: "interviews", title: "Interviews — Calendar &amp; Meetings", dep: "Microsoft Teams, Google Workspace, or Zoom credentials",
+      need: "An OAuth app registered in your own Microsoft 365, Google Workspace, or Zoom admin console.",
+      without: "Native Teams/Google Meet/Zoom invites aren\u2019t created. Scheduling still works in full \u2014 invites go out as a standard calendar file (.ics) instead.",
+      quote: "If you don\u2019t provide calendar credentials for a given provider, interview invites for that provider are sent as a calendar file (.ics) rather than a native meeting invite. Scheduling itself is never blocked." },
+    { id: "jobboards", title: "Job Boards — Posting Accounts", dep: "Your own Indeed, LinkedIn, ZipRecruiter, or VONQ account",
+      need: "An active account or contract with each board you want to post to, held by you, not NetDynamic.",
+      without: "Postings don\u2019t appear on that specific board. Other connected boards are unaffected.",
+      quote: "Posting to a given job board requires the Customer\u2019s own account or contract with that board. Free posting limits (for example, on LinkedIn) are set by the board itself, not by ATS360." },
+    { id: "ai", title: "AI Features — Resume Matching &amp; Assistant", dep: "Pending internal confirmation",
+      need: "No client action required today.",
+      without: "\u2014",
+      quote: "This section is on hold pending confirmation of the AI provider actually in production. Do not present this term to a client until it\u2019s resolved.", pending: true },
+    { id: "sms", title: "Communications — SMS", dep: "None \u2014 NetDynamic-managed add-on",
+      need: "Nothing from you beyond agreeing to the monthly add-on fee.",
+      without: "SMS notifications are unavailable; the same notifications are sent by email instead.",
+      quote: "SMS notifications are billed as a monthly add-on, coordinated entirely by NetDynamic. Without it, candidates and hiring managers are notified by email only." },
+    { id: "prehire", title: "Offers &amp; Pre-Hire — E-Verify and Background Checks", dep: "Your own E-Verify and Checkr accounts",
+      need: "A federal E-Verify employer account, and your own Checkr account (billed directly by Checkr).",
+      without: "E-Verify checks and background checks can\u2019t run.",
+      quote: "E-Verify requires the Customer\u2019s own federal employer account. Background checks run on the Customer\u2019s own Checkr account, billed directly by Checkr." },
+    { id: "payroll", title: "Payroll &amp; HCM Connect", dep: "An active payroll system (for example, SuitePeople Payroll)",
+      need: "Payroll implemented separately, directly with Oracle NetSuite or your payroll provider.",
+      without: "Tax mapping and paysheets have nothing to sync to until payroll exists.",
+      quote: "NetDynamic configures the hiring side of payroll integration only. Payroll itself is implemented directly by Oracle NetSuite or your provider, under a separate agreement." },
+    { id: "campaigns", title: "Campaigns &amp; Newsletters — Consent", dep: "Your own lawful consent to email candidates",
+      need: "Confirmation that you hold valid consent under CASL, CAN-SPAM, or your local equivalent.",
+      without: "\u2014 this is a compliance duty on your side, not a technical dependency.",
+      quote: "The Customer is solely responsible for ensuring it has lawful consent to send email campaigns and newsletters through this module. NetDynamic provides the sending tool, not the consent." }
+  ];
+
+  var faqGroups = [
+    { key: "calendar", label: "Calendars &amp; Meetings", items: [
+      { q: "We use Microsoft Outlook/Teams. Do we need to give you anything for interview scheduling to work?",
+        a: "If you want invites to create native Teams meetings and sync to Outlook, register an app in your own Microsoft 365 admin and share the credentials with us. Without it, scheduling still works fully; invites are sent as a calendar file (.ics) instead." },
+      { q: "What if we use Google Workspace instead?",
+        a: "Same pattern: give us Google Workspace admin consent for Calendar and Meet to get native Meet links and calendar events. Without it, you get the .ics fallback." },
+      { q: "What if we use Zoom?",
+        a: "A Zoom admin API key enables native meeting creation. Without it, invites fall back to .ics." },
+      { q: "What happens if we don\u2019t want to give access to any calendar system?",
+        a: "Interview scheduling still works end to end \u2014 candidates and interviewers just receive a calendar file to open manually instead of a one-click native meeting link." }
+    ]},
+    { key: "boards", label: "Job Postings &amp; Job Boards", items: [
+      { q: "Can ATS360 post our jobs to Indeed, LinkedIn, and ZipRecruiter?",
+        a: "Yes, but each board requires your own account or contract. ATS360 handles the posting mechanics; it doesn\u2019t create board accounts or guarantee approval." },
+      { q: "Why are we limited on free LinkedIn postings?",
+        a: "That cap is set by LinkedIn, not by ATS360. More slots require your own paid LinkedIn agreement." },
+      { q: "What is the VONQ Wallet, and why does it need funding?",
+        a: "VONQ is the vendor behind several job board integrations. Campaigns run against a prepaid balance you fund directly with VONQ; once spent, campaigns pause until topped up." }
+    ]},
+    { key: "ai", label: "AI Features", items: [
+      { q: "What AI service do you use for resume parsing and matching?", pending: true,
+        a: "Not yet finalized for client-facing use \u2014 there\u2019s an internal discrepancy between documentation and what\u2019s actually deployed that needs resolving first." },
+      { q: "What AI model powers the chatbot and interview transcription?", pending: true,
+        a: "Same hold \u2014 the specific provider isn\u2019t named yet in a way that\u2019s safe to commit to in writing." },
+      { q: "Is our resume and candidate data used to train any AI model?", pending: true,
+        a: "Don\u2019t answer this client-facing yet \u2014 it depends on which provider question above gets resolved first." }
+    ]},
+    { key: "sms", label: "SMS &amp; Communications", items: [
+      { q: "Can candidates and hiring managers get text message notifications?",
+        a: "Yes, through our Twilio integration, billed as a monthly add-on. Without it, the same notifications go out by email instead." },
+      { q: "Do we need our own Twilio account?",
+        a: "No \u2014 NetDynamic coordinates Twilio setup and bills you directly; you don\u2019t need a separate Twilio relationship." }
+    ]},
+    { key: "checks", label: "Background Checks &amp; E-Verify", items: [
+      { q: "Do we need our own E-Verify account?",
+        a: "Yes. E-Verify is a federal program; you must hold your own employer account. ATS360 connects to it but can\u2019t create or guarantee eligibility." },
+      { q: "Do we need our own Checkr account?",
+        a: "Yes, and you pay Checkr directly for checks run; NetDynamic helps set the account up but isn\u2019t the billing party." },
+      { q: "Who\u2019s responsible if a new hire enters wrong information in the Pre-Hire Portal?",
+        a: "The employee enters their own data, and the Customer is responsible for its accuracy. ATS360 presents and stores the forms; it doesn\u2019t verify what\u2019s typed into them." }
+    ]},
+    { key: "payroll", label: "Payroll", items: [
+      { q: "Does ATS360 implement our payroll system?",
+        a: "No. Payroll is implemented separately, directly by Oracle NetSuite or your provider. ATS360 configures the hiring side so it\u2019s ready to sync once payroll exists." }
+    ]},
+    { key: "consent", label: "Email Campaigns &amp; Consent", items: [
+      { q: "Can we send marketing emails or newsletters to candidates through ATS360?",
+        a: "Yes, the tool supports it. Having lawful consent to email those candidates is the Customer\u2019s own responsibility, not something ATS360 verifies." }
+    ]},
+    { key: "scope", label: "Licensing &amp; Scope", items: [
+      { q: "What if we don\u2019t want a particular module or integration?",
+        a: "ATS360 is modular \u2014 you only pay for and use what you purchase. Declining an integration just means that feature falls back to its default behavior." },
+      { q: "Can you customize ATS360 for our specific process?",
+        a: "ATS360 is configurable within its existing settings, not custom-built per client. Anything beyond configuration is scoped and billed separately as a Change Order." }
+    ]}
+  ];
+
+  var releases = [
+    { version: "v3.3.514 \u2014 current", title: "Calendar, monitoring, and job-requisition updates",
+      items: [
+        { tag: "new", text: "Native Google Meet and direct Google Calendar event creation, alongside existing Teams and Zoom support." },
+        { tag: "new", text: "Configurable approval engine for job requisitions, with position-requisition approval and convert-to-posting." },
+        { tag: "flag", text: "System Health and error monitoring now send account metrics externally \u2014 see the Data Flow disclosure." },
+        { tag: "flag", text: "Email campaigns and newsletter sending added \u2014 Customer consent responsibility applies (CASL / CAN-SPAM)." }
+      ]
+    },
+    { version: "Earlier", title: "Foundation modules",
+      items: [
+        { tag: "new", text: "Core recruiting, portals, interviews, job boards, screening, communications, offers, and payroll-connect modules established." },
+        { tag: "flag", text: "AI resume parsing provider under internal review \u2014 see Terms &amp; Conditions \u00b7 AI Features." }
+      ]
+    }
+  ];
+
+  /* ---------------- render: terms ---------------- */
+
+  var accepted = {};
+
+  function renderTerms(){
+    var list = document.getElementById("termsList");
+    list.innerHTML = "";
+    terms.forEach(function(t){
+      var card = document.createElement("div");
+      card.className = "term-card";
+      card.id = "term-" + t.id;
+      card.innerHTML =
+        '<div class="term-head" data-toggle="' + t.id + '">' +
+          '<div class="term-head-left">' +
+            '<div>' +
+              '<div class="term-title">' + t.title + '</div>' +
+              '<div class="term-dep">' + t.dep + '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div style="display:flex;align-items:center;gap:10px;">' +
+            '<span class="chip ' + (accepted[t.id] ? "accepted" : "unread") + '" id="chip-' + t.id + '">' + (accepted[t.id] ? "Accepted" : "Not reviewed") + '</span>' +
+            '<span class="chevron">\u203A</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="term-body"><div class="term-body-in">' +
+          '<dl>' +
+            '<div class="term-row"><dt>What\u2019s needed</dt><dd>' + t.need + '</dd></div>' +
+            '<div class="term-row"><dt>Without it</dt><dd>' + t.without + '</dd></div>' +
+          '</dl>' +
+          '<div class="term-quote">' + t.quote + '</div>' +
+          (t.pending ?
+            '<div class="accept-row" style="color:var(--pending);">\u26a0 On hold \u2014 not ready for client acceptance</div>' :
+            '<label class="accept-row"><input type="checkbox" data-accept="' + t.id + '" ' + (accepted[t.id] ? "checked" : "") + '> I\u2019ve read this term for ' + t.title.replace(/<[^>]+>/g,"") + '</label>'
+          ) +
+        '</div></div>';
+      list.appendChild(card);
+    });
+    updateProgress();
+  }
+
+  function updateProgress(){
+    var reviewable = terms.filter(function(t){ return !t.pending; });
+    var done = reviewable.filter(function(t){ return accepted[t.id]; }).length;
+    var pct = Math.round((done / reviewable.length) * 100);
+    document.getElementById("progressFill").style.width = pct + "%";
+    document.getElementById("progressLabel").textContent = done + " of " + reviewable.length + " reviewed";
+    document.getElementById("acceptAllBtn").disabled = done < reviewable.length;
+  }
+
+  document.addEventListener("click", function(e){
+    var head = e.target.closest("[data-toggle]");
+    if (head){
+      var card = document.getElementById("term-" + head.getAttribute("data-toggle"));
+      card.classList.toggle("open");
+      return;
+    }
+    var faqQ = e.target.closest("[data-faq-toggle]");
+    if (faqQ){
+      faqQ.closest(".faq-item").classList.toggle("open");
+      return;
+    }
+  });
+
+  document.addEventListener("change", function(e){
+    if (e.target.matches("[data-accept]")){
+      var id = e.target.getAttribute("data-accept");
+      accepted[id] = e.target.checked;
+      document.getElementById("chip-" + id).textContent = accepted[id] ? "Accepted" : "Not reviewed";
+      document.getElementById("chip-" + id).className = "chip " + (accepted[id] ? "accepted" : "unread");
+      updateProgress();
+    }
+  });
+
+  document.getElementById("acceptAllBtn").addEventListener("click", function(){
+    this.textContent = "Accepted \u2014 continuing\u2026";
+  });
+
+  /* ---------------- render: faq ---------------- */
+
+  var activeFilter = "all";
+  var searchTerm = "";
+
+  function renderFaqFilters(){
+    var wrap = document.getElementById("faqFilters");
+    var all = [{ key: "all", label: "All topics" }].concat(faqGroups.map(function(g){ return { key: g.key, label: g.label }; }));
+    wrap.innerHTML = all.map(function(f){
+      return '<button type="button" class="filter-pill' + (activeFilter === f.key ? " active" : "") + '" data-filter="' + f.key + '">' + f.label + '</button>';
+    }).join("");
+    Array.prototype.forEach.call(wrap.querySelectorAll("[data-filter]"), function(btn){
+      btn.addEventListener("click", function(){
+        activeFilter = btn.getAttribute("data-filter");
+        renderFaqFilters();
+        renderFaqList();
+      });
+    });
+  }
+
+  function renderFaqList(){
+    var list = document.getElementById("faqList");
+    var empty = document.getElementById("faqEmpty");
+    var html = "";
+    var shown = 0;
+    faqGroups.forEach(function(g){
+      if (activeFilter !== "all" && activeFilter !== g.key) return;
+      var matches = g.items.filter(function(it){
+        if (!searchTerm) return true;
+        var hay = (it.q + " " + it.a).toLowerCase();
+        return hay.indexOf(searchTerm) !== -1;
+      });
+      if (matches.length === 0) return;
+      shown += matches.length;
+      html += '<div class="faq-group-title">' + g.label + '</div>';
+      matches.forEach(function(it, i){
+        html += '<div class="faq-item">' +
+          '<div class="faq-q" data-faq-toggle>' +
+            '<span class="mark-q">Q</span>' +
+            '<span>' + it.q + (it.pending ? '<span class="badge-pending">Pending</span>' : '') + '</span>' +
+          '</div>' +
+          '<div class="faq-a">' + it.a + '</div>' +
+        '</div>';
+      });
+    });
+    list.innerHTML = html;
+    empty.style.display = shown === 0 ? "block" : "none";
+  }
+
+  document.getElementById("faqSearch").addEventListener("input", function(){
+    searchTerm = this.value.trim().toLowerCase();
+    renderFaqList();
+  });
+
+  /* ---------------- render: release notes ---------------- */
+
+  function renderReleases(){
+    var list = document.getElementById("releaseList");
+    list.innerHTML = releases.map(function(r){
+      return '<div class="rel-entry">' +
+        '<div class="rel-version">' + r.version + '</div>' +
+        '<div class="rel-title">' + r.title + '</div>' +
+        '<ul class="rel-list">' +
+          r.items.map(function(it){
+            return '<li><span class="rel-tag ' + it.tag + '">' + (it.tag === "new" ? "New" : "Note") + '</span>' + it.text + '</li>';
+          }).join("") +
+        '</ul>' +
+      '</div>';
+    }).join("");
+  }
+
+  /* ---------------- routing ---------------- */
+
+  var views = ["terms", "faq", "release-notes"];
+
+  function showView(name){
+    if (views.indexOf(name) === -1) name = views[0];
+    views.forEach(function(v){
+      document.getElementById("view-" + v).classList.toggle("active", v === name);
+    });
+    Array.prototype.forEach.call(document.querySelectorAll(".nav-item"), function(a){
+      a.classList.toggle("active", a.getAttribute("data-view") === name);
+    });
+  }
+
+  function routeFromHash(){
+    var name = (location.hash || "").replace("#", "") || views[0];
+    showView(name);
+  }
+
+  window.addEventListener("hashchange", routeFromHash);
+
+  /* ---------------- theme ---------------- */
+
+  function setTheme(mode){
+    var root = document.documentElement;
+    if (mode === "system"){ root.removeAttribute("data-theme"); }
+    else { root.setAttribute("data-theme", mode); }
+    Array.prototype.forEach.call(document.querySelectorAll("[data-theme-btn]"), function(b){
+      b.classList.toggle("on", b.getAttribute("data-theme-btn") === mode);
+    });
+  }
+  Array.prototype.forEach.call(document.querySelectorAll("[data-theme-btn]"), function(b){
+    b.addEventListener("click", function(){ setTheme(b.getAttribute("data-theme-btn")); });
+  });
+
+  /* ---------------- init ---------------- */
+
+  renderTerms();
+  renderFaqFilters();
+  renderFaqList();
+  renderReleases();
+  routeFromHash();
+
+})();
+</script>
+</body>
+</html>
